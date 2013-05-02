@@ -1,4 +1,4 @@
-package eu.trentorise.smartcampus.coreservice.manager;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import eu.trentorise.smartcampus.exceptions.*;
-import eu.trentorise.smartcampus.coreservice.model.AppAccount;
+import eu.trentorise.smartcampus.permissionprovider.model.AppAccount;
 
 
 @Service

@@ -14,14 +14,14 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.coreservice.manager;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import eu.trentorise.smartcampus.ac.provider.model.User;
-import eu.trentorise.smartcampus.coreservice.model.UserAccount;
 import eu.trentorise.smartcampus.exceptions.NotFoundException;
+import eu.trentorise.smartcampus.permissionprovider.model.UserAccount;
 
 /**
  * <i>PermissionManager</i> checks the permissions about resources and storage

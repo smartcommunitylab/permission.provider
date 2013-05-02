@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.coreservice.model;
+package eu.trentorise.smartcampus.permissionprovider.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Permission {
+public class Configuration {
 	/**
 	 * name of configuration
 	 */
@@ -39,11 +39,11 @@ public class Permission {
 	 */
 	private String value;
 
-	public Permission() {
+	public Configuration() {
 
 	}
 
-	public Permission(String name, String value) {
+	public Configuration(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}

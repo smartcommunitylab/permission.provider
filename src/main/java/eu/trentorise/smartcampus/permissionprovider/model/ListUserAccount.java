@@ -1,4 +1,4 @@
-package eu.trentorise.smartcampus.coreservice.model;
+package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.util.List;
 

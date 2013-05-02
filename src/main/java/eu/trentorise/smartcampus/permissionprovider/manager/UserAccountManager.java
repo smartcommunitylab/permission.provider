@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.coreservice.manager;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import eu.trentorise.smartcampus.exceptions.*;
-import eu.trentorise.smartcampus.coreservice.model.Configuration;
-import eu.trentorise.smartcampus.coreservice.model.UserAccount;
+import eu.trentorise.smartcampus.permissionprovider.model.Configuration;
+import eu.trentorise.smartcampus.permissionprovider.model.UserAccount;
 
 /**
  * <i>UserAccountManager</i> manages functionalities about the user storage

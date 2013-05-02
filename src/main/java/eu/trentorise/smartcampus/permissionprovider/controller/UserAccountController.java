@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.coreservice.controller;
+package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,11 +32,11 @@ import eu.trentorise.smartcampus.ac.provider.model.User;
 
 import eu.trentorise.smartcampus.exceptions.*;
 import eu.trentorise.smartcampus.controllers.SCController;
-import eu.trentorise.smartcampus.coreservice.manager.PermissionManager;
-import eu.trentorise.smartcampus.coreservice.manager.UserAccountManager;
-import eu.trentorise.smartcampus.coreservice.model.ListUserAccount;
-import eu.trentorise.smartcampus.coreservice.model.UserAccount;
 import eu.trentorise.smartcampus.exceptions.SmartCampusException;
+import eu.trentorise.smartcampus.permissionprovider.manager.PermissionManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.UserAccountManager;
+import eu.trentorise.smartcampus.permissionprovider.model.ListUserAccount;
+import eu.trentorise.smartcampus.permissionprovider.model.UserAccount;
 
 @Controller
 public class UserAccountController extends SCController {

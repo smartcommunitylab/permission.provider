@@ -1,4 +1,4 @@
-package eu.trentorise.smartcampus.coreservice.controller;
+package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.controllers.SCController;
-import eu.trentorise.smartcampus.coreservice.manager.AppAccountManager;
-import eu.trentorise.smartcampus.coreservice.model.AppAccount;
-import eu.trentorise.smartcampus.coreservice.model.ListAppAccount;
 import eu.trentorise.smartcampus.exceptions.AlreadyExistException;
 import eu.trentorise.smartcampus.exceptions.NotFoundException;
 import eu.trentorise.smartcampus.exceptions.SmartCampusException;
+import eu.trentorise.smartcampus.permissionprovider.manager.AppAccountManager;
+import eu.trentorise.smartcampus.permissionprovider.model.AppAccount;
+import eu.trentorise.smartcampus.permissionprovider.model.ListAppAccount;
 
 @Controller
 public class AppAccountController extends SCController {
