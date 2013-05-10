@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Configuration {
+public class Configuration<T> {
 	/**
 	 * name of configuration
 	 */
@@ -38,6 +38,8 @@ public class Configuration {
 	 * value of configuration
 	 */
 	private String value;
+	
+	private T type;
 
 	public Configuration() {
 
@@ -46,6 +48,12 @@ public class Configuration {
 	public Configuration(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+	
+	public Configuration(String name, String value,T type) {
+		this.name = name;
+		this.value = value;
+		this.type=type;
 	}
 
 	public String getName() {
@@ -62,6 +70,14 @@ public class Configuration {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public T getType() {
+		return type;
+	}
+
+	public void setType(T type) {
+		this.type = type;
 	}
 
 }

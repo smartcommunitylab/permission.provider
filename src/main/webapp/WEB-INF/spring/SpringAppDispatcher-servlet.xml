@@ -53,12 +53,6 @@
 			value="${smartcampus.vas.web.mongo.db}" />
 	</bean>
 	
-	<!-- 
-	<bean id="objectStorage"
-		class="eu.trentorise.smartcampus.communicatorservice.storage.CommunicatorStorage">
-		<constructor-arg ref="mongoTemplate" />
-	</bean>
-		
-	STORAGES -->
+
 	
 </beans>

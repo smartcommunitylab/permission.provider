@@ -156,7 +156,7 @@
 				<version>${appengine.target.version}</version> </plugin> -->
 		</plugins>
 
-		<finalName>communicatorservice</finalName>
+		<finalName>permission.provider</finalName>
 	</build>
 
 	<repositories>
