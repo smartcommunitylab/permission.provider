@@ -55,8 +55,8 @@ public class UserAccountController extends SCController {
 		User user = retrieveUser(request);
 
 		// if userId isn't setted, it will be use the authToken to retrieve it
-		if (account.getUserId() <= 0) {
-			account.setUserId(user.getId());
+		if (account.getUser()!=null) {
+			account.setUser(user);
 		}
 		if (!permissionManager.checkAccountPermission(user, account)) {
 			throw new SecurityException();

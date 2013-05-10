@@ -49,7 +49,7 @@ public class PermissionManager {
 	 * @see UserAccount
 	 */
 	public boolean checkAccountPermission(User user, UserAccount account) {
-		return user.getId().equals(account.getUserId());
+		return user.getId().equals(account.getUser().getId());
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class PermissionManager {
 	public boolean checkAccountPermission(User user, String accountId)
 			throws NotFoundException {
 		UserAccount account = accountManager.findById(accountId);
-		return user.getId().equals(account.getUserId());
+		return user.getId().equals(account.getUser().getId());
 	}
 
 	/**

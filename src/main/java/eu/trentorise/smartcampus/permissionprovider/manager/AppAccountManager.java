@@ -81,4 +81,12 @@ public class AppAccountManager {
 		return appAccount;
 	}
 
+	public AppAccount getAppAccountByToken(
+			String app_token)throws NotFoundException {
+		Criteria crit = new Criteria();
+		crit.and("appToken").is(app_token);
+		Query query = Query.query(crit);
+		return db.find(query, AppAccount.class).get(0);//todo
+	}
+
 }

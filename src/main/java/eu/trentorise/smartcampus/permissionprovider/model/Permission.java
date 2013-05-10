@@ -16,6 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.model;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,7 +41,8 @@ public class Permission {
 	 * value of configuration
 	 */
 	private String value;
-
+	
+	
 	public Permission() {
 
 	}

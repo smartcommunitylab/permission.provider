@@ -17,12 +17,15 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import eu.trentorise.smartcampus.ac.provider.model.User;
 
 /**
  * User storage account informations
@@ -40,7 +43,7 @@ public class UserAccount {
 	/**
 	 * id of the user
 	 */
-	private long userId;
+	private User user;
 
 	private String appName;
 
@@ -50,15 +53,12 @@ public class UserAccount {
 	@XmlElementWrapper
 	@XmlElement(name = "configuration")
 	private List<Configuration> configurations;
+	
+	//@XmlElementWrapper
+	//@XmlElement(name = "permission")
+	
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
+	
 	public List<Configuration> getConfigurations() {
 		return configurations;
 	}
@@ -83,4 +83,21 @@ public class UserAccount {
 		this.appName = appName;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	private  Map<String, Map<String, List<String>>> permission;
+
+	public  Map<String, Map<String, List<String>>> getPermission() {
+		return permission;
+	}
+
+	public void setPermission( Map<String, Map<String, List<String>>> permission) {
+		this.permission = permission;
+	}
 }
