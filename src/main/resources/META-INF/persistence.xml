@@ -9,14 +9,16 @@
 		<class>eu.trentorise.smartcampus.permissionprovider.model.CoreService</class>
 		<class>eu.trentorise.smartcampus.permissionprovider.model.Resource</class>
 		<class>eu.trentorise.smartcampus.permissionprovider.model.User</class>
-
+		<class>eu.trentorise.smartcampus.permissionprovider.model.Attribute</class>
+		<class>eu.trentorise.smartcampus.permissionprovider.model.Authority</class>
+		
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
 			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/acprovider" />
-			<property name="hibernate.connection.username" value="root" />
-			<property name="hibernate.connection.password" value="root" />
-			<!-- <property name="hibernate.hbm2ddl.auto" value="create-drop" /> -->
+			<property name="hibernate.connection.username" value="ac" />
+			<property name="hibernate.connection.password" value="ac" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 		</properties>
 
 	</persistence-unit>
