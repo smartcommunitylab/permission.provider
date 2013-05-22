@@ -38,14 +38,21 @@ public class AutoJdbcClientTokenServices extends JdbcClientTokenServices {
 	 */
 	public AutoJdbcClientTokenServices(DataSource dataSource) {
 		super(dataSource);
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.execute(createStatement);
+		initSchema(dataSource);
 	}
 
 	/**
-	 * @param createStatement the createStatement to set
+	 * @param dataSource
+	 * @param createStatement
 	 */
-	public void setCreateStatement(String createStatement) {
+	public AutoJdbcClientTokenServices(DataSource dataSource, String createStatement) {
+		super(dataSource);
 		this.createStatement = createStatement;
+		initSchema(dataSource);
+	}
+
+	protected void initSchema(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		jdbcTemplate.execute(createStatement);
 	}
 }

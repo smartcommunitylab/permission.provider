@@ -19,24 +19,30 @@ package eu.trentorise.smartcampus.permissionprovider.oauth;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.JdbcClientDetailsService;
 
 /**
  * @author raman
  *
  */
-public class AutoJdbcAuthorizationCodeServices extends JdbcAuthorizationCodeServices {
+public class AutoJdbcClientDetailsServices extends JdbcClientDetailsService {
 
 	private JdbcTemplate jdbcTemplate;
 	
-	private static final String DEFAULT_CREATE_CODE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_code (code VARCHAR(256), authentication BLOB);";
-
-	private String createStatement = DEFAULT_CREATE_CODE_TABLE_STATEMENT; 
+	private static final String DEFAULT_CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_client_details (" +
+			"client_id VARCHAR(256), " +
+			"resource_ids TEXT, client_secret VARCHAR(256), scope TEXT, authorized_grant_types TEXT, " +
+			"web_server_redirect_uri VARCHAR(256), " +
+			"authorities TEXT, " +
+			"access_token_validity INTEGER, refresh_token_validity INTEGER, additional_information TEXT, " +
+			"id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY);";
+	
+	private String createStatement = DEFAULT_CREATE_TABLE_STATEMENT;
 	
 	/**
 	 * @param dataSource
 	 */
-	public AutoJdbcAuthorizationCodeServices(DataSource dataSource) {
+	public AutoJdbcClientDetailsServices(DataSource dataSource) {
 		super(dataSource);
 		initSchema(dataSource);
 	}
@@ -45,15 +51,17 @@ public class AutoJdbcAuthorizationCodeServices extends JdbcAuthorizationCodeServ
 	 * @param dataSource
 	 * @param createStatement
 	 */
-	public AutoJdbcAuthorizationCodeServices(DataSource dataSource, String createStatement) {
+	public AutoJdbcClientDetailsServices(DataSource dataSource, String createStatement) {
 		super(dataSource);
 		this.createStatement = createStatement;
-		initSchema(dataSource);
+		initSchema(dataSource); 
 	}
+
 
 
 	protected void initSchema(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.execute(createStatement);
 	}
+
 }

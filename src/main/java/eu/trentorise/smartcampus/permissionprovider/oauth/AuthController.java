@@ -16,7 +16,9 @@
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.adapters.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.adapters.ProviderServiceAdapter;
 
 
@@ -43,9 +46,21 @@ public class AuthController {
 
 	@Autowired
 	private ProviderServiceAdapter providerServiceAdapter;
+	@Autowired 
+	private AttributesAdapter attributesAdapter;
+	
+	@RequestMapping("/eauth/authorize")
+	public ModelAndView authorise(HttpServletRequest req) throws Exception {
+		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		model.put("authorities", authorities);
+		model.put("target","/oauth/authorize"+(req.getQueryString()==null?"":"?"+req.getQueryString()));
+		return new ModelAndView("authorities", model);
+	}
+	
 	
 	@RequestMapping("/eauth/{authorityUrl}")
-	public ModelAndView getAccessConfirmation(@PathVariable String authorityUrl, @RequestParam String target, HttpServletRequest req) throws Exception {
+	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam String target, HttpServletRequest req) throws Exception {
 		List<GrantedAuthority> list = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 		
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);

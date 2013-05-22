@@ -40,24 +40,25 @@ public class AutoJdbcTokenStore extends JdbcTokenStore {
 	 */
 	public AutoJdbcTokenStore(DataSource dataSource) {
 		super(dataSource);
+		initSchema(dataSource);
+	}
+
+	protected void initSchema(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcTemplate.execute(createAccessTokenStatement);
 		jdbcTemplate.execute(createRefreshTokenStatement);
 	}
 
 	/**
-	 * @param createRefreshTokenStatement the createRefreshTokenStatement to set
+	 * @param dataSource
+	 * @param createRefreshTokenStatement
+	 * @param createAccessTokenStatement
 	 */
-	public void setCreateRefreshTokenStatement(String createRefreshTokenStatement) {
+	public AutoJdbcTokenStore(DataSource dataSource, String createRefreshTokenStatement, String createAccessTokenStatement) {
+		super(dataSource);
 		this.createRefreshTokenStatement = createRefreshTokenStatement;
-	}
-
-	/**
-	 * @param createAccessTokenStatement the createAccessTokenStatement to set
-	 */
-	public void setCreateAccessTokenStatement(String createAccessTokenStatement) {
 		this.createAccessTokenStatement = createAccessTokenStatement;
+		initSchema(dataSource);
 	}
-
 	
 }
