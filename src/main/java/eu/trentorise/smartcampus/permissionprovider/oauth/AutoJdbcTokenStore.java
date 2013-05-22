@@ -30,20 +30,34 @@ public class AutoJdbcTokenStore extends JdbcTokenStore {
 	private JdbcTemplate jdbcTemplate;
 	
 	private static final String DEFAULT_CREATE_RT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_refresh_token ( token_id VARCHAR(64) NOT NULL PRIMARY KEY, token BLOB NOT NULL, authentication BLOB NOT NULL);";
-	private static final String DEFAULT_CREATE_CT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_client_token (token_id VARCHAR(256), token BLOB, authentication_id VARCHAR(256), user_name VARCHAR(256), client_id VARCHAR(256));";
 	private static final String DEFAULT_CREATE_AT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_access_token (token_id VARCHAR(256),  token BLOB, authentication_id VARCHAR(256), user_name VARCHAR(256), client_id VARCHAR(256), authentication BLOB, refresh_token VARCHAR(256));";
-	private static final String DEFAULT_CREATE_CODE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_code (code VARCHAR(256), authentication BLOB);";
-
+	
+	private String createRefreshTokenStatement = DEFAULT_CREATE_RT_TABLE_STATEMENT;
+	private String createAccessTokenStatement = DEFAULT_CREATE_AT_TABLE_STATEMENT;
+	
 	/**
 	 * @param dataSource
 	 */
 	public AutoJdbcTokenStore(DataSource dataSource) {
 		super(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.execute(DEFAULT_CREATE_RT_TABLE_STATEMENT);
-		jdbcTemplate.execute(DEFAULT_CREATE_AT_TABLE_STATEMENT);
-		jdbcTemplate.execute(DEFAULT_CREATE_CT_TABLE_STATEMENT);
-		jdbcTemplate.execute(DEFAULT_CREATE_CODE_TABLE_STATEMENT);
+		jdbcTemplate.execute(createAccessTokenStatement);
+		jdbcTemplate.execute(createRefreshTokenStatement);
 	}
 
+	/**
+	 * @param createRefreshTokenStatement the createRefreshTokenStatement to set
+	 */
+	public void setCreateRefreshTokenStatement(String createRefreshTokenStatement) {
+		this.createRefreshTokenStatement = createRefreshTokenStatement;
+	}
+
+	/**
+	 * @param createAccessTokenStatement the createAccessTokenStatement to set
+	 */
+	public void setCreateAccessTokenStatement(String createAccessTokenStatement) {
+		this.createAccessTokenStatement = createAccessTokenStatement;
+	}
+
+	
 }
