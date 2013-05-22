@@ -49,21 +49,9 @@
 		base-package="eu.trentorise.smartcampus.permissionprovider" />
 
 	<context:property-placeholder location="classpath:commoncore.properties" />
-  
+  	
+    <import resource="datalayer.xml"/>
 	
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="permission.provider" />
-	</bean>
-
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
-	</bean>
-
-	<tx:annotation-driven transaction-manager="transactionManager" />
-	
- 	<jpa:repositories base-package="eu.trentorise.smartcampus.permissionprovider.repository" />
- 
     <!-- Scheduler refreshing security list -->
     <task:annotation-driven scheduler="taskScheduler" />
     <task:scheduler id="taskScheduler" pool-size="1" />
