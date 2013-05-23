@@ -29,11 +29,9 @@ public class AutoJdbcTokenStore extends JdbcTokenStore {
 
 	private JdbcTemplate jdbcTemplate;
 	
-	private static final String DEFAULT_CREATE_RT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_refresh_token ( token_id VARCHAR(64) NOT NULL PRIMARY KEY, token BLOB NOT NULL, authentication BLOB NOT NULL);";
 	private static final String DEFAULT_CREATE_AT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_access_token (token_id VARCHAR(256),  token BLOB, authentication_id VARCHAR(256), user_name VARCHAR(256), client_id VARCHAR(256), authentication BLOB, refresh_token VARCHAR(256));";
 	
-	private String createRefreshTokenStatement = DEFAULT_CREATE_RT_TABLE_STATEMENT;
-	private String createAccessTokenStatement = DEFAULT_CREATE_AT_TABLE_STATEMENT;
+	private String createStatement = DEFAULT_CREATE_AT_TABLE_STATEMENT;
 	
 	/**
 	 * @param dataSource
@@ -45,19 +43,16 @@ public class AutoJdbcTokenStore extends JdbcTokenStore {
 
 	protected void initSchema(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcTemplate.execute(createAccessTokenStatement);
-		jdbcTemplate.execute(createRefreshTokenStatement);
+		jdbcTemplate.execute(createStatement);
 	}
 
 	/**
 	 * @param dataSource
-	 * @param createRefreshTokenStatement
-	 * @param createAccessTokenStatement
+	 * @param createStatement
 	 */
-	public AutoJdbcTokenStore(DataSource dataSource, String createRefreshTokenStatement, String createAccessTokenStatement) {
+	public AutoJdbcTokenStore(DataSource dataSource, String createStatement) {
 		super(dataSource);
-		this.createRefreshTokenStatement = createRefreshTokenStatement;
-		this.createAccessTokenStatement = createAccessTokenStatement;
+		this.createStatement = createStatement;
 		initSchema(dataSource);
 	}
 	
