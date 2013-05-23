@@ -113,38 +113,27 @@
 
 	<!-- Override the default mappings for approval and error pages -->
 	<!--Basic application beans. -->
-<!-- 	<bean id="viewResolver" -->
-<!-- 		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver"> -->
-<!-- 		<property name="mediaTypes"> -->
-<!-- 			<map> -->
-<!-- 				<entry key="json" value="application/json" /> -->
-<!-- 			</map> -->
-<!-- 		</property> -->
-<!-- 		<property name="viewResolvers"> -->
-<!-- 			<bean -->
-<!-- 				class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
-<!-- 				<property name="prefix" value="/WEB-INF/jsp/"></property> -->
-<!-- 				<property name="suffix" value=".jsp"></property> -->
-<!-- 			</bean> -->
-<!-- 		</property> -->
-<!-- 		<property name="defaultViews"> -->
-<!-- 			<bean -->
-<!-- 				class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"> -->
-<!-- 				<property name="extractValueFromSingleKeyModel" value="true" /> -->
-<!-- 			</bean> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
-    <bean id="viewResolver"
-        class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-        <property name="viewClass"
-            value="org.springframework.web.servlet.view.JstlView" />
-        <property name="prefix" value="/WEB-INF/jsp/" />
-        <property name="suffix" value=".jsp" />
-    </bean>
-
-<!-- 	<bean id="authController" -->
-<!-- 		class="eu.trentorise.smartcampus.permissionprovider.oauth.AuthController"> -->
-<!-- 	</bean> -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<bean
+				class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+				<property name="prefix" value="/WEB-INF/jsp/"></property>
+				<property name="suffix" value=".jsp"></property>
+			</bean>
+		</property>
+		<property name="defaultViews">
+			<bean
+				class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+				<property name="extractValueFromSingleKeyModel" value="true" />
+			</bean>
+		</property>
+	</bean>
 
 	<import resource="datalayer.xml"/>
 
