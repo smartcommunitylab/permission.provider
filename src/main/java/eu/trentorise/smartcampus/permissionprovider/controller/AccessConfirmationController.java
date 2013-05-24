@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
@@ -57,7 +58,9 @@ public class AccessConfirmationController {
 			for (String rId : client.getResourceIds()) {
 				try {
 					Resource r = resourceRepository.findOne(Long.parseLong(rId));
-					resources.add(r);
+					if (r.getAuthority().equals(AUTHORITY.USER)) {
+						resources.add(r);
+					}
 				} catch (Exception e) {
 					logger.error("Error reading resource with id "+rId+": "+e.getMessage());
 				}
