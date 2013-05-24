@@ -1,3 +1,4 @@
+<%@page import="org.springframework.security.web.WebAttributes"%>
 <%@ page import="org.springframework.security.core.AuthenticationException" %>
 <%@ page import="org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter" %>
 <%@ page import="org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException" %>
@@ -16,11 +17,11 @@
 
   <div id="content">
 
-    <% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
+    <% if (session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION) != null && !(session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION) instanceof UnapprovedClientAuthenticationException)) { %>
       <div class="error">
         <h2>Woops!</h2>
 
-        <p>Access could not be granted. (<%= ((AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY)).getMessage() %>)</p>
+        <p>Access could not be granted. (<%= ((AuthenticationException) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION)).getMessage() %>)</p>
       </div>
     <% } %>
     <c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION"/>
@@ -29,18 +30,18 @@
 
       <p>You hereby authorize "<c:out value="${client.clientId}"/>" to access the following resources:</p>
       <ul>
-      <c:forEach items="${auth_request.resourceIds}" var="i">
-        <li><c:out value="${i}"/></li>
+      <c:forEach items="${resources}" var="r">
+        <li><c:out value="${r.name}"/></li>
       </c:forEach>        
       </ul>
 
       <form id="confirmationForm" name="confirmationForm" action="<%=request.getContextPath()%>/oauth/authorize" method="post">
         <input name="user_oauth_approval" value="true" type="hidden"/>
-        <label><input name="authorize" value="Authorize" type="submit"></label>
+        <label><input name="authorize" value="Authorize" type="submit"/></label>
       </form>
       <form id="denialForm" name="denialForm" action="<%=request.getContextPath()%>/oauth/authorize" method="post">
         <input name="user_oauth_approval" value="false" type="hidden"/>
-        <label><input name="deny" value="Deny" type="submit"></label>
+        <label><input name="deny" value="Deny" type="submit"/></label>
       </form>
   </div>
 

@@ -85,6 +85,8 @@
         <constructor-arg ref="dataSource" />
 	</bean>
 
+	<bean id="resourceStorage" class="eu.trentorise.smartcampus.permissionprovider.oauth.CachedResourceStorage"/>
+	
 	<bean id="tokenServices"
 		class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
 		<property name="tokenStore" ref="tokenStore" />

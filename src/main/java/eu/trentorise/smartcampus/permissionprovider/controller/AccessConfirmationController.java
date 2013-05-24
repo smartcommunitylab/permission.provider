@@ -13,10 +13,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.trentorise.smartcampus.permissionprovider.oauth;
+package eu.trentorise.smartcampus.permissionprovider.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -26,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
+
 /**
  * Controller for retrieving the model for and displaying the confirmation page for access to a protected resource.
  * 
@@ -34,13 +41,29 @@ import org.springframework.web.servlet.ModelAndView;
 @SessionAttributes("authorizationRequest")
 public class AccessConfirmationController {
 
+	private static Log logger = LogFactory.getLog(AccessConfirmationController.class);
+	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
+	@Autowired
+	private ResourceRepository resourceRepository;
 
 	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView getAccessConfirmation(Map<String, Object> model) throws Exception {
 		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
+		List<Resource> resources = new ArrayList<Resource>();
+		if (clientAuth.getResourceIds() != null) {
+			for (String rId : client.getResourceIds()) {
+				try {
+					Resource r = resourceRepository.findOne(Long.parseLong(rId));
+					resources.add(r);
+				} catch (Exception e) {
+					logger.error("Error reading resource with id "+rId+": "+e.getMessage());
+				}
+			}
+		}
+		model.put("resources", resources);
 		model.put("auth_request", clientAuth);
 		model.put("client", client);
 		return new ModelAndView("access_confirmation", model);

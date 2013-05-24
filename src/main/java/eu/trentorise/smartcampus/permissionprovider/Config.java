@@ -13,17 +13,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.trentorise.smartcampus.permissionprovider.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+package eu.trentorise.smartcampus.permissionprovider;
 
-@Entity
-public class AppResource {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+/**
+ * @author raman
+ *
+ */
+public class Config {
 
+	public enum AUTHORITY {USER, CLIENT};
 }

@@ -13,15 +13,20 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.trentorise.smartcampus.permissionprovider.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+package eu.trentorise.smartcampus.permissionprovider.oauth;
 
-import eu.trentorise.smartcampus.permissionprovider.model.App;
+import java.util.List;
 
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 
-@Repository
-public interface AppRepository extends JpaRepository<App, Long> {
+/**
+ * @author raman
+ *
+ */
+public interface ResourceStorage extends ResourceServices {
 
+	public Resource storeResource(Resource resource);
+	
+	public void storeResources(List<Resource> resources);
 }

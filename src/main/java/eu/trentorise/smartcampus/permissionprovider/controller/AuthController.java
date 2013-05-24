@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.trentorise.smartcampus.permissionprovider.oauth;
+package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.adapters.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.adapters.ProviderServiceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.oauth.ExternalAuthenticationToken;
 
 
 /**
