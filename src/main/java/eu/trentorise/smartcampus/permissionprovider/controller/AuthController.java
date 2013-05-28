@@ -15,6 +15,8 @@
  */
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,13 +52,39 @@ public class AuthController {
 	@Autowired 
 	private AttributesAdapter attributesAdapter;
 	
+	@RequestMapping("/eauth/dev")
+	public ModelAndView developer(HttpServletRequest req) throws Exception {
+		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		model.put("authorities", authorities);
+		String target = prepareRedirect(req,"/dev");
+		model.put("target",target);
+		return new ModelAndView("authorities", model);
+	}
+	
 	@RequestMapping("/eauth/authorize")
 	public ModelAndView authorise(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
 		model.put("authorities", authorities);
-		model.put("target","/oauth/authorize"+(req.getQueryString()==null?"":"?"+req.getQueryString()));
+		String target = prepareRedirect(req,"/oauth/authorize");
+		model.put("target",target);
+		
+		
 		return new ModelAndView("authorities", model);
+	}
+
+	/**
+	 * @param req
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	protected String prepareRedirect(HttpServletRequest req, String path)
+			throws UnsupportedEncodingException {
+		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
+		// HOOK for testing
+		target += "&openid.ext1.value.email=my@mail@openid.ext1.value.name=r2";
+		return target;
 	}
 	
 	
@@ -71,6 +99,6 @@ public class AuthController {
 		a.setAuthenticated(true);
 
 		SecurityContextHolder.getContext().setAuthentication(a);
-		return new ModelAndView("forward:"+target);
+		return new ModelAndView("redirect:"+target);
 	}
 }

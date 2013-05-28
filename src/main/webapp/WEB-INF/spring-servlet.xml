@@ -40,11 +40,12 @@
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</sec:http>
 
-	<sec:http entry-point-ref="forbEntryPoint"
-		disable-url-rewriting="true" xmlns="http://www.springframework.org/schema/security">
-		<intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
-	</sec:http>
-
+	<sec:http disable-url-rewriting="true">
+        <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:form-login login-page="/eauth/dev" />
+    </sec:http>
+	
 	<bean id="clientAuthenticationEntryPoint"
 		class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="sparklr2/client" />
@@ -107,8 +108,11 @@
         <constructor-arg ref="dataSource" />
     </bean>
 
-    <bean id="clientDetails" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcClientDetailsServices">
+    <bean id="clientDetails" class="org.springframework.security.oauth2.provider.JdbcClientDetailsService">
         <constructor-arg ref="dataSource" />
+        <property name="rowMapper">
+            <bean class="eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsRowMapper"/>
+        </property>
     </bean>
     		
 <!-- 	<mvc:default-servlet-handler /> -->

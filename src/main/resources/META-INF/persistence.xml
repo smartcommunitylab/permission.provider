@@ -7,5 +7,6 @@
 		<class>eu.trentorise.smartcampus.permissionprovider.model.User</class>
 		<class>eu.trentorise.smartcampus.permissionprovider.model.Attribute</class>
 		<class>eu.trentorise.smartcampus.permissionprovider.model.Authority</class>
-	</persistence-unit>
+        <class>eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity</class>
+			</persistence-unit>
 </persistence>
