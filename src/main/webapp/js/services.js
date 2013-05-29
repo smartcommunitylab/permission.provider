@@ -18,7 +18,7 @@ function AppController($scope, $resource) {
 	$scope.incPath = "./html/apps.html";
 	$scope.app = null;
 	$scope.clientId = 'none';
-	$scope.clientView = 'none';
+	$scope.clientView = 'overview';
 	$scope.error = '';
 	$scope.info = '';
 	
@@ -41,7 +41,7 @@ function AppController($scope, $resource) {
 				} else {
 					$scope.clientId = 'none';
 					$scope.app = null;
-					$scope.switchClientView('none');
+					$scope.switchClientView('overview');
 				}
 			} else {
 				$scope.error = 'Failed to load apps: '+response.errorMessage;
@@ -124,6 +124,10 @@ function AppController($scope, $resource) {
 				$scope.error = 'Failed to save settings: '+response.errorMessage;
 			}
 		});
+	};
+	
+	$scope.savePermissions = function() {
+		// TODO
 	};
 	
 	$scope.statusIcon = function(val) {

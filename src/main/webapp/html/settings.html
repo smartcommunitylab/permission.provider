@@ -1,0 +1,36 @@
+<form ng-submit="saveSettings()">
+    <table class="table table-striped">
+        <tr>
+            <th>name</th>
+            <td><input type="text" class="input-large"
+                placeholder="app_name" ng-model="app.name" required></td>
+        </tr>
+        <tr>
+            <th>clientId</th>
+            <td>{{app.clientId}} <a href="#" ng-click="reset(clientId,'clientId')">Reset</a></td>
+        </tr>
+        <tr>
+            <th>clientSecret</th>
+            <td>{{app.clientSecret}} <a href="#" ng-click="reset(clientId,'secret')">Reset</a></td>
+        </tr>
+        <tr>
+            <th>redirect Web server URLs</th>
+            <td><input type="text" class="input-xxlarge"
+                placeholder="specify your (comma-separated) web app addresses"
+                ng-model="app.redirectUris"></td>
+        </tr>
+        <tr>
+            <th>Server-side access</th>
+            <td><input type="checkbox" ng-model="app.serverSideAccess"></td>
+        </tr>
+        <tr>
+            <th>Browser access</th>
+            <td><input type="checkbox" ng-model="app.browserAccess"></td>
+        </tr>
+        <tr>
+            <th>Native app access</th>
+            <td><input type="checkbox" ng-model="app.nativeAppsAccess"></td>
+        </tr>
+    </table>
+    <button type="submit" class="btn btn-primary">Save settings</button>
+</form>
