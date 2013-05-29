@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -112,13 +113,53 @@ public class AppController {
 		return response;
 	}
 
+	@RequestMapping(method=RequestMethod.POST,value="/dev/apps/{clientId}")
+	public @ResponseBody Response resetClientId(@PathVariable String clientId,@RequestParam String reset) {
+		return reset(clientId, "clientId".equals(reset));
+	}
+
+	/**
+	 * Reset clientId or client secret
+	 * @param clientId
+	 * @param resetClientId true to reset clientId, false to reset clientSecret
+	 * @return
+	 */
+	protected Response reset(String clientId, boolean resetClientId) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+			if (client == null) {
+				response.setResponseCode(RESPONSE.ERROR);
+				response.setErrorMessage("client app not found");
+				return response;
+			}
+			if (resetClientId) {
+				client.setClientId(clientDetailsAdapter.generateClientId());
+			} else {
+				client.setClientSecret(clientDetailsAdapter.generateClientSecret());
+			}
+			clientDetailsRepository.save(client);
+			response.setData(clientDetailsAdapter.convertToClientApp(client));
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			response.setResponseCode(RESPONSE.ERROR);
+			response.setErrorMessage(e.getMessage());
+		}
+		return response;
+	}
+
 	@RequestMapping(method=RequestMethod.DELETE,value="/dev/apps/{clientId}")
 	public @ResponseBody Response delete(@PathVariable String clientId) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-			if (client == null) return null;
+			if (client == null) {
+				response.setResponseCode(RESPONSE.ERROR);
+				response.setErrorMessage("client app not found");
+				return response;
+			}
 			clientDetailsRepository.delete(client);
 			response.setData(clientDetailsAdapter.convertToClientApp(client));
 		} catch (Exception e) {

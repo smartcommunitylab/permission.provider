@@ -24,7 +24,8 @@ function AppController($scope, $resource) {
 	
 	var ClientAppBasic = $resource('dev/apps/:clientId', {}, {
 		query : { method : 'GET' },
-		update : { method : 'PUT' }
+		update : { method : 'PUT' },
+		reset : {method : 'POST'}
 	});
 	
 	var init = function() {
@@ -128,5 +129,31 @@ function AppController($scope, $resource) {
 	$scope.statusIcon = function(val) {
 		if (val) return 'icon-ok';
 		else return 'icon-remove';
+	};
+	
+	$scope.reset = function(client,param) {
+		if (confirm('Are you sure you want to reset '+param+'?')) {
+			var newClient = new ClientAppBasic($scope.app);
+			newClient.$reset({clientId:$scope.clientId,reset:param}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = param + ' successfully reset!';
+
+					var app = response.data;
+					for (var i = 0; i < $scope.apps.length; i++) {
+						if ($scope.apps[i].clientId == client) {
+							$scope.apps[i] = app;
+							if ($scope.clientId == client) {
+								$scope.clientId = app.clientId;
+								$scope.app = angular.copy(app);
+							}
+							return;
+						}
+					}
+				} else {
+					$scope.error = 'Failed to reset '+param+': '+response.errorMessage;
+				}
+			});
+		}
 	};
 };
