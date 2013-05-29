@@ -77,7 +77,7 @@ function AppController($scope, $resource) {
 	$scope.removeClient = function() {
 		if (confirm('Are you sure you want to delete?')) {
 			var newClient = new ClientAppBasic();
-			newClient.$remove({clientId:$scope.clientId},function(app){
+			newClient.$remove({clientId:$scope.clientId},function(response){
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					init();

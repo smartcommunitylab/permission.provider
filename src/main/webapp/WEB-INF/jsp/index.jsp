@@ -33,8 +33,8 @@
       <div class="navbar-inner">
         <div class="container" >
           <ul class="nav" role="navigation">
-        <li class="{{activeView('apps')}}"><a href="#" ng-click="currentView='apps'">Apps</a></li>
-        <li class="{{activeView('profile')}}"><a href="#" ng-click="currentView='profile'">Profile</a></li>
+	        <li class="{{activeView('apps')}}"><a href="#" ng-click="currentView='apps'">Apps</a></li>
+	        <li class="{{activeView('profile')}}"><a href="#" ng-click="currentView='profile'">Profile</a></li>
           </ul>
           <ul class="nav pull-right">
             <li id="fat-menu" class="dropdown">
@@ -47,10 +47,12 @@
         </div>
       </div>
     </div>
-    <div ng-include="'./html/'+currentView+'.html'" />
-    <hr>
-    <footer>
-      <p>&copy; SmartCampus 2013</p>
-    </footer>
+    <div class="container">
+	    <div ng-include="'./html/'+currentView+'.html'"></div>
+	    <hr>
+	    <footer>
+	      <p>&copy; SmartCampus 2013</p>
+	    </footer>
+    </div>
   </body>
 </html>
