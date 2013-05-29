@@ -16,7 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,12 +35,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.adapters.ClientDetailsAdapter;
+import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
+import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
  * @author raman
@@ -54,10 +59,16 @@ public class AppController {
 	private ClientDetailsRepository clientDetailsRepository;
 	@Autowired
 	private ClientDetailsAdapter clientDetailsAdapter;
+	@Autowired
+	private UserRepository userRepository;
 	
 	@RequestMapping("/dev")
 	public ModelAndView developer() {
-		return new ModelAndView("index");
+		Map<String,Object> model = new HashMap<String, Object>();
+		User user =  userRepository.findOne(getUserId());
+		String username = getUserName(user);
+		model.put("username",username);
+		return new ModelAndView("index", model);
 	}
 	
 	@RequestMapping("/dev/apps")
@@ -154,4 +165,24 @@ public class AppController {
 	private Long getUserId() {
 		return Long.parseLong(getUser().getUsername());
 	}
+	/**
+	 * @return
+	 */
+	private String getUserAuthority() {
+		return SecurityContextHolder.getContext().getAuthentication().getDetails().toString();
+	}
+
+	protected String getUserName(User user) {
+		Map<String,Object> attrs = new HashMap<String, Object>();
+		String authority = getUserAuthority();
+		for (Attribute a : user.getAttributeEntities()) {
+			if (a.getAuthority().getRedirectUrl().equals(authority)) {
+				attrs.put(a.getKey(), a.getValue());
+			}
+		}
+		String username = attrs.containsKey("eu.trentorise.smartcampus.givenname")?attrs.get("eu.trentorise.smartcampus.givenname").toString():"";
+		username += " "+(attrs.containsKey("eu.trentorise.smartcampus.surname")?attrs.get("eu.trentorise.smartcampus.surname").toString():"");
+		return username;
+	}
+
 }

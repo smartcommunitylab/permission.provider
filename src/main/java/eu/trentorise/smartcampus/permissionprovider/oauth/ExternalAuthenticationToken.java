@@ -25,9 +25,10 @@ public class ExternalAuthenticationToken extends AbstractAuthenticationToken {
 
 	private Object principal;
 	
-	public ExternalAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
+	public ExternalAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities, String authority) {
 		super(authorities);
 		this.principal = principal;
+		setDetails(authority);
 	}
 
 	@Override

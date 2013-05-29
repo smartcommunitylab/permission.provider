@@ -1,6 +1,21 @@
 angular.module('dev', [ 'ngResource' ]);
 
+function MainController($scope) {
+	$scope.currentView = 'apps';
+	$scope.activeView = function(view) {
+		return view == $scope.currentView ? 'active' : '';
+	};
+	$scope.signOut = function() {
+	    window.document.location = "./logout";
+	};
+}
+
+function ProfileController($scope) {
+	
+}
+
 function AppController($scope, $resource) {
+	$scope.incPath = "./html/apps.html";
 	$scope.app = null;
 	$scope.clientId = 'none';
 	$scope.clientView = 'none';
@@ -108,5 +123,10 @@ function AppController($scope, $resource) {
 				$scope.error = 'Failed to save settings: '+response.errorMessage;
 			}
 		});
+	};
+	
+	$scope.statusIcon = function(val) {
+		if (val) return 'icon-ok';
+		else return 'icon-remove';
 	};
 };

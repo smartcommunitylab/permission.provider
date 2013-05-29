@@ -83,7 +83,7 @@ public class AuthController {
 			throws UnsupportedEncodingException {
 		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
 		// HOOK for testing
-		target += "&openid.ext1.value.email=my@mail@openid.ext1.value.name=r2";
+		target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
 		return target;
 	}
 	
@@ -95,7 +95,7 @@ public class AuthController {
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
 		
 		UserDetails user = new User(userEntity.getId().toString(),"", list);
-		Authentication a = new ExternalAuthenticationToken(user, list);
+		Authentication a = new ExternalAuthenticationToken(user, list, authorityUrl);
 		a.setAuthenticated(true);
 
 		SecurityContextHolder.getContext().setAuthentication(a);
