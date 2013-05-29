@@ -18,12 +18,15 @@ package eu.trentorise.smartcampus.permissionprovider.adapters;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
@@ -38,6 +41,14 @@ import eu.trentorise.smartcampus.permissionprovider.model.PermissionBasic;
 @Transactional
 public class ClientDetailsAdapter {
 
+	/**
+	 * 
+	 */
+	private static final String GT_CLIENT_CREDENTIALS = "client_credentials";
+	private static final String GT_IMPLICIT = "implicit";
+	private static final String GT_AUTHORIZATION_CODE = "authorization_code";
+	private static final String GT_REFRESH_TOKEN = "refresh_token";
+
 	public synchronized String generateClientId() {
 		return UUID.randomUUID().toString();
 	}
@@ -45,13 +56,13 @@ public class ClientDetailsAdapter {
 		return UUID.randomUUID().toString();
 	}
 	
-	public List<ClientAppBasic> convertClientApps(List<ClientDetailsEntity> entities){
+	public List<ClientAppBasic> convertToClientApps(List<ClientDetailsEntity> entities){
 		if (entities == null) {
 			return Collections.emptyList();
 		}
 		List<ClientAppBasic> res = new ArrayList<ClientAppBasic>();
 		for (ClientDetailsEntity e : entities) {
-			res.add(convertClientApp(e));
+			res.add(convertToClientApp(e));
 		}
 		return res;
 	}
@@ -60,27 +71,84 @@ public class ClientDetailsAdapter {
 	 * @param e
 	 * @return
 	 */
-	public ClientAppBasic convertClientApp(ClientDetails e) {
+	public ClientAppBasic convertToClientApp(ClientDetails e) {
 		ClientAppBasic res = new ClientAppBasic();
 		res.setClientId(e.getClientId());
 		res.setClientSecret(e.getClientSecret());
+		res.setGrantedTypes(e.getAuthorizedGrantTypes());
 		
 		ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
 		if (info != null) {
 			res.setName(info.getName());
+			res.setNativeAppsAccess(info.isNativeAppsAccess());
 		}
-		res.setRedirectUris(new ArrayList<String>(e.getRegisteredRedirectUri()));
-		// TODO
+		res.setServerSideAccess(e.getAuthorizedGrantTypes().contains(GT_AUTHORIZATION_CODE));
+		res.setBrowserAccess(e.getAuthorizedGrantTypes().contains(GT_IMPLICIT));
+		res.setRedirectUris(StringUtils.collectionToCommaDelimitedString(e.getRegisteredRedirectUri()));
+		// TODO convert permissions
 		res.setPermissions(Collections.<PermissionBasic>emptyList());
 		return res;
 	}
 	public String defaultGrantTypes() {
-		return "authorization_code,implicit,refresh_token,client_credentials";
+		return GT_CLIENT_CREDENTIALS;
 	}
 	public String defaultAuthorities() {
 		return "ROLE_CLIENT";
 	}
 	public String defaultScope() {
 		return "read,write";
+	}
+	/**
+	 * @param client
+	 * @param data
+	 * @return
+	 * @throws Exception 
+	 */
+	public ClientDetailsEntity convertFromClientApp(ClientDetailsEntity client, ClientAppBasic data) {
+		try {
+			ClientAppInfo info = null;
+			if (client.getAdditionalInformation() == null) {
+				info = new ClientAppInfo();
+			} else {
+				info = ClientAppInfo.convert(client.getAdditionalInformation());
+			}
+			info.setName(data.getName());
+			info.setNativeAppsAccess(data.isNativeAppsAccess());
+			client.setAdditionalInformation(info.toJson());
+			Set<String> types = new HashSet<String>(client.getAuthorizedGrantTypes());
+			if (data.isBrowserAccess()) {
+				types.add(GT_IMPLICIT);
+			} else {
+				types.remove(GT_IMPLICIT);
+			} 
+			// TODO decide the grant type for native app access
+			if (data.isServerSideAccess() || data.isNativeAppsAccess()) {
+				types.add(GT_AUTHORIZATION_CODE);
+				types.add(GT_REFRESH_TOKEN);
+			} else {
+				types.remove(GT_AUTHORIZATION_CODE);
+				types.remove(GT_REFRESH_TOKEN);
+			}
+			client.setAuthorizedGrantTypes(StringUtils.collectionToCommaDelimitedString(types));
+			
+			client.setRedirectUri(data.getRedirectUris());
+			return client;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * @param client
+	 * @param data
+	 */
+	public String validate(ClientDetailsEntity client, ClientAppBasic data) {
+		if (client == null) return "app not found";
+		if (data.getName() == null || data.getName().trim().isEmpty()) {
+			return "name cannot be empty";
+		}
+		if ((data.isServerSideAccess() || data.isNativeAppsAccess()) && (data.getRedirectUris() == null || data.getRedirectUris().trim().isEmpty())) {
+			return "redirect URL is required for Server-side or native access";
+		}
+		return null;
 	}
 }

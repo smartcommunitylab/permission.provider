@@ -22,8 +22,10 @@ package eu.trentorise.smartcampus.permissionprovider.model;
  */
 public class Response {
 
+	public enum RESPONSE {OK,ERROR};
+	
 	private Object data;
-	private int responseCode;
+	private RESPONSE responseCode;
 	private String errorMessage;
 	/**
 	 * @return the data
@@ -37,16 +39,17 @@ public class Response {
 	public void setData(Object data) {
 		this.data = data;
 	}
+	
 	/**
 	 * @return the responseCode
 	 */
-	public int getResponseCode() {
-		return responseCode;
+	public String getResponseCode() {
+		return responseCode.toString();
 	}
 	/**
 	 * @param responseCode the responseCode to set
 	 */
-	public void setResponseCode(int responseCode) {
+	public void setResponseCode(RESPONSE responseCode) {
 		this.responseCode = responseCode;
 	}
 	/**

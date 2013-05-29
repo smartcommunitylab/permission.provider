@@ -30,6 +30,8 @@ public class ClientAppInfo {
 	
 	private String name;
 
+	private boolean nativeAppsAccess;
+
 	public static ClientAppInfo convert(Map<String,Object> map) {
 		return mapper.convertValue(map, ClientAppInfo.class);
 	}
@@ -50,6 +52,20 @@ public class ClientAppInfo {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isNativeAppsAccess() {
+		return nativeAppsAccess;
+	}
+
+	/**
+	 * @param nativeAppsAccess the nativeAppsAccess to set
+	 */
+	public void setNativeAppsAccess(boolean nativeAppsAccess) {
+		this.nativeAppsAccess = nativeAppsAccess;
 	}
 	
 	

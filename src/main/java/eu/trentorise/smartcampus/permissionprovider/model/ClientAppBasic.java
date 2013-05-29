@@ -17,6 +17,7 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author raman
@@ -27,8 +28,14 @@ public class ClientAppBasic {
 	private String clientId;
 	private String clientSecret;
 	private String name;
-	private List<String> redirectUris;
+	private String redirectUris;
 	private List<PermissionBasic> permissions;
+	private Set<String> grantedTypes;
+	
+	private boolean nativeAppsAccess;
+	private boolean browserAccess;
+	private boolean serverSideAccess;
+	
 	/**
 	 * @return the clientId
 	 */
@@ -68,13 +75,13 @@ public class ClientAppBasic {
 	/**
 	 * @return the redirectUris
 	 */
-	public List<String> getRedirectUris() {
+	public String getRedirectUris() {
 		return redirectUris;
 	}
 	/**
 	 * @param redirectUris the redirectUris to set
 	 */
-	public void setRedirectUris(List<String> redirectUris) {
+	public void setRedirectUris(String redirectUris) {
 		this.redirectUris = redirectUris;
 	}
 	/**
@@ -89,4 +96,54 @@ public class ClientAppBasic {
 	public void setPermissions(List<PermissionBasic> permissions) {
 		this.permissions = permissions;
 	}
+	/**
+	 * @return the grantedTypes
+	 */
+	public Set<String> getGrantedTypes() {
+		return grantedTypes;
+	}
+	/**
+	 * @param set the grantedTypes to set
+	 */
+	public void setGrantedTypes(Set<String> set) {
+		this.grantedTypes = set;
+	}
+	/**
+	 * @return the nativeAppsAccess
+	 */
+	public boolean isNativeAppsAccess() {
+		return nativeAppsAccess;
+	}
+	/**
+	 * @param nativeAppsAccess the nativeAppsAccess to set
+	 */
+	public void setNativeAppsAccess(boolean nativeAppsAccess) {
+		this.nativeAppsAccess = nativeAppsAccess;
+	}
+	/**
+	 * @return the browserAccess
+	 */
+	public boolean isBrowserAccess() {
+		return browserAccess;
+	}
+	/**
+	 * @param browserAccess the browserAccess to set
+	 */
+	public void setBrowserAccess(boolean browserAccess) {
+		this.browserAccess = browserAccess;
+	}
+	/**
+	 * @return the serverSideAccess
+	 */
+	public boolean isServerSideAccess() {
+		return serverSideAccess;
+	}
+	/**
+	 * @param serverSideAccess the serverSideAccess to set
+	 */
+	public void setServerSideAccess(boolean serverSideAccess) {
+		this.serverSideAccess = serverSideAccess;
+	}
+	
+	
 }
