@@ -56,6 +56,10 @@ public class ResourceAdapter {
 	 * @return
 	 */
 	private List<Resource> loadDefaultResources() {
+		// TODO change implementation:
+		// - load resource templates
+		// - store completely matched resources
+		// - create mapping for parametric templates 
 		try {
 			JAXBContext jaxb = JAXBContext.newInstance(Resource.class,
 					Resources.class);
