@@ -1,53 +1,62 @@
-<form ng-submit="savePermissions()">
+<form ng-submit="savePermissions()" >
 	<div class="accordion" id="permissions">
-	  <div class="accordion-group">
+	  <div ng-repeat="item in permissions.services" class="accordion-group">
 	    <div class="accordion-heading">
-	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#profile">
-	        Profile service
+	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#d{{$index}}">
+	        {{item.name}}
 	      </a>
 	    </div>
-	    <div id="profile" class="accordion-body collapse in">
-	      <div class="accordion-inner">
-	        Anim pariatur cliche...
+	    <div id="d{{$index}}" class="accordion-body collapse " style="background-color: #ffffff">
+	      <div class="accordion-inner body ">
+	        {{item.description}}
+	        <p/>
+	        <div>
+	           <ul class="nav nav-tabs">
+                   <li class="active" ><a data-toggle="tab" href="#" ng-click="permView='avail'">Available Resources</a></li>
+	               <li><a data-toggle="tab" href="#" ng-click="permView='own'">Own Resources</a></li>
+	           </ul>
+	           <div ng-switch on="permView">
+	               <div  ng-switch-when="own">
+		               <div ng-repeat="rd in item.resource" class="row-fluid">
+		                   <div class="span11"><strong>{{rd.name}}</strong> ({{rd.description}})</div>
+		                   <div class="span1"><a class="btn btn-mini btn-primary" href="#"><i class="icon-plus icon-white"></i></a></div>
+		                   <div class="row-fluid" ng-repeat="r in permissions.ownResources[rd.id]">
+	                            <div class="span11"><strong>{{r.value}}</strong></div>
+                               <div class="span1"><a class="btn btn-mini" href="#"><i class="icon-minus"></i></a></div>
+		                   </div>
+	                       <div ng-repeat="rd2 in rd.resource" class="row-fluid">
+	                           <div class="offset1 span10"><strong>{{rd2.name}}</strong> ({{rd2.description}})</div>
+	                           <div class="span1"><a class="btn btn-mini btn-primary" href="#"><i class="icon-plus icon-white"></i></a></div>
+	                           <div class="row-fluid" ng-repeat="r in permissions.ownResources[rd2.id]">
+	                               <div class="offset1 span10"><strong>{{r.value}}</strong></div>
+	                               <div class="span1"><a class="btn btn-mini" href="#"><i class="icon-minus"></i></a></div>
+	                           </div>
+	                       </div>
+		               </div>
+	               </div>
+	               <div ng-switch-default>
+		               <div ng-repeat="rm in item.resourceMapping">
+		                  <div ng-repeat="r in permissions.availableResources[rm.id]" class="row-fluid">
+		                    <div class="span4"><strong>{{r.resourceType}}</strong></div>
+		                    <div class="span6">{{r.description}}</div>
+		                    <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
+                            <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
+		                  </div>
+                          <div ng-repeat="rm2 in rm.resourceMapping">
+	                          <div ng-repeat="r in permissions.availableResources[rm2.id]" class="row-fluid">
+	                            <div class="span4"><strong>{{r.resourceType}}</strong></div>
+	                            <div class="span6">{{r.name}}<br/>{{r.description}}</div>
+	                            <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
+                                <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></div>
+	                          </div>
+                          </div>
+		               </div>
+	               </div>
+	           </div>
+	        </div>
 	      </div>
 	    </div>
 	  </div>
-	  <div class="accordion-group">
-	    <div class="accordion-heading">
-	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#communicator">
-	        Communicator service
-	      </a>
-	    </div>
-	    <div id="communicator" class="accordion-body collapse">
-	      <div class="accordion-inner">
-	        Anim pariatur cliche...
-	      </div>
-	    </div>
-	  </div>
-	  <div class="accordion-group">
-	    <div class="accordion-heading">
-	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#storage">
-	        File storage service
-	      </a>
-	    </div>
-	    <div id="storage" class="accordion-body collapse">
-	      <div class="accordion-inner">
-	        Anim pariatur cliche...
-	      </div>
-	    </div>
-	  </div>
-	  <div class="accordion-group">
-	    <div class="accordion-heading">
-	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#social">
-	        Social networking service
-	      </a>
-	    </div>
-	    <div id="social" class="accordion-body collapse">
-	      <div class="accordion-inner">
-	        Anim pariatur cliche...
-	      </div>
-	    </div>
-	  </div>
-	</div>
+	</div>    
     <button type="submit" class="btn btn-primary">Save permissions</button>
 </form>

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
+import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
 /**
  * @author raman
@@ -48,9 +49,11 @@ public class ResourceAccessController {
 	private ResourceServices resourceServices;
 	@Autowired
 	private ResourceServerTokenServices resourceServerTokenServices;
-
-	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
+	@Autowired
+	private ClientDetailsRepository clientDetailsRepository;
 	
+	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
+
 	@RequestMapping("/resources/{resourceUri}/access")
 	public @ResponseBody Boolean canAccessResource(@RequestHeader("Authorization") String token, @PathVariable String resourceUri, HttpServletRequest request) {
 		Resource resource = resourceServices.loadResourceByResourceUri(resourceUri);

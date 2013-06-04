@@ -15,17 +15,21 @@ function ProfileController($scope) {
 }
 
 function AppController($scope, $resource) {
-	$scope.incPath = "./html/apps.html";
 	$scope.app = null;
 	$scope.clientId = 'none';
 	$scope.clientView = 'overview';
 	$scope.error = '';
 	$scope.info = '';
+	$scope.permissions = null;
 	
 	var ClientAppBasic = $resource('dev/apps/:clientId', {}, {
 		query : { method : 'GET' },
 		update : { method : 'PUT' },
 		reset : {method : 'POST'}
+	});
+
+	var ClientAppPermissions = $resource('dev/permissions/:clientId', {}, {
+		update : { method : 'PUT' },		
 	});
 	
 	var init = function() {
@@ -57,12 +61,37 @@ function AppController($scope, $resource) {
 	$scope.activeView = function(view) {
 		return view == $scope.clientView ? 'active' : '';
 	};
+	$scope.activePermView = function(view) {
+		return view == $scope.permView ? 'active' : '';
+	};
 	
 	$scope.switchClientView = function(view) {
 		$scope.clientView = view;
 		$scope.error = '';
 		$scope.info = '';
 	};
+	
+	$scope.viewOverview = function() {
+		$scope.switchClientView('overview');
+	};
+
+	$scope.viewSettings = function() {
+		$scope.switchClientView('settings');
+	};
+	$scope.viewPermissions = function() {
+		$scope.permissions = null;
+		$scope.switchClientView('permissions');
+		var newClient = new ClientAppPermissions();
+		newClient.$get({clientId:$scope.clientId}, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.permissions = response.data;
+			} else {
+				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
+			}	
+		});
+	};
+
 	$scope.switchClient = function(client) {
 		for (var i = 0; i < $scope.apps.length; i++) {
 			if ($scope.apps[i].clientId == client) {
@@ -127,7 +156,25 @@ function AppController($scope, $resource) {
 	};
 	
 	$scope.savePermissions = function() {
-		// TODO
+		var perm = new ClientAppPermissions($scope.permissions);
+		perm.$update({clientId:$scope.clientId}, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.permissions = response.data;
+			} else {
+				$scope.error = 'Failed to save app permissions: '+response.errorMessage;
+			}	
+		});
+	};
+	
+	$scope.permissionIcon = function(val) {
+		switch (val){
+		case 1: return 'icon-ok';
+		case 2: return 'icon-remove';
+		case 3: return 'icon-time';
+		default: return null;
+		}
+		
 	};
 	
 	$scope.statusIcon = function(val) {

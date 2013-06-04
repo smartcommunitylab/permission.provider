@@ -32,6 +32,8 @@ public class ClientAppInfo {
 
 	private boolean nativeAppsAccess;
 
+	private Map<String, Boolean> resourceApprovals;
+	
 	public static ClientAppInfo convert(Map<String,Object> map) {
 		return mapper.convertValue(map, ClientAppInfo.class);
 	}
@@ -67,6 +69,18 @@ public class ClientAppInfo {
 	public void setNativeAppsAccess(boolean nativeAppsAccess) {
 		this.nativeAppsAccess = nativeAppsAccess;
 	}
-	
-	
+
+	/**
+	 * @return the resourceApprovals
+	 */
+	public Map<String, Boolean> getResourceApprovals() {
+		return resourceApprovals;
+	}
+
+	/**
+	 * @param resourceApprovals the resourceApprovals to set
+	 */
+	public void setResourceApprovals(Map<String, Boolean> resourceApprovals) {
+		this.resourceApprovals = resourceApprovals;
+	}
 }

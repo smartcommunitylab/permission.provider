@@ -40,13 +40,13 @@
 			<div ng-switch-default>
 				<ul class="nav nav-tabs">
 					<li class="{{activeView('overview')}}"><a href
-						ng-click="switchClientView('overview')">Overview</a></li>
+						ng-click="viewOverview()">Overview</a></li>
 					<li class="{{activeView('settings')}}"><a href
-						ng-click="switchClientView('settings')">Settings</a></li>
+						ng-click="viewSettings()">Settings</a></li>
 					<li class="{{activeView('permissions')}}"><a href
-						ng-click="switchClientView('permissions')">Permissions</a></li>
+						ng-click="viewPermissions()">Permissions</a></li>
 				</ul>
-				<div ng-include="'./html/'+clientView+'.html'"/>
+				<div ng-include="'./html/'+clientView+'.html'" />
 <!-- 				<div ng-switch on="clientView"> -->
 <!-- 					<div ng-switch-default></div> -->
 <!-- 				</div> -->
