@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
@@ -53,8 +54,11 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
  *
  */
 @Component
+@Transactional
 public class ResourceAdapter {
 
+	private static final String RP_ROOT = "_ROOT";
+	
 	private static Log logger = LogFactory.getLog(ResourceAdapter.class);
 	@Autowired
 	private ResourceStorage resourceStorage;
@@ -73,37 +77,64 @@ public class ResourceAdapter {
 		processServiceResourceTemplates();
 	}
 
-	public void storeResourceParameter(String resourceId, String value, String clientId) {
+	public void storeResourceParameter(ResourceParameter rp) {
 		ResourceParameterKey pk = new ResourceParameterKey();
-		pk.resourceId = resourceId;
-		pk.value = value;
-		ResourceParameter rp = resourceParameterRepository.findOne(pk);
-		if (rp != null && !rp.getClientId().equals(clientId)) {
+		pk.resourceId = rp.getResourceId();
+		pk.value = rp.getValue();
+		pk.parentResource = rp.getParentResource();
+		if (pk.parentResource == null || pk.parentResource.trim().length() == 0) {
+			pk.parentResource = RP_ROOT;
+		}
+		
+		ResourceParameter rpold = resourceParameterRepository.findOne(pk);
+		if (rpold != null && !rp.getClientId().equals(rp.getClientId())) {
 			throw new IllegalArgumentException("A parameter already used by another app");
-		} else if (rp == null) {
-			rp = new ResourceParameter();
-			String serviceId = resourceServiceMap.get(resourceId);
-			String parentId = resourceTreeMap.get(resourceId);
-			rp.setClientId(clientId);
-			rp.setParentResource(parentId);
-			rp.setResourceId(resourceId);
-			rp.setValue(value);
-			rp.setServiceId(serviceId);
+		} else if (rpold == null) {
 			resourceParameterRepository.save(rp);
+			//TODO : instantiate matching resources
+			//TODO add resources to the client? 
+
+		} else {
+			throw new IllegalArgumentException("A parameter already exists");
 		}
 	}
 
-	public void removeResourceParameter(String resourceId, String value, String clientId) {
+	public void removeResourceParameter(String resourceId, String parentResource, String value, String clientId) {
+		//TODO : check the usage?
 		ResourceParameterKey pk = new ResourceParameterKey();
 		pk.resourceId = resourceId;
 		pk.value = value;
-		ResourceParameter rp = resourceParameterRepository.findOne(pk);
-		if (rp != null && !rp.getClientId().equals(clientId)) {
+		pk.parentResource = parentResource;
+		ResourceParameter rpdb = resourceParameterRepository.findOne(pk);
+		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
 			throw new IllegalArgumentException("Can delete only own resource parameters");
 		}	
-		resourceParameterRepository.delete(pk); 
+		deleteElements(pk);
 	}
 	
+	/**
+	 * @param rpdb
+	 */
+	private void deleteElements(ResourceParameterKey rpKey) {
+		String parentResource = rpKey.value;
+		resourceParameterRepository.delete(rpKey);
+		ResourceDeclaration rd = resourceDeclarationMap.get(rpKey.resourceId);
+		if (rd != null && rd.getResource() != null) {
+			for (ResourceDeclaration subRd : rd.getResource()) {
+				List<ResourceParameter> instances = resourceParameterRepository.findByResourceIdAndParentResource(subRd.getId(), parentResource);
+				if (instances != null) {
+					for (ResourceParameter subRp : instances) {
+						ResourceParameterKey subKey = new ResourceParameterKey();
+						subKey.resourceId = subRp.getResourceId();
+						subKey.parentResource = subRp.getParentResource();
+						subKey.value = subRp.getValue();
+						resourceParameterRepository.delete(subKey);
+					}
+				}
+			}
+		}
+	}
+
 	public List<ResourceParameter> getOwnResourceParameters(String clientId, String serviceId, String parentId, String resourceId) {
 		if (clientId == null) {
 			return Collections.emptyList();
@@ -117,7 +148,7 @@ public class ResourceAdapter {
 		if (serviceId != null) {
 			return resourceParameterRepository.findByClientIdAndServiceId(clientId,serviceId);
 		}
-		return Collections.emptyList();
+		return resourceParameterRepository.findByClientId(clientId);
 	}
 	
 	private List<Service> loadResourceTemplates() {

@@ -23,8 +23,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +50,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
  */
 @Controller
 @Transactional
-public class AppController {
+public class AppController extends AbstractController {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
@@ -114,7 +112,7 @@ public class AppController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST,value="/dev/apps/{clientId}")
-	public @ResponseBody Response resetClientId(@PathVariable String clientId,@RequestParam String reset) {
+	public @ResponseBody Response resetClientData(@PathVariable String clientId,@RequestParam String reset) {
 		return reset(clientId, "clientId".equals(reset));
 	}
 
@@ -128,6 +126,7 @@ public class AppController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			checkClientIdOwnership(clientId);
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			if (client == null) {
 				response.setResponseCode(RESPONSE.ERROR);
@@ -154,6 +153,7 @@ public class AppController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			checkClientIdOwnership(clientId);
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			if (client == null) {
 				response.setResponseCode(RESPONSE.ERROR);
@@ -175,6 +175,7 @@ public class AppController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			checkClientIdOwnership(clientId);
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			String error = null;
 			if  ((error = clientDetailsAdapter.validate(client,data)) != null) {
@@ -197,20 +198,6 @@ public class AppController {
 			response.setErrorMessage(e.getMessage());
 		}
 		return response;
-	}
-
-	private UserDetails getUser(){
-		return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	}
-	
-	private Long getUserId() {
-		return Long.parseLong(getUser().getUsername());
-	}
-	/**
-	 * @return
-	 */
-	private String getUserAuthority() {
-		return SecurityContextHolder.getContext().getAuthentication().getDetails().toString();
 	}
 
 	protected String getUserName(User user) {

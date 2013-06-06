@@ -31,7 +31,6 @@ import org.springframework.util.StringUtils;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
-import eu.trentorise.smartcampus.permissionprovider.model.PermissionBasic;
 
 /**
  * @author raman
@@ -85,8 +84,6 @@ public class ClientDetailsAdapter {
 		res.setServerSideAccess(e.getAuthorizedGrantTypes().contains(GT_AUTHORIZATION_CODE));
 		res.setBrowserAccess(e.getAuthorizedGrantTypes().contains(GT_IMPLICIT));
 		res.setRedirectUris(StringUtils.collectionToCommaDelimitedString(e.getRegisteredRedirectUri()));
-		// TODO convert permissions
-		res.setPermissions(Collections.<PermissionBasic>emptyList());
 		return res;
 	}
 	public String defaultGrantTypes() {

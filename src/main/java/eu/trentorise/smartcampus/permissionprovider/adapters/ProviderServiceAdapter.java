@@ -149,7 +149,6 @@ public class ProviderServiceAdapter {
 			throw new SecurityException("Access denied to user");
 		}
 
-		// TODO
 		userRepository.save(user);
 		return user;
 	}

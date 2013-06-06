@@ -36,6 +36,7 @@ public class ResourceParameter {
 	/**
 	 * Parent resource
 	 */
+	@Id
 	private String parentResource;
 	
 	/**

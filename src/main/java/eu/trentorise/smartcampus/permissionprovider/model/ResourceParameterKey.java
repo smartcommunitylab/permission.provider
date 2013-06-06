@@ -28,16 +28,21 @@ public class ResourceParameterKey implements Serializable {
 
 	public String resourceId;
 	public String value;
+	public String parentResource;
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime
+				* result
+				+ ((parentResource == null) ? 0 : parentResource.hashCode());
 		result = prime * result
 				+ ((resourceId == null) ? 0 : resourceId.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -47,6 +52,11 @@ public class ResourceParameterKey implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ResourceParameterKey other = (ResourceParameterKey) obj;
+		if (parentResource == null) {
+			if (other.parentResource != null)
+				return false;
+		} else if (!parentResource.equals(other.parentResource))
+			return false;
 		if (resourceId == null) {
 			if (other.resourceId != null)
 				return false;
@@ -59,5 +69,6 @@ public class ResourceParameterKey implements Serializable {
 			return false;
 		return true;
 	}
+
 	
 }

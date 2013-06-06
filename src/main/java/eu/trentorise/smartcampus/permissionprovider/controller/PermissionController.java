@@ -28,8 +28,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +52,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
  *
  */
 @Controller
-public class PermissionController {
+public class PermissionController extends AbstractController {
 
 	private static final Integer RA_NONE = 0;
 	private static final Integer RA_APPROVED = 1;
@@ -73,6 +71,7 @@ public class PermissionController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			checkClientIdOwnership(clientId);
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
 			ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
 			if (info.getResourceApprovals() == null) info.setResourceApprovals(new HashMap<String, Boolean>());
@@ -120,6 +119,7 @@ public class PermissionController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			checkClientIdOwnership(clientId);
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
 			if (!clientDetails.getDeveloperId().toString().equals(getUser().getUsername())) {
 				response.setResponseCode(RESPONSE.ERROR);
@@ -196,15 +196,35 @@ public class PermissionController {
 		return permissions;
 	}
 	
-	private UserDetails getUser(){
-		return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	@RequestMapping(value="/dev/resourceparams",method=RequestMethod.POST)
+	public @ResponseBody Response createProperty(@RequestBody ResourceParameter rp) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			checkClientIdOwnership(rp.getClientId());
+			resourceAdapter.storeResourceParameter(rp);
+			response.setData(rp);
+		} catch (Exception e) {
+			logger.error("Failure reading permissions model: "+e.getMessage(),e);
+			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		return response;
 	}
 
-	public @ResponseBody Response createProperty() {
-		//TODO create resource property:
-		// - check duplicates and ownership
-		// - store it in the resource property repo
-		// - instantiate matching resources
-		return null;
+	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{parentResource}/{value}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String parentResource, @PathVariable String value) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			checkClientIdOwnership(clientId);
+			resourceAdapter.removeResourceParameter(resourceId, parentResource, value, clientId);
+		} catch (Exception e) {
+			logger.error("Failure reading permissions model: "+e.getMessage(),e);
+			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		return response;
 	}
+
 }

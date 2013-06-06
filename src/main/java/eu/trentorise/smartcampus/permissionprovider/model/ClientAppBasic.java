@@ -16,7 +16,6 @@
 
 package eu.trentorise.smartcampus.permissionprovider.model;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,7 +28,6 @@ public class ClientAppBasic {
 	private String clientSecret;
 	private String name;
 	private String redirectUris;
-	private List<PermissionBasic> permissions;
 	private Set<String> grantedTypes;
 	
 	private boolean nativeAppsAccess;
@@ -83,18 +81,6 @@ public class ClientAppBasic {
 	 */
 	public void setRedirectUris(String redirectUris) {
 		this.redirectUris = redirectUris;
-	}
-	/**
-	 * @return the permissions
-	 */
-	public List<PermissionBasic> getPermissions() {
-		return permissions;
-	}
-	/**
-	 * @param permissions the permissions to set
-	 */
-	public void setPermissions(List<PermissionBasic> permissions) {
-		this.permissions = permissions;
 	}
 	/**
 	 * @return the grantedTypes

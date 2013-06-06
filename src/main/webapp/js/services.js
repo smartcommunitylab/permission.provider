@@ -31,6 +31,10 @@ function AppController($scope, $resource) {
 	var ClientAppPermissions = $resource('dev/permissions/:clientId', {}, {
 		update : { method : 'PUT' },		
 	});
+
+	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:parentResource/:value', {}, {
+		create : { method : 'POST' },		
+	});
 	
 	var init = function() {
 		ClientAppBasic.query(function(response){
@@ -70,7 +74,13 @@ function AppController($scope, $resource) {
 		$scope.error = '';
 		$scope.info = '';
 	};
-	
+
+	$scope.switchPermView = function(view) {
+		$scope.permView = view;
+		$scope.error = '';
+		$scope.info = '';
+	};
+
 	$scope.viewOverview = function() {
 		$scope.switchClientView('overview');
 	};
@@ -81,6 +91,10 @@ function AppController($scope, $resource) {
 	$scope.viewPermissions = function() {
 		$scope.permissions = null;
 		$scope.switchClientView('permissions');
+		loadPermissions();
+	};
+
+	function loadPermissions() {
 		var newClient = new ClientAppPermissions();
 		newClient.$get({clientId:$scope.clientId}, function(response) {
 			if (response.responseCode == 'OK') {
@@ -90,8 +104,8 @@ function AppController($scope, $resource) {
 				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
 			}	
 		});
-	};
-
+	}
+	
 	$scope.switchClient = function(client) {
 		for (var i = 0; i < $scope.apps.length; i++) {
 			if ($scope.apps[i].clientId == client) {
@@ -160,13 +174,56 @@ function AppController($scope, $resource) {
 		perm.$update({clientId:$scope.clientId}, function(response) {
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
+				$scope.info = 'App permissions saved!';
 				$scope.permissions = response.data;
 			} else {
 				$scope.error = 'Failed to save app permissions: '+response.errorMessage;
 			}	
 		});
 	};
+	$scope.saveResourceParam = function(resourceId,parentResource,serviceId,clientId) {
+		var perm = new ClientAppResourceParam({resourceId:resourceId,parentResource:parentResource,serviceId:serviceId,clientId:clientId});
+		var n = prompt("Create new resource", "value");
+		if (n == null || n.trim().length==0) return;
+		perm.value = n.trim();
+		
+		perm.$create(function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.info = 'Resource added!';
+				loadPermissions();
+			} else {
+				$scope.error = 'Failed to save own resource: '+response.errorMessage;
+			}	
+		});
+	};
+
+	$scope.filteredResources = function(resources, parentResource) {
+		var arr = [];
+		if (!resources) return arr;
+		for (var i = 0; i < resources.length; i++) {
+			if (resources[i].parentResource == parentResource) {
+				arr.push(resources[i]);
+			}
+		}
+		return arr;
+	};
 	
+	$scope.removeResourceParam = function(r) {
+		if (confirm('Are you sure you want to delete this resource and subresources?')) {
+			var perm = new ClientAppResourceParam();
+			perm.$delete({clientId:r.clientId,resourceId:r.resourceId,parentResource:r.parentResource,value:r.value},function(response){
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Resource removed!';
+					loadPermissions();
+				} else {
+					$scope.error = 'Failed to remove resource: '+response.errorMessage;
+				}	
+			});
+	    }
+	};
+
 	$scope.permissionIcon = function(val) {
 		switch (val){
 		case 1: return 'icon-ok';
