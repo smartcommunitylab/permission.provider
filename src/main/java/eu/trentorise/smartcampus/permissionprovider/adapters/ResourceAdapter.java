@@ -16,13 +16,16 @@
 
 package eu.trentorise.smartcampus.permissionprovider.adapters;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
@@ -36,16 +39,19 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriTemplate;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Services;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameterKey;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceStorage;
+import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
@@ -66,11 +72,15 @@ public class ResourceAdapter {
 	private ResourceParameterRepository resourceParameterRepository;
 	@Autowired
 	private ResourceRepository resourceRepository;
+	@Autowired
+	private ClientDetailsRepository clientDetailsRepository;
 	
 	private Map<String,Service> serviceMap = new HashMap<String, Service>(); 
 	private Map<String,ResourceDeclaration> resourceDeclarationMap = new HashMap<String, ResourceDeclaration>();
+	private Map<String,ResourceMapping> resourceMappingMap = new HashMap<String, ResourceMapping>();
 	private Map<String,String> resourceTreeMap = new HashMap<String, String>();
 	private Map<String,String> resourceServiceMap = new HashMap<String, String>();
+	private Map<String,List<ResourceMapping>> flatServiceMappings = new HashMap<String, List<ResourceMapping>>();
 	
 	@PostConstruct 
 	public void init() {
@@ -81,37 +91,100 @@ public class ResourceAdapter {
 		ResourceParameterKey pk = new ResourceParameterKey();
 		pk.resourceId = rp.getResourceId();
 		pk.value = rp.getValue();
-		pk.parentResource = rp.getParentResource();
-		if (pk.parentResource == null || pk.parentResource.trim().length() == 0) {
-			pk.parentResource = RP_ROOT;
-		}
 		
 		ResourceParameter rpold = resourceParameterRepository.findOne(pk);
 		if (rpold != null && !rp.getClientId().equals(rp.getClientId())) {
 			throw new IllegalArgumentException("A parameter already used by another app");
 		} else if (rpold == null) {
+			if (rp.getParentResource() == null || rp.getParentResource().isEmpty()) {
+				rp.setParentResource(RP_ROOT);
+			}
 			resourceParameterRepository.save(rp);
-			//TODO : instantiate matching resources
-			//TODO add resources to the client? 
-
+			Map<String, ResourceMapping> mappings = findResourceURIs(rp);
+			if (mappings != null) {
+				for (String uri : mappings.keySet()) {
+					Resource r = new Resource();
+					r.setAccessibleByClient(mappings.get(uri).isAccessibleByOthers());
+					r.setApprovalRequired(mappings.get(uri).isApprovalRequired());
+					r.setAuthority(AUTHORITY.valueOf(mappings.get(uri).getAuthority()));
+					r.setClientId(rp.getClientId());
+					r.setDescription(mappings.get(uri).getDescription());
+					r.setName(mappings.get(uri).getName());
+					r.setResourceType(mappings.get(uri).getId());
+					r.setResourceUri(uri);
+					resourceRepository.save(r);
+				}
+			}
 		} else {
 			throw new IllegalArgumentException("A parameter already exists");
 		}
 	}
 
-	public void removeResourceParameter(String resourceId, String parentResource, String value, String clientId) {
-		//TODO : check the usage?
+	public void removeResourceParameter(String resourceId, String value, String clientId) {
 		ResourceParameterKey pk = new ResourceParameterKey();
 		pk.resourceId = resourceId;
 		pk.value = value;
-		pk.parentResource = parentResource;
 		ResourceParameter rpdb = resourceParameterRepository.findOne(pk);
 		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
 			throw new IllegalArgumentException("Can delete only own resource parameters");
+		} if (rpdb != null) {
+			Collection<String> uris = findResourceURIs(rpdb).keySet();
+			Set<String> ids = new HashSet<String>();
+			for (String uri : uris) {
+				Resource r = resourceRepository.findByResourceUri(uri);
+				if (r != null) {
+					ids.add(r.getResourceId().toString());
+				}
+			}
+			for (ClientDetailsEntity cd : clientDetailsRepository.findAll()) {
+				if (!Collections.disjoint(cd.getResourceIds(), ids)) {
+					throw new IllegalArgumentException("Resource is in use by other client app.");
+				}
+			} 
+			deleteElements(pk);
 		}	
-		deleteElements(pk);
 	}
 	
+	/**
+	 * @param rpdb
+	 * @return
+	 */
+	private Map<String,ResourceMapping> findResourceURIs(ResourceParameter rpdb) {
+		Map<String, ResourceMapping> res = new HashMap<String, ResourceMapping>();
+		Map<String,String> params = new HashMap<String, String>();
+		ResourceParameter rp = rpdb;
+		Service service = serviceMap.get(rpdb.getServiceId());
+		if (service == null) {
+			throw new IllegalArgumentException("Service "+rpdb.getServiceId() +" is not found.");
+		}
+		
+		while (true) {
+			params.put(rp.getResourceId(), rp.getValue());
+			ResourceParameterKey rpk = new ResourceParameterKey();
+			rpk.resourceId = resourceTreeMap.get(rp.getResourceId());
+			if (rpk.resourceId == null) {
+				break;
+			}
+			rpk.value = rp.getParentResource();
+			rp = resourceParameterRepository.findOne(rpk);
+		}	
+		
+		List<ResourceMapping> list = flatServiceMappings.get(service.getId());
+		if (list != null) {
+			for (ResourceMapping rm : list) {
+				UriTemplate template = new UriTemplate(rm.getUri());
+				if (template.getVariableNames() != null) {
+					if (new HashSet<String>(template.getVariableNames()).equals(params.keySet())) {
+						URI uri = template.expand(params);
+						res.put(uri.toString(), rm);
+					}
+				}
+			}
+		}
+		
+		return res;
+	}
+
 	/**
 	 * @param rpdb
 	 */
@@ -126,7 +199,6 @@ public class ResourceAdapter {
 					for (ResourceParameter subRp : instances) {
 						ResourceParameterKey subKey = new ResourceParameterKey();
 						subKey.resourceId = subRp.getResourceId();
-						subKey.parentResource = subRp.getParentResource();
 						subKey.value = subRp.getValue();
 						resourceParameterRepository.delete(subKey);
 					}
@@ -135,15 +207,12 @@ public class ResourceAdapter {
 		}
 	}
 
-	public List<ResourceParameter> getOwnResourceParameters(String clientId, String serviceId, String parentId, String resourceId) {
+	public List<ResourceParameter> getOwnResourceParameters(String clientId, String serviceId, String resourceId) {
 		if (clientId == null) {
 			return Collections.emptyList();
 		}
 		if (resourceId != null) {
 			return resourceParameterRepository.findByClientIdAndResourceId(clientId,resourceId);
-		}
-		if (serviceId != null && parentId != null) {
-			return resourceParameterRepository.findByClientIdAndServiceIdAndParentResource(clientId,serviceId,parentId);
 		}
 		if (serviceId != null) {
 			return resourceParameterRepository.findByClientIdAndServiceId(clientId,serviceId);
@@ -180,25 +249,35 @@ public class ResourceAdapter {
 			if (s.getResourceMapping() != null) {
 				List<Resource> resources = new ArrayList<Resource>();
 				for (ResourceMapping  rm : s.getResourceMapping()) {
-					extractDefaultResources(rm,resources);
+					extractResources(rm,resources, s);
 				}
 				if (!resources.isEmpty()) {
 					resourceStorage.storeResources(resources);
 				}
 			}
+			// TODO validate service data
 		}
 	}
 	
 	/**
 	 * @param rm
 	 * @param resources
+	 * @param s 
 	 */
-	private void extractDefaultResources(ResourceMapping rm, List<Resource> resources) {
+	private void extractResources(ResourceMapping rm, List<Resource> resources, Service s) {
+		resourceMappingMap.put(rm.getId(), rm);
+		List<ResourceMapping> list = flatServiceMappings.get(s.getId());
+		if (list == null) {
+			list = new ArrayList<ResourceMapping>();
+			flatServiceMappings.put(s.getId(), list);
+		}
+		list.add(rm);
+		
 		if (!isParametric(rm)) {
 			resources.add(createResource(rm));
 			if (rm.getResourceMapping() != null) {
 				for (ResourceMapping child : rm.getResourceMapping()) {
-					extractDefaultResources(child, resources);
+					extractResources(child, resources, s);
 				}
 			}
 		}
@@ -209,8 +288,8 @@ public class ResourceAdapter {
 	 * @return
 	 */
 	private boolean isParametric(ResourceMapping rm) {
-		// TODO Auto-generated method stub
-		return rm.getUri().indexOf('{')>=0;
+		UriTemplate template = new UriTemplate(rm.getUri());
+		return template.getVariableNames() != null && template.getVariableNames().size() > 0;
 	}
 
 	/**
@@ -261,7 +340,7 @@ public class ResourceAdapter {
 			List<Resource> list = resourceRepository.findAll();
 			for (Iterator<Resource> iterator = list.iterator(); iterator.hasNext();) {
 				Resource resource = iterator.next();
-				if ((resource.getClientId() != null && !resource.isAccessibleByClient())) {
+				if ((!clientId.equals(resource.getClientId()) && resource.getClientId() != null && !resource.isAccessibleByClient())) {
 					iterator.remove();
 				}
 			}

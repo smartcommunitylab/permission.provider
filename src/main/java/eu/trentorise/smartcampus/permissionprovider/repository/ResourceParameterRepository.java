@@ -33,7 +33,6 @@ public interface ResourceParameterRepository extends JpaRepository<ResourceParam
 
 	List<ResourceParameter> findByClientId(String clientId);
 	List<ResourceParameter> findByClientIdAndServiceId(String clientId, String serviceId);
-	List<ResourceParameter> findByClientIdAndServiceIdAndParentResource(String clientId, String serviceId, String parentResource);
 	List<ResourceParameter> findByClientIdAndResourceId(String clientId, String resourceId);
 
 	List<ResourceParameter> findByResourceId(String resourceId);

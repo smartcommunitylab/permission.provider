@@ -47,17 +47,17 @@
 	               <div ng-switch-default>
 		               <div ng-repeat="rm in item.resourceMapping">
 		                  <div ng-repeat="r in permissions.availableResources[rm.id]" class="row-fluid">
-		                    <div class="span4"><strong>{{r.resourceType}}</strong></div>
-		                    <div class="span6">{{r.description}}</div>
+		                    <div class="span5"><strong>{{r.resourceUri}}</strong></div>
+		                    <div class="span5">{{r.name}}</div>
 		                    <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
                             <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
 		                  </div>
                           <div ng-repeat="rm2 in rm.resourceMapping">
 	                          <div ng-repeat="r in permissions.availableResources[rm2.id]" class="row-fluid">
-	                            <div class="span4"><strong>{{r.resourceType}}</strong></div>
-	                            <div class="span6">{{r.name}}<br/>{{r.description}}</div>
+	                            <div class="span5"><strong>{{r.resourceUri}}</strong></div>
+	                            <div class="span5">{{r.name}}</div>
 	                            <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
-                                <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></div>
+                                <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
 	                          </div>
                           </div>
 		               </div>

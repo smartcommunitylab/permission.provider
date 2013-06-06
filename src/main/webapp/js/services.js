@@ -32,7 +32,7 @@ function AppController($scope, $resource) {
 		update : { method : 'PUT' },		
 	});
 
-	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:parentResource/:value', {}, {
+	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value', {}, {
 		create : { method : 'POST' },		
 	});
 	
@@ -212,7 +212,7 @@ function AppController($scope, $resource) {
 	$scope.removeResourceParam = function(r) {
 		if (confirm('Are you sure you want to delete this resource and subresources?')) {
 			var perm = new ClientAppResourceParam();
-			perm.$delete({clientId:r.clientId,resourceId:r.resourceId,parentResource:r.parentResource,value:r.value},function(response){
+			perm.$delete({clientId:r.clientId,resourceId:r.resourceId,value:r.value},function(response){
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					$scope.info = 'Resource removed!';

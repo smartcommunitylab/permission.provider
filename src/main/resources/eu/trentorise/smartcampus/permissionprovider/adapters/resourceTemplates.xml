@@ -16,7 +16,7 @@
        limitations under the License.
 
 -->
-<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../jaxb/attributesBinding/resourceTemplateSchema.xsd">
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../jaxb/binding/resourceTemplateSchema.xsd">
    <service name="Basic profile service" id="smartcampus.profile.basicprofie">
        <description>Core service for managing basic user profiles.</description>
 
@@ -24,9 +24,7 @@
            id="smartcampus.profile.basicprofile.me" 
            name="Read user's basic profile" 
            uri="smartcampus.profile.basicprofile.me"
-           authority="USER" 
-           methods="GET" 
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.BasicProfile/me">
+           authority="USER">
            <description>Basic profile of the current platform user. Read access only.</description>
        </resourceMapping>
        <resourceMapping 
@@ -34,9 +32,7 @@
            name="Read all basic profiles" 
            uri="smartcampus.profile.basicprofile.all"
            authority="CLIENT" 
-           methods="GET" 
-           approvalRequired="true"
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.BasicProfile">
+           approvalRequired="true">
            <description>Basic profile of the platform users. Read access only.</description>
        </resourceMapping>
     </service>   
@@ -55,8 +51,7 @@
            name="Manage profile" 
            uri="smartcampus.extprofile.write.{app}.{profile}"
            authority="CLIENT" 
-           accessibleByOthers="false"
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/users/*/{app}/{profile}">
+           accessibleByOthers="false">
            <description>Write the profile of this app.</description>
        </resourceMapping>
        
@@ -65,27 +60,21 @@
            name="Read all user profiles" 
            uri="smartcampus.extprofile.me.read"
            authority="USER" 
-           methods="GET" 
-           approvalRequired="true"
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/me">
+           approvalRequired="true">
            <description>Read all custom profiles of the current user.</description>
            <resourceMapping 
                id="smartcampus.extprofile.me.app.read"
                name="Read specific app user profiles" 
 	           uri="smartcampus.extprofile.me.{app}.read"
 	           authority="USER" 
-	           methods="GET" 
-	           approvalRequired="true"
-	           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/me/{app}">
+	           approvalRequired="true" >
 	           <description>Read app {app} custom profiles of the current user.</description>
 	           <resourceMapping 
 	               id="smartcampus.extprofile.me.app.profile.read"
 	               name="Read specific user profile" 
 	               uri="smartcampus.extprofile.me.{app}.{profile}.read"
 	               authority="USER" 
-	               methods="GET" 
-	               approvalRequired="true"
-	               pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/me/{app}/{profile}">
+	               approvalRequired="true">
 	               <description>Read custom profile {profile} of the app {app} of the current user.</description>
 	           </resourceMapping>
            </resourceMapping>
@@ -96,27 +85,21 @@
            name="Read all profiles shared with user" 
            uri="smartcampus.extprofile.shared.read"
            authority="USER" 
-           methods="GET" 
-           approvalRequired="true"
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/shared">
+           approvalRequired="true">
            <description>Read all custom profiles shared with the current user.</description>
            <resourceMapping 
                id="smartcampus.extprofile.shared.app.read"
                name="Read specific app profiles shared with user" 
                uri="smartcampus.extprofile.shared.{app}.read"
                authority="USER" 
-               methods="GET" 
-               approvalRequired="true"
-               pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/shared/{app}">
+               approvalRequired="true" >
                <description>Read app {app} custom profiles shared with the current user.</description>
                <resourceMapping 
                    id="smartcampus.extprofile.shared.app.profile.read"
                    name="Read specific profiles shared with user" 
                    uri="smartcampus.extprofile.shared.{app}.{profile}.read"
                    authority="USER" 
-                   methods="GET" 
-                   approvalRequired="true"
-                   pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/shared/{app}/{profile}">
+                   approvalRequired="true">
                    <description>Read custom profile {profile} of the app {app} shared with the current user.</description>
                </resourceMapping>
            </resourceMapping>
@@ -127,27 +110,21 @@
            name="Read all profiles" 
            uri="smartcampus.extprofile.all.read"
            authority="CLIENT" 
-           methods="GET" 
-           approvalRequired="true"
-           pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile">
+           approvalRequired="true">
            <description>Read all custom profiles.</description>
            <resourceMapping 
                id="smartcampus.extprofile.all.app.read"
                name="Read specific app profiles" 
                uri="smartcampus.extprofile.all.{app}.read"
                authority="CLIENT" 
-               methods="GET" 
-               approvalRequired="true"
-               pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/{app}">
+               approvalRequired="true">
                <description>Read app {app} custom profiles.</description>
                <resourceMapping 
                    id="smartcampus.extprofile.all.app.profile.read"
                    name="Read specific profiles" 
                    uri="smartcampus.extprofile.all.{app}.{profile}.read"
                    authority="USER" 
-                   methods="GET" 
-                   approvalRequired="true"
-                   pathPatterns="profileservice/eu.trentorise.smartcampus.profileservice.model.ExtendedProfile/{app}/{profile}">
+                   approvalRequired="true">
                    <description>Read custom profiles {profile} of the app {app}.</description>
                </resourceMapping>
            </resourceMapping>
@@ -164,8 +141,7 @@
            name="Storage account management" 
            uri="filestorage.appacount"
            authority="CLIENT"
-           accessibleByOthers="false"
-           pathPatterns="filestorage/appaccount/">
+           accessibleByOthers="false">
            <description>Manage different cloud storage app accounts.</description>
        </resourceMapping>
        <resourceMapping 
@@ -173,8 +149,7 @@
            name="Storage user account management" 
            uri="filestorage.useracount"
            authority="CLIENT"
-           accessibleByOthers="false"
-           pathPatterns="filestorage/useraccount/">
+           accessibleByOthers="false">
            <description>Manage different cloud storage user accounts.</description>
        </resourceMapping>
        <resourceMapping 
@@ -182,9 +157,7 @@
            name="Read user resource metadata" 
            uri="filestorage.metadata"
            authority="USER"
-           methods="GET"
-           approvalRequired="true"
-           pathPatterns="filestorage/metadata/">
+           approvalRequired="true">
            <description>Read metadata descriptors of the user files.</description>
        </resourceMapping>
        <resourceMapping 
@@ -192,8 +165,7 @@
            name="Write " 
            uri="filestorage.resource.{fsapp}.manage"
            authority="USER"
-           approvalRequired="true"
-           pathPatterns="filestorage/resource/{fsapp}/">
+           approvalRequired="true">
            <description>Manage user files of a specific app.</description>
        </resourceMapping>
        <resourceMapping 
@@ -201,9 +173,7 @@
            name="Read user resource" 
            uri="filestorage.resource.read"
            authority="USER"
-           methods="GET"
-           approvalRequired="true"
-           pathPatterns="filestorage/resource/">
+           approvalRequired="true">
            <description>Read an arbitrary user file.</description>
        </resourceMapping>
        </service> 

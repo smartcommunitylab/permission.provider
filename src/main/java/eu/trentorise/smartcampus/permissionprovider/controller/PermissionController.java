@@ -147,7 +147,7 @@ public class PermissionController extends AbstractController {
 		Permissions permissions = new Permissions();
 		permissions.setServices(resourceAdapter.getServices());
 		Map<String, List<ResourceParameter>> ownResources = new HashMap<String, List<ResourceParameter>>();
-		List<ResourceParameter> resourceParameters = resourceAdapter.getOwnResourceParameters(clientDetails.getClientId(), null, null, null);
+		List<ResourceParameter> resourceParameters = resourceAdapter.getOwnResourceParameters(clientDetails.getClientId(), null, null);
 		if (resourceParameters != null) {
 			for (ResourceParameter resourceParameter : resourceParameters) {
 				List<ResourceParameter> sublist = ownResources.get(resourceParameter.getResourceId());
@@ -212,13 +212,13 @@ public class PermissionController extends AbstractController {
 		return response;
 	}
 
-	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{parentResource}/{value}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String parentResource, @PathVariable String value) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			resourceAdapter.removeResourceParameter(resourceId, parentResource, value, clientId);
+			resourceAdapter.removeResourceParameter(resourceId, value, clientId);
 		} catch (Exception e) {
 			logger.error("Failure reading permissions model: "+e.getMessage(),e);
 			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
