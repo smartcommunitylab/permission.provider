@@ -213,7 +213,7 @@ public class PermissionController extends AbstractController {
 	}
 
 	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.DELETE)
-	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String parentResource, @PathVariable String value) {
+	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {

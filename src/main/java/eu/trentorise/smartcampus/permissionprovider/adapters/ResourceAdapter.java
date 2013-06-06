@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriTemplate;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
@@ -102,6 +103,7 @@ public class ResourceAdapter {
 			resourceParameterRepository.save(rp);
 			Map<String, ResourceMapping> mappings = findResourceURIs(rp);
 			if (mappings != null) {
+				Set<String> newIds = new HashSet<String>();
 				for (String uri : mappings.keySet()) {
 					Resource r = new Resource();
 					r.setAccessibleByClient(mappings.get(uri).isAccessibleByOthers());
@@ -113,7 +115,13 @@ public class ResourceAdapter {
 					r.setResourceType(mappings.get(uri).getId());
 					r.setResourceUri(uri);
 					resourceRepository.save(r);
+					newIds.add(r.getResourceId().toString());
 				}
+				ClientDetailsEntity cd = clientDetailsRepository.findByClientId(rp.getClientId());
+				Set<String> oldIds = cd.getResourceIds();
+				if (oldIds != null) newIds.addAll(oldIds);
+				cd.setResourceIds(StringUtils.collectionToCommaDelimitedString(newIds));
+				clientDetailsRepository.save(cd);
 			}
 		} else {
 			throw new IllegalArgumentException("A parameter already exists");
@@ -141,6 +149,9 @@ public class ResourceAdapter {
 					throw new IllegalArgumentException("Resource is in use by other client app.");
 				}
 			} 
+			for (String id : ids ){
+				resourceRepository.delete(Long.parseLong(id));
+			}
 			deleteElements(pk);
 		}	
 	}

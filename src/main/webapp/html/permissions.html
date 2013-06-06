@@ -1,12 +1,12 @@
 <form ng-submit="savePermissions()" >
-	<div class="accordion" id="permissions">
+	<div class="accordion" id="permissions" ng-init="exp = 0; state = false">
 	  <div ng-repeat="item in permissions.services" class="accordion-group">
 	    <div class="accordion-heading">
-	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#permissions" href="#d{{$index}}">
+	      <a class="accordion-toggle" ng-class="{collapsed:exp!=$index || state}" ng-click="exp=$index; state=!state">
 	        {{item.name}}
 	      </a>
 	    </div>
-	    <div id="d{{$index}}" class="accordion-body collapse " style="background-color: #ffffff">
+	    <div class="accordion-body"  ng-class="{collapse:exp!=$index || state}" style="background-color: #ffffff">
 	      <div class="accordion-inner body ">
 	        {{item.description}}
 	        <p/>

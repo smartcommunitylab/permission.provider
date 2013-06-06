@@ -32,7 +32,7 @@ function AppController($scope, $resource) {
 		update : { method : 'PUT' },		
 	});
 
-	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value', {}, {
+	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value/', {}, {
 		create : { method : 'POST' },		
 	});
 	
