@@ -21,6 +21,9 @@ function AppController($scope, $resource) {
 	$scope.error = '';
 	$scope.info = '';
 	$scope.permissions = null;
+	$scope.permView = 'avail';
+	$scope.permService = 0;
+	$scope.permServiceCollapsed = false;
 	
 	var ClientAppBasic = $resource('dev/apps/:clientId', {}, {
 		query : { method : 'GET' },
@@ -81,6 +84,20 @@ function AppController($scope, $resource) {
 		$scope.info = '';
 	};
 
+	$scope.switchPermService = function(idx) {
+		if (idx == $scope.permService) {
+			$scope.permServiceCollapsed = !$scope.permServiceCollapsed;
+		} else {
+			$scope.permServiceCollapsed = false;
+			$scope.permService = idx;
+			$scope.switchPermView('avail');
+		}
+	};
+	
+	$scope.isPermServiceCollapsed = function(idx) {
+		return $scope.permService != idx || $scope.permServiceCollapsed;
+	};
+	
 	$scope.viewOverview = function() {
 		$scope.switchClientView('overview');
 	};

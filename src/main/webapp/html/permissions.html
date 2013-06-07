@@ -1,19 +1,19 @@
 <form ng-submit="savePermissions()" >
-	<div class="accordion" id="permissions" ng-init="exp = 0; state = false">
+	<div class="accordion" id="permissions" >
 	  <div ng-repeat="item in permissions.services" class="accordion-group">
 	    <div class="accordion-heading">
-	      <a class="accordion-toggle" ng-class="{collapsed:exp!=$index || state}" ng-click="exp=$index; state=!state">
+	      <a class="accordion-toggle" ng-class="{collapsed:isPermServiceCollapsed($index)}" ng-click="switchPermService($index)">
 	        {{item.name}}
 	      </a>
 	    </div>
-	    <div class="accordion-body"  ng-class="{collapse:exp!=$index || state}" style="background-color: #ffffff">
+	    <div class="accordion-body"  ng-class="{collapse:isPermServiceCollapsed($index)}" style="background-color: #ffffff">
 	      <div class="accordion-inner body ">
 	        {{item.description}}
 	        <p/>
 	        <div>
 	           <ul class="nav nav-tabs">
-                   <li class="active" ><a data-toggle="tab" href="#" ng-click="switchPermView('avail')">Available Resources</a></li>
-	               <li><a data-toggle="tab" href="#" ng-click="switchPermView('own')">Own Resources</a></li>
+                   <li class="{{activePermView('avail')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('avail')">Available Resources</a></li>
+	               <li class="{{activePermView('own')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('own')">Own Resources</a></li>
 	           </ul>
 	           <div ng-switch on="permView">
 	               <div  ng-switch-when="own">
