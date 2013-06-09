@@ -96,8 +96,12 @@
 		<property name="clientDetailsService" ref="clientDetails" />
 	</bean>
 
+    <bean id="userApprovalHandler" class="eu.trentorise.smartcampus.permissionprovider.oauth.UserApprovalHandler">
+        <property name="tokenServices" ref="tokenServices"/>
+    </bean>
+
 	<oauth:authorization-server
-		client-details-service-ref="clientDetails" token-services-ref="tokenServices">
+		client-details-service-ref="clientDetails" token-services-ref="tokenServices" user-approval-handler-ref="userApprovalHandler">
 		<oauth:authorization-code authorization-code-services-ref="authorizationCodeServices"/>
 		<oauth:implicit />
 		<oauth:refresh-token />

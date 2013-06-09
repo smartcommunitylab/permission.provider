@@ -102,11 +102,13 @@ public class ResourceAdapter {
 			}
 			resourceParameterRepository.save(rp);
 			Map<String, ResourceMapping> mappings = findResourceURIs(rp);
+			// store new resources entailed by the resource parameter
 			if (mappings != null) {
-				Set<String> newIds = new HashSet<String>();
+				Set<String> newSet = new HashSet<String>();
+				Set<String> newScopes = new HashSet<String>();
 				for (String uri : mappings.keySet()) {
 					Resource r = new Resource();
-					r.setAccessibleByClient(mappings.get(uri).isAccessibleByOthers());
+					r.setAccessibleByOthers(mappings.get(uri).isAccessibleByOthers());
 					r.setApprovalRequired(mappings.get(uri).isApprovalRequired());
 					r.setAuthority(AUTHORITY.valueOf(mappings.get(uri).getAuthority()));
 					r.setClientId(rp.getClientId());
@@ -115,12 +117,18 @@ public class ResourceAdapter {
 					r.setResourceType(mappings.get(uri).getId());
 					r.setResourceUri(uri);
 					resourceRepository.save(r);
-					newIds.add(r.getResourceId().toString());
+					newSet.add(r.getResourceId().toString());
+					newScopes.add(r.getResourceUri());
 				}
+				// add automatically the resources entailed by own resource parameters to the client resourceIds
 				ClientDetailsEntity cd = clientDetailsRepository.findByClientId(rp.getClientId());
-				Set<String> oldIds = cd.getResourceIds();
-				if (oldIds != null) newIds.addAll(oldIds);
-				cd.setResourceIds(StringUtils.collectionToCommaDelimitedString(newIds));
+				Set<String> oldSet = cd.getResourceIds();
+				if (oldSet != null) newSet.addAll(oldSet);
+				cd.setResourceIds(StringUtils.collectionToCommaDelimitedString(newSet));
+				// add automatically the resources entailed by own resource parameters to the client scope
+				oldSet = cd.getScope();
+				if (oldSet != null) newScopes.addAll(oldSet);
+				cd.setScope(StringUtils.collectionToCommaDelimitedString(newScopes));
 				clientDetailsRepository.save(cd);
 			}
 		} else {
@@ -309,7 +317,7 @@ public class ResourceAdapter {
 	 */
 	private Resource createResource(ResourceMapping rm) {
 		Resource r = new Resource();
-		r.setAccessibleByClient(rm.isAccessibleByOthers());
+		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
 		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority()));
 		r.setClientId(null);
@@ -351,7 +359,7 @@ public class ResourceAdapter {
 			List<Resource> list = resourceRepository.findAll();
 			for (Iterator<Resource> iterator = list.iterator(); iterator.hasNext();) {
 				Resource resource = iterator.next();
-				if ((!clientId.equals(resource.getClientId()) && resource.getClientId() != null && !resource.isAccessibleByClient())) {
+				if ((!clientId.equals(resource.getClientId()) && resource.getClientId() != null && !resource.isAccessibleByOthers())) {
 					iterator.remove();
 				}
 			}

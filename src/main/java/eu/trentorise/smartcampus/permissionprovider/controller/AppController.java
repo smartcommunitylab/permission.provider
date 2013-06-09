@@ -97,7 +97,6 @@ public class AppController extends AbstractController {
 			entity.setClientId(clientDetailsAdapter.generateClientId());
 			entity.setAuthorities(clientDetailsAdapter.defaultAuthorities());
 			entity.setAuthorizedGrantTypes(clientDetailsAdapter.defaultGrantTypes());
-			entity.setScope(clientDetailsAdapter.defaultScope());
 			entity.setDeveloperId(getUserId());
 			entity.setClientSecret(clientDetailsAdapter.generateClientSecret());
 

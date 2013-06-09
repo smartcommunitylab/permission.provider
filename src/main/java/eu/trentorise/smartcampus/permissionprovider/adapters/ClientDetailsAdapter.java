@@ -92,9 +92,6 @@ public class ClientDetailsAdapter {
 	public String defaultAuthorities() {
 		return "ROLE_CLIENT";
 	}
-	public String defaultScope() {
-		return "read,write";
-	}
 	/**
 	 * @param client
 	 * @param data

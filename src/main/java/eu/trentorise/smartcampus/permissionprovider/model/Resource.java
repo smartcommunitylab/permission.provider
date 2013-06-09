@@ -81,7 +81,7 @@ public class Resource {
 	 * Whether non-owning clients can request and access this resource
 	 */
 	@XmlAttribute(name="accessibleByClient", required = false)
-	private boolean accessibleByClient = true;
+	private boolean accessibleByOthers = true;
 	
 	/**
 	 * @return the resourceId
@@ -196,17 +196,17 @@ public class Resource {
 	}
 
 	/**
-	 * @return the accessibleByClient
+	 * @return the accessibleByOthers
 	 */
-	public boolean isAccessibleByClient() {
-		return accessibleByClient;
+	public boolean isAccessibleByOthers() {
+		return accessibleByOthers;
 	}
 
 	/**
-	 * @param accessibleByClient the accessibleByClient to set
+	 * @param accessibleByOthers the accessibleByClient to set
 	 */
-	public void setAccessibleByClient(boolean accessibleByClient) {
-		this.accessibleByClient = accessibleByClient;
+	public void setAccessibleByOthers(boolean accessibleByOthers) {
+		this.accessibleByOthers = accessibleByOthers;
 	}
 
 }

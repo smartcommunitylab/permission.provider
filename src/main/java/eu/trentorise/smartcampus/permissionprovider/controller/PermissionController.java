@@ -80,12 +80,14 @@ public class PermissionController extends AbstractController {
 				response.setErrorMessage("Attempting to access non-owned data.");
 			} else {
 				Collection<String> resourceIds = new HashSet<String>(clientDetails.getResourceIds());
+				Collection<String> scopes = new HashSet<String>(clientDetails.getScope());
 				for (String r : permissions.getSelectedResources().keySet()) {
 					Resource resource = resourceRepository.findOne(Long.parseLong(r));
 					// if not checked, remove from permissions and from pending requests
 					if (!permissions.getSelectedResources().get(r)) {
 						info.getResourceApprovals().remove(r);
 						resourceIds.remove(r);
+						scopes.remove(resource.getResourceUri());
 					// if checked but requires approval, check whether  
 				    // - already approved (i.e., included in client resourceIds)
 					// - already requested (i.e., incuded in additional info approval requests map)	
@@ -96,9 +98,11 @@ public class PermissionController extends AbstractController {
 					// if approval is not required, include directly in client resource ids	
 					} else {
 						resourceIds.add(r);
+						scopes.add(resource.getResourceUri());
 					}
 				}
 				clientDetails.setResourceIds(StringUtils.collectionToCommaDelimitedString(resourceIds));
+				clientDetails.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
 				clientDetails.setAdditionalInformation(info.toJson());
 				clientDetailsRepository.save(clientDetails);
 				response.setData(buildPermissions(clientDetails));
@@ -147,6 +151,7 @@ public class PermissionController extends AbstractController {
 		Permissions permissions = new Permissions();
 		permissions.setServices(resourceAdapter.getServices());
 		Map<String, List<ResourceParameter>> ownResources = new HashMap<String, List<ResourceParameter>>();
+		// read resource parameters owned by the client and create 'parameter-values' map
 		List<ResourceParameter> resourceParameters = resourceAdapter.getOwnResourceParameters(clientDetails.getClientId(), null, null);
 		if (resourceParameters != null) {
 			for (ResourceParameter resourceParameter : resourceParameters) {
@@ -159,15 +164,17 @@ public class PermissionController extends AbstractController {
 			}
 		}
 		permissions.setOwnResources(ownResources);
-		
+		// read all available resources and assign permission status
 		Map<String, List<Resource>> otherResourcesMap = new HashMap<String, List<Resource>>();
+		// map resources selected by the client
 		Map<String,Boolean> selectedResources = new HashMap<String, Boolean>();
+		// map resource approval state
 		Map<String,Integer> resourceApprovals = new HashMap<String, Integer>();
 		Set<String> set = clientDetails.getResourceIds();
 		if (set == null) set = Collections.emptySet();
 		
 		List<Resource> otherResources = resourceAdapter.getAvailableResources(clientDetails.getClientId());
-		
+		// read approval status for the resources that require approval explicit
 		ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
 		if (info.getResourceApprovals() == null) info.setResourceApprovals(Collections.<String,Boolean>emptyMap());
 		

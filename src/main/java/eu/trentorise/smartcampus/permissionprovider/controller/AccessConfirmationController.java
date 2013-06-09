@@ -58,7 +58,7 @@ public class AccessConfirmationController {
 			for (String rId : client.getResourceIds()) {
 				try {
 					Resource r = resourceRepository.findOne(Long.parseLong(rId));
-					if (r.getAuthority().equals(AUTHORITY.USER)) {
+					if (r.getAuthority().equals(AUTHORITY.ROLE_USER)) {
 						resources.add(r);
 					}
 				} catch (Exception e) {

@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -56,14 +55,11 @@ public class ResourceAccessController {
 
 	@RequestMapping("/resources/{resourceUri}/access")
 	public @ResponseBody Boolean canAccessResource(@RequestHeader("Authorization") String token, @PathVariable String resourceUri, HttpServletRequest request) {
-		Resource resource = resourceServices.loadResourceByResourceUri(resourceUri);
-		if (resource == null) return false;
-		
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			Collection<String> resourceIds = auth.getAuthorizationRequest().getResourceIds();
-			if (resourceIds != null && !resourceIds.isEmpty() && resourceIds.contains(resource.getResourceId().toString())) {
+			Collection<String> scope = auth.getAuthorizationRequest().getScope();
+			if (scope != null && !scope.isEmpty() && scope.contains(resourceUri)) {
 				return true;
 			}
 		} catch (AuthenticationException e) {
