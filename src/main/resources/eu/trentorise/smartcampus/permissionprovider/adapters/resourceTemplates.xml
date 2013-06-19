@@ -177,5 +177,115 @@
            <description>Read an arbitrary user file.</description>
        </resourceMapping>
        </service> 
+       
+<service name="Communicator service" id="smartcampus.communicator">
+       <description>Service manage notification</description>
+       <resource name="App" id="capp">
+               <description>Symbolic name of the application managing the notification</description>
+       </resource>
+       <resource name="Id" id="idn">
+               <description>Symbolic name of the application managing the notification</description>
+       </resource>
+       <resourceMapping 
+           id="communicator.appaccount"
+           name="communicator account management" 
+           uri="communicator.appacount"
+           authority="CLIENT"
+           accessibleByOthers="false">
+           <description>Manage different communicator app accounts.</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="communicator.useraccount"
+           name="communicator user account management" 
+           uri="communicator.useracount"
+           authority="CLIENT"
+           accessibleByOthers="false">
+           <description>Manage different communicator user accounts.</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="communicator.notification"
+           name="Read user resource notification" 
+           uri="communicator.notification"
+           authority="USER"
+           approvalRequired="false">
+           <description>Read notification of the user .</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="communicator.notification.manage"
+           name="Write " 
+           uri="communicator.notification.{capp}.manage"
+           authority="USER"
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="communicator.notification.read.all"
+           name="Read user notification" 
+           uri="communicator.notification.read.all"
+           authority="USER"
+           approvalRequired="false">
+           <description>Read an arbitrary user notification.</description>
+           <resourceMapping 
+           id="communicator.notification.read"
+           name="Read user notification" 
+           uri="communicator.notification.read"
+           
+           authority="USER"
+           approvalRequired="false">
+           <description>Read an arbitrary user notification.</description>
+       </resourceMapping>
+       </resourceMapping>
+       <resourceMapping 
+           id="communicator.configuration"
+           name="Read GCM configuration " 
+           uri="communicator.configuration.{capp}"
+           authority="USER"
+          
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+         <resourceMapping 
+           id="communicator.send"
+           name="Send notification" 
+           uri="communicator.send.{capp}"
+           authority="USER"
+       
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+       
+        <resourceMapping 
+           id="communicator.register.app"
+           name="register gcm" 
+           uri="communicator.register.{capp}"
+           authority="USER"
+           
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+       
+         <resourceMapping 
+           id="communicator.register.user"
+           name="register gcm" 
+           uri="communicator.register.user"
+           authority="USER"
+          
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+       
+        <resourceMapping 
+           id="communicator.unregister.user"
+           name="unregister gcm" 
+           uri="communicator.unregister.user.{capp}"
+           authority="USER"
+        
+           approvalRequired="false">
+           <description>Manage user notification of a specific app.</description>
+       </resourceMapping>
+       
+    
+       </service> 
+
     
 </services>

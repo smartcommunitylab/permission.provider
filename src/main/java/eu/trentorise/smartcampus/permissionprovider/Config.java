@@ -22,5 +22,5 @@ package eu.trentorise.smartcampus.permissionprovider;
  */
 public class Config {
 
-	public enum AUTHORITY {ROLE_USER, ROLE_CLIENT,ROLE_CLIENT_TRUSTED};
+	public enum AUTHORITY {USER,CLIENT,ROLE_USER, ROLE_CLIENT,ROLE_CLIENT_TRUSTED};
 }
