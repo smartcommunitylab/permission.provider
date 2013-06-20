@@ -134,7 +134,7 @@
    <service name="File storage service" id="smartcampus.filestorage">
        <description>Service for storing user files through different cloud storages.</description>
        <resource name="App" id="fsapp">
-               <description>Symbolic name of the application managing the resources</description>
+               <description>Symbolic name of the application managing the resources. Corresponds to the app 'folder'.</description>
        </resource>
        <resourceMapping 
            id="filestorage.appaccount"
@@ -167,6 +167,14 @@
            authority="USER"
            approvalRequired="true">
            <description>Manage user files of a specific app.</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="filestorage.resource.app.read"
+           name="Write " 
+           uri="filestorage.resource.{fsapp}.read"
+           authority="USER"
+           approvalRequired="true">
+           <description>Read user files of a specific app.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.resource.read"
