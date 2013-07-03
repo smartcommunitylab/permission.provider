@@ -37,6 +37,8 @@ import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
 /**
+ * Controller for remote check the access to the resource
+ * 
  * @author raman
  *
  */
@@ -53,6 +55,13 @@ public class ResourceAccessController {
 	
 	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
 
+	/**
+	 * Check the access to the specified resource using the client app token header
+	 * @param token
+	 * @param resourceUri
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping("/resources/{resourceUri}/access")
 	public @ResponseBody Boolean canAccessResource(@RequestHeader("Authorization") String token, @PathVariable String resourceUri, HttpServletRequest request) {
 		try {

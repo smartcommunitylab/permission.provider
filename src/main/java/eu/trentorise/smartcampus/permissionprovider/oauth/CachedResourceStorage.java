@@ -27,6 +27,8 @@ import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
 /**
+ * Implementation of the resource storage with in-memory cache of resource model.
+ * 
  * @author raman
  *
  */

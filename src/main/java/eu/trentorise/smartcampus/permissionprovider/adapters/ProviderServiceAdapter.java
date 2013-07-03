@@ -39,7 +39,6 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 /**
  * This class manages operations of the service
  * 
- * @author Viktor Pravdin
  */
 @Component
 @Transactional
@@ -65,7 +64,7 @@ public class ProviderServiceAdapter {
 	}
 
 	/**
-	 * Updates of user attributes using the values getted from http request
+	 * Updates of user attributes using the values obtained from http request
 	 * 
 	 * @param authorityUrl
 	 *            the url of authority used from user to authenticate himself
@@ -79,19 +78,22 @@ public class ProviderServiceAdapter {
 		if (auth == null) {
 			throw new IllegalArgumentException("Unknown authority URL: " + authorityUrl);
 		}
+		// read received attribute values
 		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), req);
-		List<Attribute> list = extractAttributes(auth, attributes);
+		List<Attribute> list = extractIdentityAttributes(auth, attributes);
 		
+		// find user by identity attributes
 		List<User> users = userRepository.getUsersByAttributes(list);
 		if (users == null)
 			users = new ArrayList<User>();
 		if (users.size() > 1) {
 			throw new IllegalArgumentException("The request attributes identify more than one user");
 		}
+		// fillin attribute list
 		list.clear();
 		populateAttributes(auth, attributes, list);
 
-		// add security whitelist
+		// check the access rights for the user with respect to the whitelist
 		if (!secAdapter.access(auth.getName(), new ArrayList<String>(attributes.keySet()), attributes)) {
 			throw new SecurityException("Access denied to user");
 		}
@@ -99,7 +101,7 @@ public class ProviderServiceAdapter {
 		User user = null;
 		if (users.isEmpty()) {
 			user = new User();
-			// TODO integrate social service
+			// TODO integrate social service ?
 			user.setSocialId(1L);
 			user.setAttributeEntities(new HashSet<Attribute>(list));
 			userRepository.save(user);
@@ -122,7 +124,7 @@ public class ProviderServiceAdapter {
 		}
 
 		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), req);
-		List<Attribute> list = extractAttributes(auth, attributes);
+		List<Attribute> list = extractIdentityAttributes(auth, attributes);
 
 		List<User> users = userRepository.getUsersByAttributes(list);
 		list.clear();
@@ -164,7 +166,13 @@ public class ProviderServiceAdapter {
 		}
 	}
 
-	private List<Attribute> extractAttributes(Authority auth, Map<String, String> attributes) {
+	/**
+	 * Extract identity attribute values from all the attributes received for the specified authority.
+	 * @param auth
+	 * @param attributes
+	 * @return
+	 */
+	private List<Attribute> extractIdentityAttributes(Authority auth, Map<String, String> attributes) {
 		List<String> ids = attrAdapter.getIdentifyingAttributes(auth.getName());
 
 		// Try to find an already existing user

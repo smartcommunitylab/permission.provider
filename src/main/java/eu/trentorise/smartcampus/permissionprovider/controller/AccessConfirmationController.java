@@ -49,15 +49,24 @@ public class AccessConfirmationController {
 	@Autowired
 	private ResourceRepository resourceRepository;
 
+	/**
+	 * Request the user confirmation for the resources enabled for the requesting client
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView getAccessConfirmation(Map<String, Object> model) throws Exception {
 		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
+		// load client information given the client credentials obtained from the request
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
 		List<Resource> resources = new ArrayList<Resource>();
+		
 		if (clientAuth.getResourceIds() != null) {
 			for (String rId : client.getResourceIds()) {
 				try {
 					Resource r = resourceRepository.findOne(Long.parseLong(rId));
+					// ask the user only for the resources associated to the user role
 					if (r.getAuthority().equals(AUTHORITY.ROLE_USER)) {
 						resources.add(r);
 					}
@@ -72,6 +81,12 @@ public class AccessConfirmationController {
 		return new ModelAndView("access_confirmation", model);
 	}
 
+	/**
+	 * Generate error response
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/oauth/error")
 	public String handleError(Map<String,Object> model) throws Exception {
 		model.put("message", "There was a problem with the OAuth2 protocol");

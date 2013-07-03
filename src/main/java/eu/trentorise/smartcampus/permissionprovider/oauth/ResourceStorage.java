@@ -21,12 +21,22 @@ import java.util.List;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 
 /**
+ * Resource storage interface
+ * 
  * @author raman
  *
  */
 public interface ResourceStorage extends ResourceServices {
 
+	/**
+	 * Store the specified {@link Resource}
+	 * @param resource
+	 * @return stored resource object
+	 */
 	public Resource storeResource(Resource resource);
-	
+	/**
+	 * Store list of {@link Resource} list 
+	 * @param resources
+	 */
 	public void storeResources(List<Resource> resources);
 }

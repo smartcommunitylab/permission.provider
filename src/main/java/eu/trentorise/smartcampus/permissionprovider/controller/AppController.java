@@ -45,6 +45,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepo
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
+ * Controller for performing the basic operations over the 
+ * client apps.
  * @author raman
  *
  */
@@ -61,6 +63,10 @@ public class AppController extends AbstractController {
 	@Autowired
 	private UserRepository userRepository;
 	
+	/**
+	 * Retrieve the with the user data: currently on the username is added.
+	 * @return
+	 */
 	@RequestMapping("/dev")
 	public ModelAndView developer() {
 		Map<String,Object> model = new HashMap<String, Object>();
@@ -70,11 +76,16 @@ public class AppController extends AbstractController {
 		return new ModelAndView("index", model);
 	}
 	
+	/**
+	 * Read the 
+	 * @return {@link Response} entity containing the list of client app {@link ClientAppBasic} descriptors
+	 */
 	@RequestMapping("/dev/apps")
 	public @ResponseBody Response getAppList() {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			// read all the apps associated to the signed user
 			List<ClientAppBasic> list = clientDetailsAdapter.convertToClientApps(clientDetailsRepository.findByDeveloperId(getUserId()));
 			response.setData(list);
 		} catch (Exception e) {
@@ -85,6 +96,12 @@ public class AppController extends AbstractController {
 		return response;
 	}
 	
+	/**
+	 * create a new client app given a container with the name only
+	 * @param appData
+	 * @return {@link Response} entity containing the stored app {@link ClientAppBasic} descriptor
+	 * @throws Exception
+	 */
 	@RequestMapping(method=RequestMethod.POST,value="/dev/apps")
 	public @ResponseBody Response saveEmpty(@RequestBody ClientAppBasic appData) throws Exception {
 		Response response = new Response();
@@ -119,7 +136,7 @@ public class AppController extends AbstractController {
 	 * Reset clientId or client secret
 	 * @param clientId
 	 * @param resetClientId true to reset clientId, false to reset clientSecret
-	 * @return
+	 * @return {@link Response} entity containing the stored app {@link ClientAppBasic} descriptor
 	 */
 	protected Response reset(String clientId, boolean resetClientId) {
 		Response response = new Response();
@@ -147,6 +164,11 @@ public class AppController extends AbstractController {
 		return response;
 	}
 
+	/**
+	 * Delete the specified app
+	 * @param clientId
+	 * @return {@link Response} entity containing the deleted app {@link ClientAppBasic} descriptor
+	 */
 	@RequestMapping(method=RequestMethod.DELETE,value="/dev/apps/{clientId}")
 	public @ResponseBody Response delete(@PathVariable String clientId) {
 		Response response = new Response();
@@ -169,6 +191,12 @@ public class AppController extends AbstractController {
 		return response;
 	}
 
+	/**
+	 * Update the client app
+	 * @param data
+	 * @param clientId
+	 * @return {@link Response} entity containing the updated app {@link ClientAppBasic} descriptor
+	 */
 	@RequestMapping(method=RequestMethod.PUT,value="/dev/apps/{clientId}")
 	public @ResponseBody Response update(@RequestBody ClientAppBasic data, @PathVariable String clientId) {
 		Response response = new Response();
@@ -199,6 +227,11 @@ public class AppController extends AbstractController {
 		return response;
 	}
 
+	/**
+	 * Read the signed user name from the user attributes
+	 * @param user
+	 * @return
+	 */
 	protected String getUserName(User user) {
 		Map<String,Object> attrs = new HashMap<String, Object>();
 		String authority = getUserAuthority();

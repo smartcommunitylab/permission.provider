@@ -22,6 +22,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.provider.token.JdbcTokenStore;
 
 /**
+ * Token store with DB tables creation on startup.
+ * @see {@link JdbcTokenStore}
  * @author raman
  *
  */

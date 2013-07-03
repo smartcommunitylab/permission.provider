@@ -34,8 +34,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
 import eu.trentorise.smartcampus.permissionprovider.adapters.ResourceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
@@ -48,6 +50,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepo
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
 /**
+ * Controller for managing the permissions of the apps
  * @author raman
  *
  */
@@ -66,50 +69,53 @@ public class PermissionController extends AbstractController {
 	@Autowired
 	private ResourceRepository resourceRepository;
 	
+	/**
+	 * Save permissions requested by the app.
+	 * @param permissions
+	 * @param clientId
+	 * @return {@link Response} entity containing the processed app {@link Permissions} descriptor
+	 */
 	@RequestMapping(value="/dev/permissions/{clientId}",method=RequestMethod.PUT)
 	public @ResponseBody Response savePermissions(@RequestBody Permissions permissions, @PathVariable String clientId) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			// check that the client is owned by the current user
 			checkClientIdOwnership(clientId);
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
 			ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
+			
 			if (info.getResourceApprovals() == null) info.setResourceApprovals(new HashMap<String, Boolean>());
-			if (!clientDetails.getDeveloperId().toString().equals(getUser().getUsername())) {
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage("Attempting to access non-owned data.");
-			} else {
-				Collection<String> resourceIds = new HashSet<String>(clientDetails.getResourceIds());
-				Collection<String> scopes = new HashSet<String>(clientDetails.getScope());
-				for (String r : permissions.getSelectedResources().keySet()) {
-					Resource resource = resourceRepository.findOne(Long.parseLong(r));
-					// if not checked, remove from permissions and from pending requests
-					if (!permissions.getSelectedResources().get(r)) {
-						info.getResourceApprovals().remove(r);
-						resourceIds.remove(r);
-						scopes.remove(resource.getResourceUri());
-					// if checked but requires approval, check whether  
-				    // - already approved (i.e., included in client resourceIds)
-					// - already requested (i.e., incuded in additional info approval requests map)	
-					} else if (resource.isApprovalRequired()) {
-						if (!resourceIds.contains(r) && ! info.getResourceApprovals().containsKey(r)) {
-							info.getResourceApprovals().put(r, true);
-						}
-					// if approval is not required, include directly in client resource ids	
-					} else {
-						resourceIds.add(r);
-						scopes.add(resource.getResourceUri());
+			Collection<String> resourceIds = new HashSet<String>(clientDetails.getResourceIds());
+			Collection<String> scopes = new HashSet<String>(clientDetails.getScope());
+			for (String r : permissions.getSelectedResources().keySet()) {
+				Resource resource = resourceRepository.findOne(Long.parseLong(r));
+				// if not checked, remove from permissions and from pending requests
+				if (!permissions.getSelectedResources().get(r)) {
+					info.getResourceApprovals().remove(r);
+					resourceIds.remove(r);
+					scopes.remove(resource.getResourceUri());
+				// if checked but requires approval, check whether  
+			    // - already approved (i.e., included in client resourceIds)
+				// - already requested (i.e., included in additional info approval requests map)	
+				} else if (resource.isApprovalRequired()) {
+					if (!resourceIds.contains(r) && ! info.getResourceApprovals().containsKey(r)) {
+						info.getResourceApprovals().put(r, true);
 					}
+				// if approval is not required, include directly in client resource ids	
+				} else {
+					resourceIds.add(r);
+					scopes.add(resource.getResourceUri());
 				}
-				clientDetails.setResourceIds(StringUtils.collectionToCommaDelimitedString(resourceIds));
-				clientDetails.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
-				clientDetails.setAdditionalInformation(info.toJson());
-				clientDetailsRepository.save(clientDetails);
-				response.setData(buildPermissions(clientDetails));
 			}
+			clientDetails.setResourceIds(StringUtils.collectionToCommaDelimitedString(resourceIds));
+			clientDetails.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
+			clientDetails.setAdditionalInformation(info.toJson());
+			clientDetailsRepository.save(clientDetails);
+			response.setData(buildPermissions(clientDetails));
 		} catch (Exception e) {
 			logger.error("Failure saving permissions model: "+e.getMessage(),e);
-			response.setErrorMessage("Failure saving permissions model: "+e.getMessage());
+			response.setErrorMessage(e.getMessage());
 			response.setResponseCode(RESPONSE.ERROR);
 		}
 		
@@ -118,6 +124,11 @@ public class PermissionController extends AbstractController {
 	}
 	
 
+	/**
+	 * Read permissions of the specified app
+	 * @param clientId
+	 * @return {@link Response} entity containing the app {@link Permissions} descriptor
+	 */
 	@RequestMapping(value="/dev/permissions/{clientId}",method=RequestMethod.GET)
 	public @ResponseBody Response getPermissions(@PathVariable String clientId) {
 		Response response = new Response();
@@ -125,16 +136,11 @@ public class PermissionController extends AbstractController {
 		try {
 			checkClientIdOwnership(clientId);
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
-			if (!clientDetails.getDeveloperId().toString().equals(getUser().getUsername())) {
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage("Attempting to access non-owned data.");
-			} else {
-				Permissions permissions = buildPermissions(clientDetails);
-				response.setData(permissions);
-			}
+			Permissions permissions = buildPermissions(clientDetails);
+			response.setData(permissions);
 		} catch (Exception e) {
 			logger.error("Failure reading permissions model: "+e.getMessage(),e);
-			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
+			response.setErrorMessage(e.getMessage());
 			response.setResponseCode(RESPONSE.ERROR);
 		}
 		
@@ -143,6 +149,7 @@ public class PermissionController extends AbstractController {
 
 
 	/**
+	 * Create {@link Permissions} descriptors from the client app data.
 	 * @param clientId
 	 * @param clientDetails
 	 * @return
@@ -173,8 +180,8 @@ public class PermissionController extends AbstractController {
 		Set<String> set = clientDetails.getResourceIds();
 		if (set == null) set = Collections.emptySet();
 		
-		List<Resource> otherResources = resourceAdapter.getAvailableResources(clientDetails.getClientId());
-		// read approval status for the resources that require approval explicit
+		List<Resource> otherResources = resourceAdapter.getAvailableResources(clientDetails.getClientId(), getUserId());
+		// read approval status for the resources that require approval explicitly
 		ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
 		if (info.getResourceApprovals() == null) info.setResourceApprovals(Collections.<String,Boolean>emptyMap());
 		
@@ -188,9 +195,13 @@ public class PermissionController extends AbstractController {
 				}
 				sublist.add(resource);
 				selectedResources.put(rId, set.contains(rId) || info.getResourceApprovals().containsKey(rId));
+				// set the resource approval status
 				if (selectedResources.containsKey(rId) && selectedResources.get(rId)) {
+					// the resource is approved if it is in the client resource Ids
 					if (set.contains(rId)) resourceApprovals.put(rId, RA_APPROVED);
+					// if resource is not in the resource approvals map, then it is rejected
 					else if (!info.getResourceApprovals().get(rId)) resourceApprovals.put(rId, RA_REJECTED);
+					// resource is waiting for approval
 					else resourceApprovals.put(rId, RA_PENDING);
 				} else {
 					resourceApprovals.put(rId, RA_NONE);
@@ -202,7 +213,12 @@ public class PermissionController extends AbstractController {
 		permissions.setAvailableResources(otherResourcesMap);
 		return permissions;
 	}
-	
+
+	/**
+	 * Create new resource property
+	 * @param rp
+	 * @return {@link Response} entity containing the stored {@link ResourceParameter} descriptor
+	 */
 	@RequestMapping(value="/dev/resourceparams",method=RequestMethod.POST)
 	public @ResponseBody Response createProperty(@RequestBody ResourceParameter rp) {
 		Response response = new Response();
@@ -212,13 +228,45 @@ public class PermissionController extends AbstractController {
 			resourceAdapter.storeResourceParameter(rp);
 			response.setData(rp);
 		} catch (Exception e) {
-			logger.error("Failure reading permissions model: "+e.getMessage(),e);
-			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
+			logger.error("Failure creating resource parameter: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
 			response.setResponseCode(RESPONSE.ERROR);
 		}
 		return response;
 	}
 
+	/**
+	 * Change the visibility of the owned resource property
+	 * @param clientId client owning the resource
+	 * @param resourceId id of the resource parameter
+	 * @param value parameter value
+	 * @param vis visibility
+	 * @return {@link Response} entity containing the processed {@link ResourceParameter} descriptor
+	 */
+	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.PUT)
+	public @ResponseBody Response updatePropertyVisibility(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value, @RequestParam RESOURCE_VISIBILITY vis) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			checkClientIdOwnership(clientId);
+			ResourceParameter rp = resourceAdapter.updateResourceParameterVisibility(resourceId, value, clientId, vis);
+			response.setData(rp);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Failure Failure updating resource parameter visibility: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		return response;
+	}
+
+	/**
+	 * Delete the specified resource parameter
+	 * @param clientId client owning the property
+	 * @param resourceId id of the parameter
+	 * @param value parameter value
+	 * @return
+	 */
 	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value) {
 		Response response = new Response();
@@ -227,8 +275,8 @@ public class PermissionController extends AbstractController {
 			checkClientIdOwnership(clientId);
 			resourceAdapter.removeResourceParameter(resourceId, value, clientId);
 		} catch (Exception e) {
-			logger.error("Failure reading permissions model: "+e.getMessage(),e);
-			response.setErrorMessage("Failure reading permissions model: "+e.getMessage());
+			logger.error("Failure deleting resource parameter: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
 			response.setResponseCode(RESPONSE.ERROR);
 		}
 		return response;

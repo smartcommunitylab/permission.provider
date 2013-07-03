@@ -22,6 +22,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 
 /**
+ * Authorization code services with DB table creation on startup.
+ * 
+ * @see {@link JdbcAuthorizationCodeServices}
  * @author raman
  *
  */

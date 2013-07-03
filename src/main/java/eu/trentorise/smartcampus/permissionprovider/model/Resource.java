@@ -20,20 +20,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
+import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
 
 /**
- * 
+ * DB entity to store resource data 
  * @author raman
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "resource")
 @Entity
 public class Resource {
 	@Id
@@ -42,18 +37,15 @@ public class Resource {
 	/**
 	 * Resource category used to group different resources
 	 */
-	@XmlAttribute(name="resourceType", required = false)
 	private String resourceType;
 	/**
 	 * Resource-specific symbolic name
 	 */
-	@XmlAttribute(name="resourceUri", required = true)
 	private String resourceUri;
 	
 	/**
 	 * Human-readable resource name
 	 */
-	@XmlAttribute(name="name", required = true)
 	private String name;
 	/**
 	 * Resource description
@@ -62,26 +54,28 @@ public class Resource {
 	/**
 	 * Application that created this resource (if applicable)
 	 */
-	@XmlAttribute(name="clientId", required = false)
 	private String clientId;
 	/**
 	 * Authority that can access this resource
 	 */
 	@Enumerated(EnumType.STRING)
-	@XmlAttribute(name="authority", required = true)
 	private AUTHORITY authority; 
 
 	/**
 	 * Whether explicit manual approval required
 	 */
-	@XmlAttribute(name="approvalRequired", required = false)
 	private boolean approvalRequired = false;
 
 	/**
 	 * Whether non-owning clients can request and access this resource
 	 */
-	@XmlAttribute(name="accessibleByClient", required = false)
 	private boolean accessibleByOthers = true;
+	
+	/**
+	 * Visibility of the resource for the other apps
+	 */
+	@Enumerated(EnumType.STRING)
+	private RESOURCE_VISIBILITY visibility = RESOURCE_VISIBILITY.CLIENT_APP;
 	
 	/**
 	 * @return the resourceId
@@ -209,4 +203,17 @@ public class Resource {
 		this.accessibleByOthers = accessibleByOthers;
 	}
 
+	/**
+	 * @return the visibility
+	 */
+	public RESOURCE_VISIBILITY getVisibility() {
+		return visibility;
+	}
+
+	/**
+	 * @param visibility the visibility to set
+	 */
+	public void setVisibility(RESOURCE_VISIBILITY visibility) {
+		this.visibility = visibility;
+	}
 }

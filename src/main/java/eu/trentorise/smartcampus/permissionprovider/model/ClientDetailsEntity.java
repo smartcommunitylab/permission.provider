@@ -35,6 +35,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
+ * DB entity storing the client app information
  * @author raman
  *
  */
@@ -54,7 +55,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Column(name = "resource_ids")
 	private String resourceIds;
 	
-	@Column(name = "scope")
+	@Column(name = "scope",columnDefinition="LONGTEXT")
 	private String scope;
 
 	@Column(name = "authorized_grant_types")
@@ -72,7 +73,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Column(name = "refresh_token_validity")
 	private Integer refreshTokenValidity;
 
-	@Column(name = "additional_information")
+	@Column(name = "additional_information",columnDefinition="LONGTEXT")
 	private String additionalInformation;
 
 	@Id

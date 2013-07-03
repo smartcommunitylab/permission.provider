@@ -20,11 +20,12 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameterKey;
 
 /**
- * 
+ * Persistent repository of {@link ResourceParameter} entities
  * @author raman
  *
  */

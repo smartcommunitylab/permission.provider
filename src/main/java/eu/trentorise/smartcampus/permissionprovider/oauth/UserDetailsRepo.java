@@ -28,6 +28,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
+/**
+ * Implementation of the {@link UserDetailsService} based on the SC user model.
+ * @author raman
+ *
+ */
 public class UserDetailsRepo implements UserDetailsService {
 
 	@Autowired
@@ -38,6 +43,7 @@ public class UserDetailsRepo implements UserDetailsService {
 		List<GrantedAuthority> list = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 		
 		Long id = null;
+		// expected that the user name is the numerical identifier
 		try {
 			id = Long.parseLong(userName);
 		} catch (NumberFormatException e) {

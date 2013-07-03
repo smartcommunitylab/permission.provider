@@ -23,6 +23,8 @@ import java.util.Map;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 
 /**
+ * Permissions descriptor with client app own resource properties, services, resources available,
+ * resource approval statues, and resources selected by the client
  * @author raman
  *
  */

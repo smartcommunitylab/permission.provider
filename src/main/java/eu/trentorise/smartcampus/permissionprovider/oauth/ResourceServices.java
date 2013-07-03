@@ -19,10 +19,17 @@ package eu.trentorise.smartcampus.permissionprovider.oauth;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 
 /**
+ *  Resource service interface
+ * 
  * @author raman
  *
  */
 public interface ResourceServices {
 
+	/**
+	 * Load the {@link Resource} instance given the resource URI
+	 * @param resourceUri
+	 * @return
+	 */
 	public Resource loadResourceByResourceUri(String resourceUri);
 }

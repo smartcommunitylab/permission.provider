@@ -186,6 +186,57 @@ public class SecurityAdapter {
 				+ attrs.get(SURNAME_ATTR) + " " + attrValues);
 		return false;
 	}
-	
-	
+	/**
+	 * Descriptor of the user (name, surname, identity attributes)
+	 * @author raman
+	 *
+	 */
+	public static class SecurityEntry {
+		private String nameValue;
+		private String surnameValue;
+		private Map<String, String> idSecurityEntries;
+
+		public SecurityEntry() {
+			idSecurityEntries = new HashMap<String, String>();
+		}
+
+		public String getNameValue() {
+			return nameValue;
+		}
+
+		public void setNameValue(String nameValue) {
+			this.nameValue = nameValue;
+		}
+
+		public String getSurnameValue() {
+			return surnameValue;
+		}
+
+		public void setSurnameValue(String surnameValue) {
+			this.surnameValue = surnameValue;
+		}
+
+		public void addIdSecurityEntry(String key, String value) {
+			idSecurityEntries.put(key, value);
+		}
+
+		public Map<String, String> getIdSecurityEntries() {
+			return idSecurityEntries;
+		}
+
+		public void setIdSecurityEntries(Map<String, String> idSecurityEntries) {
+			this.idSecurityEntries = idSecurityEntries;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "SecurityEntry [nameValue=" + nameValue + ", surnameValue="
+					+ surnameValue + ", idSecurityEntries=" + idSecurityEntries
+					+ "]";
+		}
+
+	}
 }

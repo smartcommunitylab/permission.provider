@@ -20,6 +20,12 @@ import java.util.Collection;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * Implementation of {@link AbstractAuthenticationToken} representing 
+ * the externally authenticated user (Shibboleth, OpenID, etc).
+ * @author raman
+ *
+ */
 public class ExternalAuthenticationToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = -5921723637973756772L;
 

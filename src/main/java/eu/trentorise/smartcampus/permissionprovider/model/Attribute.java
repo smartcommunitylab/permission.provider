@@ -29,6 +29,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/**
+ * DB entity to store user attribute. Attributes are associated to authorities.
+ * @author raman
+ *
+ */
 @Entity
 public class Attribute implements Serializable {
 

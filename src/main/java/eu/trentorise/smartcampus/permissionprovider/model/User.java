@@ -28,6 +28,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+/**
+ * DB entity representing the user: user ID, social ID, and the attributes
+ * @author raman
+ *
+ */
 @Entity
 public class User implements Serializable {
 

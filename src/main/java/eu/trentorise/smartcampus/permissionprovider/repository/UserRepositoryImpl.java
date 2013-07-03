@@ -25,6 +25,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 
 /**
+ * 
  * @author raman
  *
  */

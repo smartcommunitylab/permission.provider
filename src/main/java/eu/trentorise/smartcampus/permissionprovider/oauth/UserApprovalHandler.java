@@ -23,6 +23,8 @@ import org.springframework.security.oauth2.provider.approval.TokenServicesUserAp
 import eu.trentorise.smartcampus.permissionprovider.Config;
 
 /**
+ * Extension of {@link TokenServicesUserApprovalHandler} to enable automatic authorization
+ * for trusted clients.
  * @author raman
  *
  */

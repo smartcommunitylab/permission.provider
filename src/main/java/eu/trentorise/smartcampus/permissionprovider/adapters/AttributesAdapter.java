@@ -44,9 +44,8 @@ import eu.trentorise.smartcampus.permissionprovider.model.Authority;
 import eu.trentorise.smartcampus.permissionprovider.repository.AuthorityRepository;
 
 /**
- * This class manages all operations on attributes
+ * This class manages all operations on attributes.
  * 
- * @author Viktor Pravdin
  */
 @Component
 public class AttributesAdapter {
@@ -56,7 +55,10 @@ public class AttributesAdapter {
 	private Map<String, AuthorityMapping> authorities;
 	private Map<String, Set<String>> identityAttributes;
 
-	// Called from the AcServiceAdapter's init
+	/**
+	 * Load attributes from the XML descriptor.
+	 * @throws JAXBException
+	 */
 	protected void init() throws JAXBException {
 		JAXBContext jaxb = JAXBContext.newInstance(AuthorityMapping.class,
 				Authorities.class);
@@ -86,7 +88,7 @@ public class AttributesAdapter {
 	}
 
 	/**
-	 * Retrieve from http request the attribute of a specified authority
+	 * Retrieve from http request the attribute values of a specified authority
 	 * 
 	 * @param authority
 	 *            the authority specified
@@ -121,8 +123,10 @@ public class AttributesAdapter {
 	}
 
 	/**
+	 * Read either request attribute or a request parameter from HTTP request
 	 * @param request
 	 * @param key
+	 * @param useParams whether to extract parameter instead of attribute 
 	 * @return
 	 */
 	private Object readAttribute(HttpServletRequest request, String key, boolean useParams) {
@@ -131,7 +135,7 @@ public class AttributesAdapter {
 	}
 
 	/**
-	 * Returns of the identifying attributes of an authority
+	 * Returns the list of the of the identity attributes of an authority as declared in configuration.
 	 * 
 	 * @param authority
 	 *            the authority
@@ -147,7 +151,7 @@ public class AttributesAdapter {
 	}
 
 	/**
-	 * Returns of the authorities available
+	 * Returns the authorities available
 	 * 
 	 * @return the map of authorities, the key is authority name and the value
 	 *         is its url

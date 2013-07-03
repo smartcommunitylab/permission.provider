@@ -24,6 +24,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
 /**
+ * Base class for the app controllers. 
  * @author raman
  *
  */
@@ -32,6 +33,10 @@ public class AbstractController {
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
 
+	/**
+	 * Check that the specified client is owned by the currently logged user
+	 * @param clientId
+	 */
 	protected void checkClientIdOwnership(String clientId) {
 		ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 		if (client == null || !client.getDeveloperId().equals(getUserId())) {
@@ -39,14 +44,25 @@ public class AbstractController {
 		};
 	}
 	
+	/**
+	 * Get the user from the Spring Security Context
+	 * @return
+	 */
 	protected UserDetails getUser(){
 		return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 	
+	/**
+	 * @return the user ID (long) from the user object in Spring Security Context
+	 */
 	protected Long getUserId() {
 		return Long.parseLong(getUser().getUsername());
 	}
 
+	/**
+	 * The authority (e.g., google) value from the Spring Security Context of the currently logged user
+	 * @return the authority value (string)
+	 */
 	protected String getUserAuthority() {
 		return SecurityContextHolder.getContext().getAuthentication().getDetails().toString();
 	}

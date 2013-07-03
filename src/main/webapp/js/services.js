@@ -36,7 +36,8 @@ function AppController($scope, $resource) {
 	});
 
 	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value/', {}, {
-		create : { method : 'POST' },		
+		create : { method : 'POST' },
+		changeVis : {method : 'PUT'}
 	});
 	
 	var init = function() {
@@ -241,6 +242,21 @@ function AppController($scope, $resource) {
 	    }
 	};
 
+	$scope.changeResourceParamVis = function(r) {
+		if (confirm('Change visibility of the resource?')) {
+			var perm = new ClientAppResourceParam();
+			perm.$changeVis({clientId:r.clientId,resourceId:r.resourceId,value:r.value,vis:r.visibility},function(response){
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Resource visibility updated!';
+				} else {
+					$scope.error = 'Failed to change resource visibility: '+response.errorMessage;
+					$scope.info = '';
+				}	
+			});
+	    }
+	};
+
 	$scope.permissionIcon = function(val) {
 		switch (val){
 		case 1: return 'icon-ok';
@@ -281,4 +297,5 @@ function AppController($scope, $resource) {
 			});
 		}
 	};
+	
 };

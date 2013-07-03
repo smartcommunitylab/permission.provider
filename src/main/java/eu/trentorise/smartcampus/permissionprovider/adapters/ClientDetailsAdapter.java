@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 
 /**
+ * Support for the management of client app registration details
  * @author raman
  *
  */
@@ -40,21 +43,35 @@ import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 @Transactional
 public class ClientDetailsAdapter {
 
-	/**
-	 * 
-	 */
+	/** GRANT TYPE: CLIENT CRIDENTIALS FLOW */
 	private static final String GT_CLIENT_CREDENTIALS = "client_credentials";
+	/** GRANT TYPE: IMPLICIT FLOW */
 	private static final String GT_IMPLICIT = "implicit";
+	/** GRANT TYPE: AUTHORIZATION GRANT FLOW */
 	private static final String GT_AUTHORIZATION_CODE = "authorization_code";
+	/** GRANT TYPE: REFRESH TOKEN */
 	private static final String GT_REFRESH_TOKEN = "refresh_token";
+	private Log log = LogFactory.getLog(getClass());
 
+	/**
+	 * Generate new value to be used as clientId (String)
+	 * @return
+	 */
 	public synchronized String generateClientId() {
 		return UUID.randomUUID().toString();
 	}
+	/**
+	 * Generate new value to be used as client secret (String)
+	 * @return
+	 */
 	public synchronized String generateClientSecret() {
 		return UUID.randomUUID().toString();
 	}
-	
+	/**
+	 * Convert DB objects to the simplified client representation
+	 * @param entities
+	 * @return
+	 */
 	public List<ClientAppBasic> convertToClientApps(List<ClientDetailsEntity> entities){
 		if (entities == null) {
 			return Collections.emptyList();
@@ -67,6 +84,7 @@ public class ClientDetailsAdapter {
 	}
 
 	/**
+	 * Convert DB object to the simplified client representation
 	 * @param e
 	 * @return
 	 */
@@ -81,18 +99,30 @@ public class ClientDetailsAdapter {
 			res.setName(info.getName());
 			res.setNativeAppsAccess(info.isNativeAppsAccess());
 		}
+		// access server-side corresponds to the 'authorization grant' flow.
 		res.setServerSideAccess(e.getAuthorizedGrantTypes().contains(GT_AUTHORIZATION_CODE));
+		// browser access corresponds to the 'implicit' flow.
 		res.setBrowserAccess(e.getAuthorizedGrantTypes().contains(GT_IMPLICIT));
+
 		res.setRedirectUris(StringUtils.collectionToCommaDelimitedString(e.getRegisteredRedirectUri()));
 		return res;
 	}
+	/**
+	 * Client types to be associated with client app by default
+	 * @return
+	 */
 	public String defaultGrantTypes() {
 		return GT_CLIENT_CREDENTIALS;
 	}
+	/**
+	 * Client authorities to be associated with client app by default
+	 * @return
+	 */
 	public String defaultAuthorities() {
 		return "ROLE_CLIENT";
 	}
 	/**
+	 * Fill in the DB object with the properties of {@link ClientAppBasic} instance. In case of problem, return null.
 	 * @param client
 	 * @param data
 	 * @return
@@ -126,20 +156,24 @@ public class ClientDetailsAdapter {
 			client.setAuthorizedGrantTypes(StringUtils.collectionToCommaDelimitedString(types));
 			
 			client.setRedirectUri(data.getRedirectUris());
-			return client;
 		} catch (Exception e) {
+			log .error("failed to convert an object: "+e.getMessage(), e);
 			return null;
 		}
+		return client;
 	}
 	/**
+	 * Validate correctness of the data specified for the app
 	 * @param client
 	 * @param data
 	 */
 	public String validate(ClientDetailsEntity client, ClientAppBasic data) {
 		if (client == null) return "app not found";
+		// name should not be empty
 		if (data.getName() == null || data.getName().trim().isEmpty()) {
 			return "name cannot be empty";
 		}
+		// for server-side or native access redirect URLs are required
 		if ((data.isServerSideAccess() || data.isNativeAppsAccess()) && (data.getRedirectUris() == null || data.getRedirectUris().trim().isEmpty())) {
 			return "redirect URL is required for Server-side or native access";
 		}

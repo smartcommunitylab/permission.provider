@@ -16,11 +16,16 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
+import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+
 /**
- * 
+ *
+ * DB entity for resource parameters
  * @author raman
  *
  */
@@ -48,6 +53,11 @@ public class ResourceParameter {
 	 * Owning client app
 	 */
 	private String clientId;
+	/**
+	 * Visibility of the resource parameter for the other apps
+	 */
+	@Enumerated(EnumType.STRING)
+	private RESOURCE_VISIBILITY visibility = RESOURCE_VISIBILITY.CLIENT_APP;
 	/**
 	 * @return the resourceId
 	 */
@@ -108,5 +118,16 @@ public class ResourceParameter {
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
-
+	/**
+	 * @return the visibility
+	 */
+	public RESOURCE_VISIBILITY getVisibility() {
+		return visibility;
+	}
+	/**
+	 * @param visibility the visibility to set
+	 */
+	public void setVisibility(RESOURCE_VISIBILITY visibility) {
+		this.visibility = visibility;
+	}
 }

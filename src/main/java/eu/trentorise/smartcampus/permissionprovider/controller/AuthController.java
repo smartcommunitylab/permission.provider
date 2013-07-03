@@ -43,6 +43,7 @@ import eu.trentorise.smartcampus.permissionprovider.oauth.ExternalAuthentication
 
 
 /**
+ * Controller for developer console entry points
  */
 @Controller
 public class AuthController {
@@ -52,6 +53,12 @@ public class AuthController {
 	@Autowired 
 	private AttributesAdapter attributesAdapter;
 	
+	/**
+	 * Redirect to the login type selection page
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/eauth/dev")
 	public ModelAndView developer(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
@@ -62,6 +69,12 @@ public class AuthController {
 		return new ModelAndView("authorities", model);
 	}
 	
+	/**
+	 * Entry point for resource access authorization request. Redirects to the login page
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/eauth/authorize")
 	public ModelAndView authorise(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
@@ -75,6 +88,7 @@ public class AuthController {
 	}
 
 	/**
+	 * Generate redirect string parameter
 	 * @param req
 	 * @return
 	 * @throws UnsupportedEncodingException
@@ -82,12 +96,22 @@ public class AuthController {
 	protected String prepareRedirect(HttpServletRequest req, String path)
 			throws UnsupportedEncodingException {
 		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
-		// HOOK for testing
+//		// HOOK for testing
 		target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
 		return target;
 	}
 	
-	
+	/**
+	 * Handles the redirection to the specified target after the login has been performed.
+	 * Given the user data collected during the login, updates the user information in DB
+	 * and populates the security context with the user credentials.
+	 * 
+	 * @param authorityUrl the authority used by the user to sign in.
+	 * @param target target functionality address.
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping("/eauth/{authorityUrl}")
 	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam String target, HttpServletRequest req) throws Exception {
 		List<GrantedAuthority> list = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority("ROLE_USER"));

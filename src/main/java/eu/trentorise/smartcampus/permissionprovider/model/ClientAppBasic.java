@@ -19,6 +19,7 @@ package eu.trentorise.smartcampus.permissionprovider.model;
 import java.util.Set;
 
 /**
+ * Application descriptor.
  * @author raman
  *
  */

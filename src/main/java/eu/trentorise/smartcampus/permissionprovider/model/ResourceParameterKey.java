@@ -19,6 +19,7 @@ package eu.trentorise.smartcampus.permissionprovider.model;
 import java.io.Serializable;
 
 /**
+ * Primary key for the resource parameters: resource parameter ID and the parameter value.
  * @author raman
  *
  */
@@ -28,7 +29,6 @@ public class ResourceParameterKey implements Serializable {
 
 	public String resourceId;
 	public String value;
-	private String parentResource;
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -64,12 +64,6 @@ public class ResourceParameterKey implements Serializable {
 		} else if (!value.equals(other.value))
 			return false;
 		return true;
-	}
-	public String getParentResource() {
-		return parentResource;
-	}
-	public void setParentResource(String parentResource) {
-		this.parentResource = parentResource;
 	}
 
 }

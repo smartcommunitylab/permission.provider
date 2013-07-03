@@ -196,7 +196,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>permission.provider</finalName>
+		<finalName>aac</finalName>
 	</build>
 
 	<repositories>

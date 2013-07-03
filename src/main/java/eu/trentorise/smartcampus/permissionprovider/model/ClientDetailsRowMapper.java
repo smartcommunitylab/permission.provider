@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.provider.BaseClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
+ * DB mapper for the client app information
  * @author raman
  *
  */

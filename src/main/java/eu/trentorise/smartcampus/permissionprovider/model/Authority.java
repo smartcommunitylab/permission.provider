@@ -27,6 +27,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Authority DB entity.
+ * @author raman
+ *
+ */
 @Entity
 @Table(name = "AUTHORITY")
 public class Authority implements Serializable {

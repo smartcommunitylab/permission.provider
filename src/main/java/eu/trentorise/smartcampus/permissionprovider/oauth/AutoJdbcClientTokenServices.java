@@ -20,8 +20,12 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.client.token.JdbcClientTokenServices;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 
 /**
+ * Client token services with DB table creation on startup.
+ * 
+ * @see {@link JdbcClientTokenServices}
  * @author raman
  *
  */

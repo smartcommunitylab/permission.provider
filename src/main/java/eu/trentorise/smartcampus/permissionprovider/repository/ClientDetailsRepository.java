@@ -21,6 +21,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+/**
+ * Persistent repository of {@link ClientDetailsEntity} entities
+ * @author raman
+ *
+ */
 @Repository
 public interface ClientDetailsRepository extends JpaRepository<ClientDetailsEntity, Long> {
 

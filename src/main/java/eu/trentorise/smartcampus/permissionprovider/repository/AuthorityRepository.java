@@ -18,10 +18,21 @@ package eu.trentorise.smartcampus.permissionprovider.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.Authority;
+/**
+ * Persistent repository of {@link Authority} entities
+ * @author raman
+ *
+ */
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, String> {
 
+	/**
+	 * Find by unique authority redirect path URL
+	 * @param redirectUrl
+	 * @return
+	 */
 	Authority findByRedirectUrl(String redirectUrl);
 
 }

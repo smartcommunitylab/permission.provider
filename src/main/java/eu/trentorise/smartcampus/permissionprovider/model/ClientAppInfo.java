@@ -21,6 +21,7 @@ import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
+ * Additional app info descriptor
  * @author raman
  *
  */
