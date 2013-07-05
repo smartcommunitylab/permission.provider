@@ -127,6 +127,7 @@ public class ResourceAdapter {
 					r.setName(mappings.get(uri).getName());
 					r.setResourceType(mappings.get(uri).getId());
 					r.setResourceUri(uri);
+					r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);
 					resourceRepository.save(r);
 					newSet.add(r.getResourceId().toString());
 					newScopes.add(r.getResourceUri());
@@ -509,6 +510,7 @@ public class ResourceAdapter {
 		r.setName(rm.getName());
 		r.setResourceType(rm.getId());
 		r.setResourceUri(rm.getUri());
+		r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);
 		return r;
 	}
 
