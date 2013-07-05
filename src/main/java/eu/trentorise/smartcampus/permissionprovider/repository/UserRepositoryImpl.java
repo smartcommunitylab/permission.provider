@@ -49,4 +49,11 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 		return result;
 	}
 
+	@Override
+	public List<User> findUsers(String text) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }

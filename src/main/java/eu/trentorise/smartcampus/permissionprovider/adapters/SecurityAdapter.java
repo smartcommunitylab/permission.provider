@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import eu.trentorise.smartcampus.permissionprovider.Config;
+
 /**
  * This class manages the operations on security white-lists, that contains the
  * set of users, for every authority, qualified to access the system
@@ -44,8 +46,6 @@ public class SecurityAdapter {
 
 	private static final Logger logger = Logger
 			.getLogger(SecurityAdapter.class);
-	private static final String NAME_ATTR = "eu.trentorise.smartcampus.givenname";
-	private static final String SURNAME_ATTR = "eu.trentorise.smartcampus.surname";
 	@Autowired
 	AttributesAdapter attrAdapter;
 	private static Map<String, List<SecurityEntry>> securityMap;
@@ -164,8 +164,8 @@ public class SecurityAdapter {
 				}
 				// check for name and surname
 				try {
-					if (!(attrs.get(NAME_ATTR).equals(se.getNameValue()) && 
-						  attrs.get(SURNAME_ATTR).equals(se.getSurnameValue()))) 
+					if (!(attrs.get(Config.NAME_ATTR).equals(se.getNameValue()) && 
+						  attrs.get(Config.SURNAME_ATTR).equals(se.getSurnameValue()))) 
 					{
 						continue;
 					}
@@ -182,8 +182,8 @@ public class SecurityAdapter {
 			attrValues += attrKey + " -> " + attrs.get(attrKey) + " ";
 		}
 		logger.error("Authentication failed. User: givenname -> "
-				+ attrs.get(NAME_ATTR) + " surname -> "
-				+ attrs.get(SURNAME_ATTR) + " " + attrValues);
+				+ attrs.get(Config.NAME_ATTR) + " surname -> "
+				+ attrs.get(Config.SURNAME_ATTR) + " " + attrValues);
 		return false;
 	}
 	/**

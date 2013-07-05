@@ -14,4 +14,5 @@ public interface UserRepositoryCustom {
 
 	List<User> getUsersByAttributes(List<Attribute> list);
 
+	List<User> findUsers(String text);
 }

@@ -17,6 +17,7 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -50,6 +51,34 @@ public class User implements Serializable {
 	@Column(name = "SOCIAL_ID")
 	private Long socialId;
 
+	private String name; 
+	private String surname;
+	private String fullName;
+	
+	public User() {
+		super();
+	}
+	
+	
+	/**
+	 * Create user with the specified parameters
+	 * @param id
+	 * @param socialId
+	 * @param name
+	 * @param surname
+	 * @param attrs 
+	 */
+	public User(Long socialId, String name, String surname, HashSet<Attribute> attrs) {
+		super();
+		this.socialId = socialId;
+		this.name = name;
+		this.surname = surname;
+		this.fullName = (name+" "+surname).toLowerCase();
+		this.attributeEntities = attrs;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}
@@ -66,9 +95,10 @@ public class User implements Serializable {
 		this.attributeEntities = attributeEntities;
 	}
 
+
 	@Override
 	public String toString() {
-		return "UserEntity{id=" + id + ",socialId=" + socialId + "}";
+		return "User [id=" + id + ", socialId=" + socialId + ", name=" + name + ", surname=" + surname + "]";
 	}
 
 	public Long getSocialId() {
@@ -79,4 +109,39 @@ public class User implements Serializable {
 		this.socialId = socialId;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+
+	/**
+	 * Update name/surname params
+	 * @param name
+	 * @param surname
+	 */
+	public void updateNames(String name, String surname) {
+		if (name != null) setName(name);
+		if (surname != null) setSurname(surname);
+		setFullName((name+" "+surname).toLowerCase());
+	}
 }

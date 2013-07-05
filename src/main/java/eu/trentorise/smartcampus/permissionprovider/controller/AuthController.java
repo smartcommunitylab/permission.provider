@@ -97,7 +97,7 @@ public class AuthController {
 			throws UnsupportedEncodingException {
 		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
 //		// HOOK for testing
-//		target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
+		target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
 		return target;
 	}
 	

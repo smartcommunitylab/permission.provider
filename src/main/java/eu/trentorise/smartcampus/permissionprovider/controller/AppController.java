@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.adapters.ClientDetailsAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
@@ -240,8 +241,8 @@ public class AppController extends AbstractController {
 				attrs.put(a.getKey(), a.getValue());
 			}
 		}
-		String username = attrs.containsKey("eu.trentorise.smartcampus.givenname")?attrs.get("eu.trentorise.smartcampus.givenname").toString():"";
-		username += " "+(attrs.containsKey("eu.trentorise.smartcampus.surname")?attrs.get("eu.trentorise.smartcampus.surname").toString():"");
+		String username = attrs.containsKey(Config.NAME_ATTR)?attrs.get(Config.NAME_ATTR).toString():"";
+		username += " "+(attrs.containsKey(Config.SURNAME_ATTR)?attrs.get(Config.SURNAME_ATTR).toString():"");
 		return username;
 	}
 

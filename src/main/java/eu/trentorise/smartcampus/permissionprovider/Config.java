@@ -25,6 +25,11 @@ package eu.trentorise.smartcampus.permissionprovider;
  */
 public class Config {
 
+	/** User name attribute alias */
+	public static final String NAME_ATTR = "eu.trentorise.smartcampus.givenname";
+	/** User surname attribute alias */
+	public static final String SURNAME_ATTR = "eu.trentorise.smartcampus.surname";
+	
 	/** Authorization authorities */
 	public enum AUTHORITY {ROLE_USER, ROLE_CLIENT,ROLE_CLIENT_TRUSTED};
 	

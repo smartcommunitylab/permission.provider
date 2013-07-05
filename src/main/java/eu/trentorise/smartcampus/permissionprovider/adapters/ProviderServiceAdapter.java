@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.Authority;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
@@ -100,15 +101,13 @@ public class ProviderServiceAdapter {
 
 		User user = null;
 		if (users.isEmpty()) {
-			user = new User();
-			// TODO integrate social service ?
-			user.setSocialId(1L);
-			user.setAttributeEntities(new HashSet<Attribute>(list));
+			user = new User(1L, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
 			userRepository.save(user);
 		} else {
 			user = users.get(0);
 			attributeRepository.deleteInBatch(user.getAttributeEntities());
 			user.setAttributeEntities(new HashSet<Attribute>(list));
+			user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 			userRepository.save(user);
 		}
 		return user;
@@ -145,6 +144,7 @@ public class ProviderServiceAdapter {
 		}
 
 		populateAttributes(auth, attributes, list);
+		user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 
 		// add security whitelist
 		if (!secAdapter.access(auth.getName(), new ArrayList<String>(attributes.keySet()), attributes)) {
