@@ -137,9 +137,9 @@
                <description>Symbolic name of the application managing the resources. Corresponds to the app 'folder'.</description>
        </resource>
        <resourceMapping 
-           id="filestorage.appaccount"
+           id="filestorage.storage"
            name="Storage account management" 
-           uri="filestorage.appaccount.{app}"
+           uri="filestorage.storage.{app}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
            <description>Manage different cloud storage app accounts.</description>
@@ -147,7 +147,7 @@
        <resourceMapping 
            id="filestorage.useraccount"
            name="Storage user account management" 
-           uri="filestorage.useraccount.{app}"
+           uri="filestorage.account.{app}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
            <description>Manage different cloud storage user accounts.</description>
@@ -242,41 +242,7 @@
        </resourceMapping>
         
 
-       <resourceMapping 
-           id="communicator.notification"
-           name="Read user resource notification" 
-           uri="communicator.notification"
-           authority="ROLE_USER"
-           approvalRequired="false">
-           <description>Read notification of the user .</description>
-       </resourceMapping>
-       <resourceMapping 
-           id="communicator.notification.manage"
-           name="Write " 
-           uri="communicator.notification.{capp}.manage"
-           authority="ROLE_USER"
-           approvalRequired="false">
-           <description>Manage user notification of a specific app.</description>
-       </resourceMapping>
-       <resourceMapping 
-           id="communicator.notification.read.all"
-           name="Read user notification" 
-           uri="communicator.notification.read.all"
-           authority="ROLE_USER"
-           approvalRequired="false">
-           <description>Read an arbitrary user notification.</description>
-           <resourceMapping 
-           id="communicator.notification.read"
-           name="Read user notification" 
-           uri="communicator.notification.read"
-           
-           authority="ROLE_USER"
-           approvalRequired="false">
-           <description>Read an arbitrary user notification.</description>
-       </resourceMapping>
-
-       </resourceMapping>
-         <resourceMapping 
+        <resourceMapping 
            id="communicator.send.user"
            name="Send notification as user" 
            uri="communicator.send.user"
