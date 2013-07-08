@@ -101,7 +101,7 @@ public class ProviderServiceAdapter {
 
 		User user = null;
 		if (users.isEmpty()) {
-			user = new User(1L, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
+			user = new User("1", attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
 			userRepository.save(user);
 		} else {
 			user = users.get(0);

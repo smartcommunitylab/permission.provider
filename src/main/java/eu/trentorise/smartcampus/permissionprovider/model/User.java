@@ -49,7 +49,7 @@ public class User implements Serializable {
 	private Set<Attribute> attributeEntities;
 
 	@Column(name = "SOCIAL_ID")
-	private Long socialId;
+	private String socialId;
 
 	private String name; 
 	private String surname;
@@ -68,7 +68,7 @@ public class User implements Serializable {
 	 * @param surname
 	 * @param attrs 
 	 */
-	public User(Long socialId, String name, String surname, HashSet<Attribute> attrs) {
+	public User(String socialId, String name, String surname, HashSet<Attribute> attrs) {
 		super();
 		this.socialId = socialId;
 		this.name = name;
@@ -101,11 +101,11 @@ public class User implements Serializable {
 		return "User [id=" + id + ", socialId=" + socialId + ", name=" + name + ", surname=" + surname + "]";
 	}
 
-	public Long getSocialId() {
+	public String getSocialId() {
 		return socialId;
 	}
 
-	public void setSocialId(Long socialId) {
+	public void setSocialId(String socialId) {
 		this.socialId = socialId;
 	}
 

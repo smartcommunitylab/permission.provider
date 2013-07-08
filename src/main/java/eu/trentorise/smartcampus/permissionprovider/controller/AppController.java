@@ -144,19 +144,11 @@ public class AppController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-			if (client == null) {
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage("client app not found");
-				return response;
-			}
 			if (resetClientId) {
-				client.setClientId(clientDetailsAdapter.generateClientId());
+				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientId(clientId)));
 			} else {
-				client.setClientSecret(clientDetailsAdapter.generateClientSecret());
+				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientSecret(clientId)));
 			}
-			clientDetailsRepository.save(client);
-			response.setData(clientDetailsAdapter.convertToClientApp(client));
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);

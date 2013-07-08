@@ -80,30 +80,30 @@
            </resourceMapping>
        </resourceMapping>
        
-       <resourceMapping 
-           id="smartcampus.extprofile.shared.read" 
-           name="Read all profiles shared with user" 
-           uri="smartcampus.extprofile.shared.read"
-           authority="ROLE_USER" 
-           approvalRequired="true">
-           <description>Read all custom profiles shared with the current user.</description>
-           <resourceMapping 
-               id="smartcampus.extprofile.shared.app.read"
-               name="Read specific app profiles shared with user" 
-               uri="smartcampus.extprofile.shared.{app}.read"
-               authority="ROLE_USER" 
-               approvalRequired="true" >
-               <description>Read app {app} custom profiles shared with the current user.</description>
-               <resourceMapping 
-                   id="smartcampus.extprofile.shared.app.profile.read"
-                   name="Read specific profiles shared with user" 
-                   uri="smartcampus.extprofile.shared.{app}.{profile}.read"
-                   authority="ROLE_USER" 
-                   approvalRequired="true">
-                   <description>Read custom profile {profile} of the app {app} shared with the current user.</description>
-               </resourceMapping>
-           </resourceMapping>
-       </resourceMapping>
+<!--        <resourceMapping  -->
+<!--            id="smartcampus.extprofile.shared.read"  -->
+<!--            name="Read all profiles shared with user"  -->
+<!--            uri="smartcampus.extprofile.shared.read" -->
+<!--            authority="ROLE_USER"  -->
+<!--            approvalRequired="true"> -->
+<!--            <description>Read all custom profiles shared with the current user.</description> -->
+<!--            <resourceMapping  -->
+<!--                id="smartcampus.extprofile.shared.app.read" -->
+<!--                name="Read specific app profiles shared with user"  -->
+<!--                uri="smartcampus.extprofile.shared.{app}.read" -->
+<!--                authority="ROLE_USER"  -->
+<!--                approvalRequired="true" > -->
+<!--                <description>Read app {app} custom profiles shared with the current user.</description> -->
+<!--                <resourceMapping  -->
+<!--                    id="smartcampus.extprofile.shared.app.profile.read" -->
+<!--                    name="Read specific profiles shared with user"  -->
+<!--                    uri="smartcampus.extprofile.shared.{app}.{profile}.read" -->
+<!--                    authority="ROLE_USER"  -->
+<!--                    approvalRequired="true"> -->
+<!--                    <description>Read custom profile {profile} of the app {app} shared with the current user.</description> -->
+<!--                </resourceMapping> -->
+<!--            </resourceMapping> -->
+<!--        </resourceMapping> -->
        
        <resourceMapping 
            id="smartcampus.extprofile.all.read" 

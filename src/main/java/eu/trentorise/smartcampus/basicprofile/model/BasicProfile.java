@@ -23,7 +23,7 @@ public class BasicProfile {
 	private String name;
 	private String surname;
 	
-	private long socialId;
+	private String socialId;
 	private String userId;
 
 	public String getName() {
@@ -42,11 +42,11 @@ public class BasicProfile {
 		this.surname = surname;
 	}
 
-	public long getSocialId() {
+	public String getSocialId() {
 		return socialId;
 	}
 
-	public void setSocialId(long socialId) {
+	public void setSocialId(String socialId) {
 		this.socialId = socialId;
 	}
 

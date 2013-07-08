@@ -9,17 +9,12 @@
 <service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="../../../../resource.api/src/main/resources/jaxb/binding/resourceTemplateSchema.xsd">
 
-	<resourceMapping uri="smartcampus.profile.basicprofile.me"
-		pathPattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile/me"/>
+	<resourceMapping uri="smartcampus.profile.basicprofile.me" pathPattern="/basicprofile/me"/>
     
-    <resourceMapping uri="smartcampus.profile.basicprofile.all"
-        pathPattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile/{userId}"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all"
-        pathPattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile"/>
-	<resourceMapping uri="smartcampus.profile.basicprofile.all"
-		pathPattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all"
-        pathPattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile//profiles"/>
+    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/{userId}"/>
+    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile"/>
+	<resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile"/>
+    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/profiles"/>
 </service>
 
 

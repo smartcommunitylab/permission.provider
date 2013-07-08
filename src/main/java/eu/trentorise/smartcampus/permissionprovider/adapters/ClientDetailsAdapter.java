@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,11 @@ import org.springframework.util.StringUtils;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
+import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
 /**
  * Support for the management of client app registration details
@@ -53,6 +59,12 @@ public class ClientDetailsAdapter {
 	private static final String GT_REFRESH_TOKEN = "refresh_token";
 	private Log log = LogFactory.getLog(getClass());
 
+	@Autowired
+	private ClientDetailsRepository clientDetailsRepository;
+	@Autowired
+	private ResourceRepository resourceRepository;
+	@Autowired
+	private ResourceParameterRepository resourceParameterRepository;
 	/**
 	 * Generate new value to be used as clientId (String)
 	 * @return
@@ -178,5 +190,50 @@ public class ClientDetailsAdapter {
 			return "redirect URL is required for Server-side or native access";
 		}
 		return null;
+	}
+	/**
+	 * Reset clientId
+	 * @param clientId
+	 * @return updated {@link ClientDetails} instance
+	 */
+	public ClientDetails resetClientId(String clientId) {
+		return resetClientData(clientId, true);
+	}
+	/**
+	 * Reset client secret
+	 * @param clientId
+	 * @return updated {@link ClientDetails} instance
+	 */
+	public ClientDetails resetClientSecret(String clientId) {
+		return resetClientData(clientId, false);
+	}
+	
+	public ClientDetails resetClientData(String clientId, boolean resetClientId) {
+		ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+		if (client == null) {
+			throw new IllegalArgumentException("client app not found");
+		}
+		if (resetClientId) {
+			client.setClientId(generateClientId());
+			List<Resource> list = resourceRepository.findByClientId(clientId);
+			if (list != null) {
+				for (Resource r : list) {
+					r.setClientId(client.getClientId());
+					resourceRepository.save(r);
+				}
+			}
+			List<ResourceParameter> rplist = resourceParameterRepository.findByClientId(clientId);
+			if (rplist != null) {
+				for (ResourceParameter rp : rplist) {
+					rp.setClientId(client.getClientId());
+					resourceParameterRepository.save(rp);
+				}
+			}
+			
+		} else {
+			client.setClientSecret(generateClientSecret());
+		}
+		clientDetailsRepository.save(client);
+		return client;
 	}
 }

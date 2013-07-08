@@ -28,9 +28,9 @@
     <context:component-scan
         base-package="eu.trentorise.smartcampus.permissionprovider" />
     
-    <sec:http pattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile/**" create-session="never" entry-point-ref="clientAuthenticationEntryPoint" >
+    <sec:http pattern="/basicprofile/**" create-session="never" entry-point-ref="clientAuthenticationEntryPoint" >
         <sec:anonymous enabled="false" />
-        <sec:intercept-url  pattern="/eu.trentorise.smartcampus.profileservice.model.BasicProfile/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:intercept-url  pattern="/basicprofile/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER" />
         <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
     </sec:http>
@@ -158,18 +158,16 @@
     <task:scheduler id="taskScheduler" pool-size="1" />
 	
     <bean id="resourceFilter" class="eu.trentorise.smartcampus.resourceprovider.filter.ResourceFilter">
-        <property name="dataSource" ref="dataSource" />
-        <property name="uriManager" ref="uriManager" />
-    </bean> 
-	
-	<bean id="uriManager" class="eu.trentorise.smartcampus.resourceprovider.uri.UriManager">
-        <property name="tagProviderFile" ref="tagProviderFile"/>
+        <property name="authenticationManager" ref="resourceAuthenticationManager"/>
     </bean>
-	
-	<bean id="tagProviderResource" class="org.springframework.core.io.ClassPathResource">
-        <constructor-arg value="/resourceList.xml" />
+    
+    <bean id="resourceAuthenticationManager" class="eu.trentorise.smartcampus.resourceprovider.filter.ResourceAuthenticationManager">
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="authServices" ref="authServices"/>
     </bean>
 
-    <util:property-path id="tagProviderFile" path="tagProviderResource.file" />
+    <bean id="authServices" class="eu.trentorise.smartcampus.resourceprovider.jdbc.JdbcServices">
+        <constructor-arg ref="dataSource"/>
+    </bean>
 	
 </beans>

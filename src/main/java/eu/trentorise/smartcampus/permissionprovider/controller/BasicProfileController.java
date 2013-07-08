@@ -49,7 +49,7 @@ public class BasicProfileController extends AbstractController {
 	@Autowired
 	private BasicProfileManager profileManager;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/eu.trentorise.smartcampus.profileservice.model.BasicProfile/{userId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/{userId}")
 	public @ResponseBody
 	BasicProfile getUser(HttpServletRequest request,
 			HttpServletResponse response, HttpSession session,
@@ -63,7 +63,7 @@ public class BasicProfileController extends AbstractController {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/eu.trentorise.smartcampus.profileservice.model.BasicProfile")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile")
 	public @ResponseBody
 	BasicProfiles searchUsers(
 			HttpServletRequest request,
@@ -91,7 +91,7 @@ public class BasicProfileController extends AbstractController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/eu.trentorise.smartcampus.profileservice.model.BasicProfile/me")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/me")
 	public @ResponseBody
 	BasicProfile findProfile(HttpServletResponse response)
 			throws IOException {
@@ -108,7 +108,7 @@ public class BasicProfileController extends AbstractController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/eu.trentorise.smartcampus.profileservice.model.BasicProfile/profiles")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/profiles")
 	public @ResponseBody
 	BasicProfiles findProfiles(HttpServletRequest request, HttpServletResponse response, @RequestParam List<String> userIds) {
 		try {
