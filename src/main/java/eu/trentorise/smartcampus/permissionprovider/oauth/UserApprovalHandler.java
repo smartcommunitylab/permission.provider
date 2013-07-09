@@ -16,6 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
+import javax.servlet.ServletContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler;
@@ -30,6 +33,9 @@ import eu.trentorise.smartcampus.permissionprovider.Config;
  */
 public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 
+	@Autowired
+	private ServletContext servletContext;
+	
 	@Override
 	public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		return super.updateBeforeApproval(authorizationRequest, userAuthentication);
@@ -59,7 +65,8 @@ public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 		boolean approved = flag != null && flag.toLowerCase().equals("true");
 		if (approved) return true;
 		
-		return authorizationRequest.getAuthorities().contains(Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString());
+		return authorizationRequest.getAuthorities().contains(Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString())
+				|| authorizationRequest.getRedirectUri().equals(ExtRedirectResolver.testTokenPath(servletContext));
 	}
 
 

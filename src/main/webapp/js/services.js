@@ -1,5 +1,9 @@
-angular.module('dev', [ 'ngResource' ]);
+angular.module('dev', [ 'ngResource']);
 
+/**
+ * Main layout controller
+ * @param $scope
+ */
 function MainController($scope) {
 	$scope.currentView = 'apps';
 	$scope.activeView = function(view) {
@@ -10,36 +14,57 @@ function MainController($scope) {
 	};
 }
 
-function ProfileController($scope) {
-	
-}
-
-function AppController($scope, $resource) {
+/**
+ * App management controller.
+ * @param $scope
+ * @param $resource
+ * @param $http
+ * @param $timeout
+ */
+function AppController($scope, $resource, $http, $timeout) {
+	// current client
 	$scope.app = null;
+	// current client ID
 	$scope.clientId = 'none';
+	// current view (overview/settings/permissions)
 	$scope.clientView = 'overview';
+	// error message
 	$scope.error = '';
+	// info message
 	$scope.info = '';
+	// permissions of the current client 
 	$scope.permissions = null;
+	// permissions subview (available permissions/own resources)
 	$scope.permView = 'avail';
+	// currently open service container in accordion
 	$scope.permService = 0;
+	// collapse flag for service container
 	$scope.permServiceCollapsed = false;
-	
+	// client flow token of the current app
+	$scope.clientToken = null;
+	// implicit flow token of the current app
+	$scope.implicitToken = null;
+
+	// resource reference for the app API
 	var ClientAppBasic = $resource('dev/apps/:clientId', {}, {
 		query : { method : 'GET' },
 		update : { method : 'PUT' },
 		reset : {method : 'POST'}
 	});
 
+	// resource reference for the permissions API
 	var ClientAppPermissions = $resource('dev/permissions/:clientId', {}, {
 		update : { method : 'PUT' },		
 	});
 
+	// resource reference for the resources API
 	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value/', {}, {
 		create : { method : 'POST' },
 		changeVis : {method : 'PUT'}
 	});
-	
+	/**
+	 * Initialize the app: load list of the developer's apps and reset views
+	 */
 	var init = function() {
 		ClientAppBasic.query(function(response){
 			if (response.responseCode == 'OK') {
@@ -62,29 +87,49 @@ function AppController($scope, $resource) {
 	};
 	init();
 
+	/**
+	 * return 'active' if the specified client is selected
+	 */
 	$scope.activeClient = function(clientId) {
 		var cls = clientId == $scope.clientId ? 'active' : '';
 		return cls;
 	};
+	/**
+	 * return 'active' if the specified view is selected
+	 */
 	$scope.activeView = function(view) {
 		return view == $scope.clientView ? 'active' : '';
 	};
+	/**
+	 * return 'active' if the specified permissions subview is selected
+	 */
 	$scope.activePermView = function(view) {
 		return view == $scope.permView ? 'active' : '';
 	};
-	
+	/**
+	 * switch to other client app. Reset views, messages, and tokens
+	 */
 	$scope.switchClientView = function(view) {
 		$scope.clientView = view;
 		$scope.error = '';
 		$scope.info = '';
+		
+		$scope.clientToken = null;  
+		$scope.implicitToken = null;  
 	};
 
+	/**
+	 * switch to other permissions subview. reset messages
+	 */
 	$scope.switchPermView = function(view) {
 		$scope.permView = view;
 		$scope.error = '';
 		$scope.info = '';
 	};
 
+	/**
+	 * select a different service container
+	 */
 	$scope.switchPermService = function(idx) {
 		if (idx == $scope.permService) {
 			$scope.permServiceCollapsed = !$scope.permServiceCollapsed;
@@ -94,24 +139,36 @@ function AppController($scope, $resource) {
 			$scope.switchPermView('avail');
 		}
 	};
-	
+	/**
+	 * Whether the specified service container is collapsed
+	 */
 	$scope.isPermServiceCollapsed = function(idx) {
 		return $scope.permService != idx || $scope.permServiceCollapsed;
 	};
-	
+	/**
+	 * switch to app 'overview'
+	 */
 	$scope.viewOverview = function() {
 		$scope.switchClientView('overview');
 	};
-
+	/**
+	 * switch to app 'settings'
+	 */
 	$scope.viewSettings = function() {
 		$scope.switchClientView('settings');
 	};
+	/**
+	 * switch to app 'permissions'
+	 */
 	$scope.viewPermissions = function() {
 		$scope.permissions = null;
 		$scope.switchClientView('permissions');
 		loadPermissions();
 	};
 
+	/**
+	 * load permissions of the current app.
+	 */
 	function loadPermissions() {
 		var newClient = new ClientAppPermissions();
 		newClient.$get({clientId:$scope.clientId}, function(response) {
@@ -123,7 +180,9 @@ function AppController($scope, $resource) {
 			}	
 		});
 	}
-	
+	/**
+	 * switch to different client
+	 */
 	$scope.switchClient = function(client) {
 		for (var i = 0; i < $scope.apps.length; i++) {
 			if ($scope.apps[i].clientId == client) {
@@ -135,6 +194,9 @@ function AppController($scope, $resource) {
 		}
 	};
 
+	/**
+	 * delete client app
+	 */
 	$scope.removeClient = function() {
 		if (confirm('Are you sure you want to delete?')) {
 			var newClient = new ClientAppBasic();
@@ -149,6 +211,9 @@ function AppController($scope, $resource) {
 	    }
 	};
 
+	/**
+	 * create new client app
+	 */
 	$scope.newClient = function() {
 		var n = prompt("Create new client app", "client name");
 		if (n != null && n.trim().length > 0) {
@@ -166,6 +231,9 @@ function AppController($scope, $resource) {
 		}
 	};
 
+	/**
+	 * Save current app settings
+	 */
 	$scope.saveSettings = function() {
 		var newClient = new ClientAppBasic($scope.app);
 		newClient.$update({clientId:$scope.clientId}, function(response) {
@@ -186,7 +254,9 @@ function AppController($scope, $resource) {
 			}
 		});
 	};
-	
+	/**
+	 * Save current app permissions
+	 */
 	$scope.savePermissions = function() {
 		var perm = new ClientAppPermissions($scope.permissions);
 		perm.$update({clientId:$scope.clientId}, function(response) {
@@ -199,6 +269,9 @@ function AppController($scope, $resource) {
 			}	
 		});
 	};
+	/**
+	 * create new resource parameter value for the specified resource parameter, service, parent value and client app
+	 */
 	$scope.saveResourceParam = function(resourceId,parentResource,serviceId,clientId) {
 		var perm = new ClientAppResourceParam({resourceId:resourceId,parentResource:parentResource,serviceId:serviceId,clientId:clientId});
 		var n = prompt("Create new resource", "value");
@@ -216,6 +289,9 @@ function AppController($scope, $resource) {
 		});
 	};
 
+	/**
+	 * filter resource to restrict to the specified parent
+	 */
 	$scope.filteredResources = function(resources, parentResource) {
 		var arr = [];
 		if (!resources) return arr;
@@ -226,7 +302,9 @@ function AppController($scope, $resource) {
 		}
 		return arr;
 	};
-	
+	/**
+	 * delete resource parameter
+	 */
 	$scope.removeResourceParam = function(r) {
 		if (confirm('Are you sure you want to delete this resource and subresources?')) {
 			var perm = new ClientAppResourceParam();
@@ -242,6 +320,9 @@ function AppController($scope, $resource) {
 	    }
 	};
 
+	/**
+	 * change resource parameter visibility
+	 */
 	$scope.changeResourceParamVis = function(r) {
 		if (confirm('Change visibility of the resource?')) {
 			var perm = new ClientAppResourceParam();
@@ -257,6 +338,9 @@ function AppController($scope, $resource) {
 	    }
 	};
 
+	/**
+	 * return icon depending on the permission status
+	 */
 	$scope.permissionIcon = function(val) {
 		switch (val){
 		case 1: return 'icon-ok';
@@ -267,11 +351,16 @@ function AppController($scope, $resource) {
 		
 	};
 	
+	/**
+	 * return icon for the app access type
+	 */
 	$scope.statusIcon = function(val) {
 		if (val) return 'icon-ok';
 		else return 'icon-remove';
 	};
-	
+	/**
+	 * reset value for client id or secret
+	 */
 	$scope.reset = function(client,param) {
 		if (confirm('Are you sure you want to reset '+param+'?')) {
 			var newClient = new ClientAppBasic($scope.app);
@@ -297,5 +386,47 @@ function AppController($scope, $resource) {
 			});
 		}
 	};
-	
+	/**
+	 * generate or retrieve client access token through the client credentials OAuth2 flow.
+	 */
+	$scope.getClientToken = function() {
+		$http(
+				{method:'POST',
+				 url:'oauth/token',
+				 params:{client_id:$scope.app.clientId,client_secret:$scope.app.clientSecret,grant_type:'client_credentials'},
+				 headers:{}
+				})
+		.success(function(data) {
+			$scope.clientToken = data.access_token;
+		}).error(function(data) {
+			$scope.error = data.error_description;
+		});
+	};
+	/**
+	 * generate or retrieve client access token through the implicit OAuth2 flow.
+	 */
+	$scope.getImplicitToken = function() {
+		var win = window.open('oauth/authorize?client_id='+$scope.app.clientId+'&response_type=token&grant_type=implicit&redirect_uri=/permission.provider/testtoken');
+		win.onload = function() {
+			var at = processAuthParams(win.location.hash.substring(1));
+			$timeout(function(){
+				$scope.implicitToken = at;
+			},100);
+			win.close();
+		};
+	};
 };
+
+/**
+ * Parse authentication parameters obtained from implicit flow authorization request 
+ * @param input
+ * @returns
+ */
+function processAuthParams(input) {
+	var params = {}, queryString = input;
+	var regex = /([^&=]+)=([^&]*)/g;
+	while (m = regex.exec(queryString)) {
+	  params[m[1]] = m[2];
+	}
+	return params.access_token;
+}

@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
+import eu.trentorise.smartcampus.permissionprovider.adapters.ClientDetailsAdapter;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
@@ -60,6 +62,7 @@ public class AccessConfirmationController {
 		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 		// load client information given the client credentials obtained from the request
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
+		ClientAppInfo info = ClientAppInfo.convert(client.getAdditionalInformation());
 		List<Resource> resources = new ArrayList<Resource>();
 		
 		if (clientAuth.getResourceIds() != null) {
@@ -77,7 +80,7 @@ public class AccessConfirmationController {
 		}
 		model.put("resources", resources);
 		model.put("auth_request", clientAuth);
-		model.put("client", client);
+		model.put("clientName", info.getName());
 		return new ModelAndView("access_confirmation", model);
 	}
 

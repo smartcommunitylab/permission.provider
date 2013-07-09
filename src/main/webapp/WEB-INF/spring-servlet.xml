@@ -50,6 +50,7 @@
 	<sec:http disable-url-rewriting="true">
         <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:intercept-url pattern="/testtoken/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/dev" />
         <sec:logout logout-url="/logout" delete-cookies="JSESSIONID" logout-success-url="/dev"/>
     </sec:http>

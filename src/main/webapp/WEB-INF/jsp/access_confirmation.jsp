@@ -28,7 +28,7 @@
 
       <h2>Please Confirm</h2>
 
-      <p>You hereby authorize "<c:out value="${client.clientId}"/>" to access the following resources:</p>
+      <p>You hereby authorize "<c:out value="${clientName}"/>" to access the following resources:</p>
       <ul>
       <c:forEach items="${resources}" var="r">
         <li><c:out value="${r.name}"/></li>
