@@ -15,10 +15,11 @@
  */
 package eu.trentorise.smartcampus.permissionprovider.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 /**
  * Persistent repository of {@link User} entities
@@ -28,4 +29,5 @@ import eu.trentorise.smartcampus.permissionprovider.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
+	List<User> findByFullNameLike(String text);
 }
