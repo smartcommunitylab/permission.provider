@@ -111,6 +111,11 @@ public class AppController extends AbstractController {
 			ClientDetailsEntity entity = new ClientDetailsEntity();
 			ClientAppInfo info = new ClientAppInfo();
 			info.setName(appData.getName());
+			for (ClientDetailsEntity cde : clientDetailsRepository.findAll()) {
+				if (ClientAppInfo.convert(cde.getAdditionalInformation()).getName().equals(appData.getName())) {
+					throw new IllegalArgumentException("An app with the same name already exists");
+				}
+			}
 			entity.setAdditionalInformation(info.toJson());
 			entity.setClientId(clientDetailsAdapter.generateClientId());
 			entity.setAuthorities(clientDetailsAdapter.defaultAuthorities());
