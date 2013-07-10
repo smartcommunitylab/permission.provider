@@ -16,6 +16,8 @@
 
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler;
 
 import eu.trentorise.smartcampus.permissionprovider.Config;
+import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 
 /**
  * Extension of {@link TokenServicesUserApprovalHandler} to enable automatic authorization
@@ -35,6 +39,8 @@ public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 
 	@Autowired
 	private ServletContext servletContext;
+	@Autowired 
+	private ResourceServices resourceService;
 	
 	@Override
 	public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
@@ -65,8 +71,27 @@ public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 		boolean approved = flag != null && flag.toLowerCase().equals("true");
 		if (approved) return true;
 		
+		// or trusted client
+		// or test token redirect uri
+		// or accesses only own resources
 		return authorizationRequest.getAuthorities().contains(Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString())
-				|| authorizationRequest.getRedirectUri().equals(ExtRedirectResolver.testTokenPath(servletContext));
+				|| authorizationRequest.getRedirectUri().equals(ExtRedirectResolver.testTokenPath(servletContext))
+				|| useOwnResourcesOnly(authorizationRequest.getClientId(), authorizationRequest.getScope());
+	}
+
+	/**
+	 * @param clientId
+	 * @param resourceUris
+	 * @return true if the given client requires access only to the resources managed by the client itself
+	 */
+	private boolean useOwnResourcesOnly(String clientId, Set<String> resourceUris) {
+		if (resourceUris != null) {
+			for (String uri : resourceUris) {
+				Resource r = resourceService.loadResourceByResourceUri(uri);
+				if (r.getAuthority() == AUTHORITY.ROLE_USER && ! clientId.equals(r.getClientId())) return false;
+			}
+		}
+		return true;
 	}
 
 

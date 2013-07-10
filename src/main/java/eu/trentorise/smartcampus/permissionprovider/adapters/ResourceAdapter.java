@@ -16,7 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.adapters;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -104,7 +106,8 @@ public class ResourceAdapter {
 		
 		ResourceParameter rpold = resourceParameterRepository.findOne(pk);
 		// check uniqueness
-		if (rpold != null && !rp.getClientId().equals(rp.getClientId())) {
+		String clientId = rp.getClientId();
+		if (rpold != null && !clientId.equals(clientId)) {
 			throw new IllegalArgumentException("A parameter already used by another app");
 		} else if (rpold == null) {
 			if (rp.getParentResource() == null || rp.getParentResource().isEmpty()) {
@@ -118,22 +121,15 @@ public class ResourceAdapter {
 				Set<String> newSet = new HashSet<String>();
 				Set<String> newScopes = new HashSet<String>();
 				for (String uri : mappings.keySet()) {
-					Resource r = new Resource();
-					r.setAccessibleByOthers(mappings.get(uri).isAccessibleByOthers());
-					r.setApprovalRequired(mappings.get(uri).isApprovalRequired());
-					r.setAuthority(AUTHORITY.valueOf(mappings.get(uri).getAuthority()));
-					r.setClientId(rp.getClientId());
-					r.setDescription(mappings.get(uri).getDescription());
-					r.setName(mappings.get(uri).getName());
-					r.setResourceType(mappings.get(uri).getId());
-					r.setResourceUri(uri);
-					r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);
+					ResourceMapping resourceMapping = mappings.get(uri);
+
+					Resource r = prepareResource(clientId, uri, resourceMapping);
 					resourceRepository.save(r);
 					newSet.add(r.getResourceId().toString());
 					newScopes.add(r.getResourceUri());
 				}
 				// add automatically the resources entailed by own resource parameters to the client resourceIds
-				ClientDetailsEntity cd = clientDetailsRepository.findByClientId(rp.getClientId());
+				ClientDetailsEntity cd = clientDetailsRepository.findByClientId(clientId);
 				Set<String> oldSet = cd.getResourceIds();
 				if (oldSet != null) newSet.addAll(oldSet);
 				cd.setResourceIds(StringUtils.collectionToCommaDelimitedString(newSet));
@@ -476,7 +472,7 @@ public class ResourceAdapter {
 		
 		// add non-parametric resources to the target list
 		if (!isParametric(rm)) {
-			resources.add(createResource(rm));
+			resources.add(prepareResource(null,rm.getUri(),rm));
 		}
 		// recursion
 		if (rm.getResourceMapping() != null) {
@@ -496,23 +492,32 @@ public class ResourceAdapter {
 	}
 
 	/**
-	 * Create resource entity to be stored in DB from the non-parametric resource definition
+	 * @param clientId
+	 * @param uri
 	 * @param rm
-	 * @return
+	 * @return {@link Resource} instance out of mapping, clientID, and resource URI.
 	 */
-	private Resource createResource(ResourceMapping rm) {
+	protected Resource prepareResource(String clientId, String uri, ResourceMapping rm) {
 		Resource r = new Resource();
 		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
 		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority()));
-		r.setClientId(null);
-		r.setDescription(rm.getDescription());
+		r.setClientId(clientId);
+		UriTemplate template = new UriTemplate(rm.getUri());
+		Map<String,String> params = template.match(uri);
+		template = new UriTemplate(rm.getDescription());
+		try {
+			r.setDescription(URLDecoder.decode(template.expand(params).toString(),"utf8"));
+		} catch (UnsupportedEncodingException e) {
+			r.setDescription(rm.getDescription());
+		}
 		r.setName(rm.getName());
 		r.setResourceType(rm.getId());
-		r.setResourceUri(rm.getUri());
+		r.setResourceUri(uri);
 		r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);
 		return r;
 	}
+
 
 	/**
 	 * Recursively extract resource parameter declarations

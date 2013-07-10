@@ -52,7 +52,7 @@
            uri="smartcampus.extprofile.write.{app}.{profile}"
            authority="ROLE_CLIENT" 
            accessibleByOthers="false">
-           <description>Write the profile of this app.</description>
+           <description>Write the profile '{profile}' of the app '{app}'.</description>
        </resourceMapping>
        
        <resourceMapping 
@@ -68,15 +68,23 @@
 	           uri="smartcampus.extprofile.me.{app}.read"
 	           authority="ROLE_USER" 
 	           approvalRequired="true" >
-	           <description>Read app {app} custom profiles of the current user.</description>
+	           <description>Read app '{app}' custom profiles of the current user.</description>
 	           <resourceMapping 
 	               id="smartcampus.extprofile.me.app.profile.read"
 	               name="Read specific user profile" 
 	               uri="smartcampus.extprofile.me.{app}.{profile}.read"
 	               authority="ROLE_USER" 
 	               approvalRequired="true">
-	               <description>Read custom profile {profile} of the app {app} of the current user.</description>
+	               <description>Read custom profile '{profile}' of the app '{app}' of the current user.</description>
 	           </resourceMapping>
+               <resourceMapping 
+                   id="smartcampus.extprofile.me.app.profile.write"
+                   name="Write specific user profile" 
+                   uri="smartcampus.extprofile.me.{app}.{profile}.write"
+                   authority="ROLE_USER" 
+                   approvalRequired="true">
+                   <description>Write custom profile '{profile}' of the app '{app}' of the current user.</description>
+               </resourceMapping>
            </resourceMapping>
        </resourceMapping>
        
@@ -118,14 +126,14 @@
                uri="smartcampus.extprofile.all.{app}.read"
                authority="ROLE_CLIENT" 
                approvalRequired="true">
-               <description>Read app {app} custom profiles.</description>
+               <description>Read app '{app}' custom profiles.</description>
                <resourceMapping 
                    id="smartcampus.extprofile.all.app.profile.read"
                    name="Read specific profiles" 
                    uri="smartcampus.extprofile.all.{app}.{profile}.read"
                    authority="ROLE_CLIENT" 
                    approvalRequired="true">
-                   <description>Read custom profiles {profile} of the app {app}.</description>
+                   <description>Read custom profiles '{profile}' of the app '{app}'.</description>
                </resourceMapping>
            </resourceMapping>
        </resourceMapping>
@@ -142,7 +150,7 @@
            uri="filestorage.storage.{app}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
-           <description>Manage different cloud storage app accounts.</description>
+           <description>Manage different cloud storage accounts of the app '{app}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.useraccount"
@@ -150,7 +158,7 @@
            uri="filestorage.account.{app}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
-           <description>Manage different cloud storage user accounts.</description>
+           <description>Manage different cloud storage user accounts of the app '{app}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.metadata"
@@ -166,7 +174,7 @@
            uri="filestorage.resource.{fsapp}.manage"
            authority="ROLE_USER"
            approvalRequired="true">
-           <description>Manage user files of a specific app.</description>
+           <description>Manage user files of the app {fsapp}.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.resource.app.read"
@@ -174,7 +182,7 @@
            uri="filestorage.resource.{fsapp}.read"
            authority="ROLE_USER"
            approvalRequired="true">
-           <description>Read user files of a specific app.</description>
+           <description>Read user files of the app '{app}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.resource.read"
@@ -214,7 +222,7 @@
            uri="communicator.app.msg.read.{capp}"
            authority="ROLE_USER"
            approvalRequired="false">
-           <description>Read a user message of a specific app.</description>
+           <description>Read a user message of the app '{capp}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="communicator.app.msg.write"
@@ -222,7 +230,7 @@
            uri="communicator.app.msg.write.{capp}"
            authority="ROLE_USER"
            approvalRequired="false">
-           <description>Manage a user message of a specific app.</description>
+           <description>Manage a user message of the app '{capp}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="communicator.user.msg.read"
@@ -256,37 +264,47 @@
            uri="communicator.send.app.{capp}"
            authority="ROLE_CLIENT"
            approvalRequired="true">
-           <description>Send a notification to users from a specific app.</description>
+           <description>Send a notification to users from the app '{app}'.</description>
        </resourceMapping>
        
         <resourceMapping 
            id="communicator.register.app"
            name="register gcm" 
            uri="communicator.register.{capp}"
+           authority="ROLE_CLIENT"
+           accessibleByOthers="false"
+           approvalRequired="false">
+           <description>Register data of the app '{app}'.</description>
+       </resourceMapping>
+
+        <resourceMapping 
+           id="communicator.configuration.app"
+           name="register gcm" 
+           uri="communicator.configuration.{capp}"
            authority="ROLE_USER"
            accessibleByOthers="false"
            approvalRequired="false">
-           <description>Register data of the specific app.</description>
+           <description>Read configuration of the '{app}'.</description>
        </resourceMapping>
        
          <resourceMapping 
            id="communicator.register.user"
            name="register gcm" 
            uri="communicator.register.user.{capp}"
-           authority="ROLE_CLIENT"
+           authority="ROLE_USER"
            accessibleByOthers="false"        
            approvalRequired="false">
-           <description>Register user for the specific app.</description>
+           <description>Register user of the app '{app}'.</description>
        </resourceMapping>
        
         <resourceMapping 
            id="communicator.unregister.user"
            name="unregister gcm" 
            uri="communicator.unregister.user.{capp}"
-           authority="ROLE_CLIENT"
+           authority="ROLE_USER"
            accessibleByOthers="false"        
            approvalRequired="false">
-           <description>Unregister user from the specific app.</description>
+           <description>Unregister user from the app '{app}'.</description>
        </resourceMapping>
    </service> 
 

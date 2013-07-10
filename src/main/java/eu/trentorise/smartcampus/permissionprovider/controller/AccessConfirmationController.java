@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
-import eu.trentorise.smartcampus.permissionprovider.adapters.ClientDetailsAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
@@ -69,8 +68,8 @@ public class AccessConfirmationController {
 			for (String rId : client.getResourceIds()) {
 				try {
 					Resource r = resourceRepository.findOne(Long.parseLong(rId));
-					// ask the user only for the resources associated to the user role
-					if (r.getAuthority().equals(AUTHORITY.ROLE_USER)) {
+					// ask the user only for the resources associated to the user role and not managed by this client
+					if (r.getAuthority().equals(AUTHORITY.ROLE_USER) && !clientAuth.getClientId().equals(r.getClientId())) {
 						resources.add(r);
 					}
 				} catch (Exception e) {
