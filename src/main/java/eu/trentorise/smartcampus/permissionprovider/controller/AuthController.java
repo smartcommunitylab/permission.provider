@@ -52,7 +52,23 @@ public class AuthController {
 	private ProviderServiceAdapter providerServiceAdapter;
 	@Autowired 
 	private AttributesAdapter attributesAdapter;
-	
+
+	/**
+	 * Redirect to the login type selection page
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/eauth/admin")
+	public ModelAndView admin(HttpServletRequest req) throws Exception {
+		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		model.put("authorities", authorities);
+		String target = prepareRedirect(req,"/admin");
+		model.put("target",target);
+		return new ModelAndView("authorities", model);
+	}
+
 	/**
 	 * Redirect to the login type selection page
 	 * @param req

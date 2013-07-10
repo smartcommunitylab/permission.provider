@@ -1,0 +1,28 @@
+<div class="accordion" id="permissions" >
+   <div class="alert alert-error" ng-show="error != ''">{{error}}</div>
+   <div class="alert alert-success" ng-show="info != ''">{{info}}</div>
+
+  <div ng-repeat="item in approvals" class="well accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" ng-class="{collapsed:isPermServiceCollapsed($index)}" ng-click="switchPermService($index)">
+        {{item.name}}
+      </a>
+    </div>
+    <div class="accordion-body"  ng-class="{collapse:isPermServiceCollapsed($index)}" style="background-color: #ffffff">
+      <div class="accordion-inner body ">
+        {{item.owner}}
+        <a class="btn btn-mini btn-primary pull-right" href="#" ng-click="approve(item.clientId)">Approve</a>
+        <p/>
+        <div>
+           <div ng-repeat="r in item.resources">
+               <div class="row-fluid">
+                  <div class="span6"><strong>{{r.resourceUri}}</strong></div>
+                  <div class="span6">{{r.name}}</div>
+               </div>
+            </div>
+               
+        </div>
+      </div>
+    </div>
+  </div>
+</div>    

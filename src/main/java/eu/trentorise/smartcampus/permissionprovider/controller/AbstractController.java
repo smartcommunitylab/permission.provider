@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
 /**
@@ -65,6 +66,15 @@ public class AbstractController {
 	 */
 	protected String getUserAuthority() {
 		return SecurityContextHolder.getContext().getAuthentication().getDetails().toString();
+	}
+
+	/**
+	 * Read the signed user name from the user attributes
+	 * @param user
+	 * @return
+	 */
+	protected String getUserName(User user) {
+		return user.getName() + " "+user.getSurname();
 	}
 
 }

@@ -98,7 +98,7 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", socialId=" + socialId + ", name=" + name + ", surname=" + surname + "]";
+		return name + " " + surname;
 	}
 
 	public String getSocialId() {

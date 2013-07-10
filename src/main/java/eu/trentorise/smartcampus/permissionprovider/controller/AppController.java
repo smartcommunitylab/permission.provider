@@ -33,9 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.adapters.ClientDetailsAdapter;
-import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
@@ -223,24 +221,6 @@ public class AppController extends AbstractController {
 			response.setErrorMessage(e.getMessage());
 		}
 		return response;
-	}
-
-	/**
-	 * Read the signed user name from the user attributes
-	 * @param user
-	 * @return
-	 */
-	protected String getUserName(User user) {
-		Map<String,Object> attrs = new HashMap<String, Object>();
-		String authority = getUserAuthority();
-		for (Attribute a : user.getAttributeEntities()) {
-			if (a.getAuthority().getRedirectUrl().equals(authority)) {
-				attrs.put(a.getKey(), a.getValue());
-			}
-		}
-		String username = attrs.containsKey(Config.NAME_ATTR)?attrs.get(Config.NAME_ATTR).toString():"";
-		username += " "+(attrs.containsKey(Config.SURNAME_ATTR)?attrs.get(Config.SURNAME_ATTR).toString():"");
-		return username;
 	}
 
 }
