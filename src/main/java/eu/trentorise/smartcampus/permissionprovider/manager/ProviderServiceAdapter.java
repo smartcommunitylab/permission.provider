@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package eu.trentorise.smartcampus.permissionprovider.adapters;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,12 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.Authority;
+import eu.trentorise.smartcampus.permissionprovider.model.SocialEngineException;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.AttributeRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.AuthorityRepository;
@@ -45,6 +47,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Transactional
 public class ProviderServiceAdapter {
 
+	@Value("${mode.testing}")
+	private boolean testMode;
 
 	@Autowired
 	private AttributesAdapter attrAdapter;
@@ -54,10 +58,12 @@ public class ProviderServiceAdapter {
 	private UserRepository userRepository;
 	@Autowired
 	private AttributeRepository attributeRepository;
-
 	@Autowired
 	private SecurityAdapter secAdapter;
-
+	@Autowired
+	private SocialEngine socialEngine;
+	
+	
 	@PostConstruct
 	private void init() throws JAXBException, IOException {
 		attrAdapter.init();
@@ -101,7 +107,15 @@ public class ProviderServiceAdapter {
 
 		User user = null;
 		if (users.isEmpty()) {
-			user = new User("1", attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
+			String socialId = "1";
+			if (!testMode) {
+				try {
+					socialId = ""+socialEngine.createUser();
+				} catch (SocialEngineException e) {
+					throw new IllegalArgumentException(e.getMessage(),e);
+				}
+			}
+			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
 			userRepository.save(user);
 		} else {
 			user = users.get(0);

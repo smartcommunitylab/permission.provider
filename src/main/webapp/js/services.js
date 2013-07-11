@@ -21,7 +21,7 @@ function MainController($scope) {
  * @param $http
  * @param $timeout
  */
-function AppController($scope, $resource, $http, $timeout) {
+function AppController($scope, $resource, $http, $timeout, $location) {
 	// current client
 	$scope.app = null;
 	// current client ID
@@ -406,7 +406,10 @@ function AppController($scope, $resource, $http, $timeout) {
 	 * generate or retrieve client access token through the implicit OAuth2 flow.
 	 */
 	$scope.getImplicitToken = function() {
-		var win = window.open('oauth/authorize?client_id='+$scope.app.clientId+'&response_type=token&grant_type=implicit&redirect_uri=/permission.provider/testtoken');
+		var hostport = $location.host()+(($location.absUrl().indexOf(':'+$location.port())>0)?(":"+$location.port()):"");
+		var ctx = $location.absUrl().substring($location.absUrl().indexOf(hostport)+hostport.length);
+		ctx = ctx.substring(0,ctx.indexOf('/',1));
+		var win = window.open('oauth/authorize?client_id='+$scope.app.clientId+'&response_type=token&grant_type=implicit&redirect_uri='+ctx+'/testtoken');
 		win.onload = function() {
 			var at = processAuthParams(win.location.hash.substring(1));
 			$timeout(function(){

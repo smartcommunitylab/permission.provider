@@ -18,7 +18,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.trentorise.smartcampus.permissionprovider.adapters;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.HashMap;
 import java.util.HashSet;

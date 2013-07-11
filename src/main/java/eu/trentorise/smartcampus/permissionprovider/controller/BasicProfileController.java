@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.basicprofile.model.BasicProfile;
 import eu.trentorise.smartcampus.basicprofile.model.BasicProfiles;
-import eu.trentorise.smartcampus.permissionprovider.adapters.BasicProfileManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 
 /**
  * @author raman

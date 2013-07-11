@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.permissionprovider.adapters;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;

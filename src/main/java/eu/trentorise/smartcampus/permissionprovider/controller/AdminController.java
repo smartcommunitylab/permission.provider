@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.ApprovalData;
+import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
@@ -45,6 +50,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
+ * Access to the administration resources.
  * @author raman
  *
  */
@@ -58,15 +64,41 @@ public class AdminController extends AbstractController{
 	private ClientDetailsRepository clientDetailsRepository;
 	@Autowired
 	private ResourceRepository resourceRepository;
+	@Autowired
+	private AttributesAdapter attributesAdapter;
+	@Autowired
+	private AdminManager adminManager;
 	
+	private Log logger = LogFactory.getLog(getClass());
 	/**
 	 * Retrieve the with the user data: currently on the username is added.
 	 * @return
 	 */
 	@RequestMapping("/admin")
 	public ModelAndView admin() {
+		User user = userRepository.findOne(getUserId());
+		String authority = getUserAuthority();
 		Map<String,Object> model = new HashMap<String, Object>();
-		User user =  userRepository.findOne(getUserId());
+
+		Set<String> identityAttrs = new HashSet<String>();
+		for (Attribute a : user.getAttributeEntities()) {
+			if (a.getAuthority().getName().equals(authority) && 
+				attributesAdapter.isIdentityAttr(a)) {
+				identityAttrs.add(authority+";"+a.getKey()+";"+a.getValue());
+			}
+		}
+		
+		try {
+			if (!adminManager.checkAccount(identityAttrs)) {
+				model.put("error", "Not authorized");
+				return new ModelAndView("adminerror",model);
+			}
+		} catch (Exception e) {
+			model.put("error", e.getMessage());
+			logger.error("Problem checking admin account: "+e.getMessage());
+			return new ModelAndView("adminerror");
+		}
+		
 		String username = getUserName(user);
 		model.put("username",username);
 		return new ModelAndView("admin", model);

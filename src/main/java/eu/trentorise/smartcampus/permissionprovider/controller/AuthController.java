@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,8 +38,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import eu.trentorise.smartcampus.permissionprovider.adapters.AttributesAdapter;
-import eu.trentorise.smartcampus.permissionprovider.adapters.ProviderServiceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ExternalAuthenticationToken;
 
 
@@ -52,6 +53,8 @@ public class AuthController {
 	private ProviderServiceAdapter providerServiceAdapter;
 	@Autowired 
 	private AttributesAdapter attributesAdapter;
+	@Value("${mode.testing}")
+	private boolean testMode;
 
 	/**
 	 * Redirect to the login type selection page
@@ -113,7 +116,9 @@ public class AuthController {
 			throws UnsupportedEncodingException {
 		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
 //		// HOOK for testing
-		target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
+		if (testMode) {
+			target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
+		}
 		return target;
 	}
 	

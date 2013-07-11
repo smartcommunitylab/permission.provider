@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package eu.trentorise.smartcampus.permissionprovider.adapters;
+package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
