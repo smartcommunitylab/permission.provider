@@ -20,6 +20,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
@@ -30,6 +31,7 @@ import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
  *
  */
 @Entity
+@Table(name="resource")
 public class Resource {
 	@Id
 	@GeneratedValue

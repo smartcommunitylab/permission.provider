@@ -33,16 +33,16 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "AUTHORITY")
+@Table(name="authority")
 public class Authority implements Serializable {
 
 	private static final long serialVersionUID = 844787564699971985L;
 
 	@Id
-	@Column(name = "NAME")
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "REDIRECT_URL")
+	@Column(name = "redirect_url")
 	private String redirectUrl;
 
 	public String getName() {

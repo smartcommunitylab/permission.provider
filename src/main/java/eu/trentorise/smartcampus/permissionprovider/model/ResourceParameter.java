@@ -20,6 +20,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.Table;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
 
@@ -31,6 +32,7 @@ import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
  */
 @Entity
 @IdClass(ResourceParameterKey.class)
+@Table(name="resource_parameter")
 public class ResourceParameter {
 	@Id
 	private String resourceId;

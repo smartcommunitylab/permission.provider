@@ -28,6 +28,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * DB entity representing the user: user ID, social ID, and the attributes
@@ -35,6 +36,7 @@ import javax.persistence.OneToMany;
  *
  */
 @Entity
+@Table(name="user")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1067996326671906278L;
@@ -48,7 +50,7 @@ public class User implements Serializable {
 	@JoinColumn(name = "USER_ID", nullable=false)
 	private Set<Attribute> attributeEntities;
 
-	@Column(name = "SOCIAL_ID")
+	@Column(name = "social_id")
 	private String socialId;
 
 	private String name; 

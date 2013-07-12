@@ -28,6 +28,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * DB entity to store user attribute. Attributes are associated to authorities.
@@ -35,6 +36,7 @@ import javax.persistence.ManyToOne;
  *
  */
 @Entity
+@Table(name="attribute")
 public class Attribute implements Serializable {
 
 	private static final long serialVersionUID = 5306076968727353508L;
@@ -44,13 +46,13 @@ public class Attribute implements Serializable {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "AUTH_ID")
+	@JoinColumn(name = "auth_id")
 	private Authority authority;
 
-	@Column(name = "NAME")
+	@Column(name = "name")
 	private String key;
 
-	@Column(name = "VALUE")
+	@Column(name = "value")
 	private String value;
 
 	public Authority getAuthority() {
