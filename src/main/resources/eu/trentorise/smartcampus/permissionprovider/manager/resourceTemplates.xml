@@ -147,18 +147,18 @@
        <resourceMapping 
            id="filestorage.storage"
            name="Storage account management" 
-           uri="filestorage.storage.{app}"
+           uri="filestorage.storage.{fsapp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
-           <description>Manage different cloud storage accounts of the app '{app}'.</description>
+           <description>Manage different cloud storage accounts of the app '{fsapp}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.useraccount"
            name="Storage user account management" 
-           uri="filestorage.account.{app}"
+           uri="filestorage.account.{fsapp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
-           <description>Manage different cloud storage user accounts of the app '{app}'.</description>
+           <description>Manage different cloud storage user accounts of the app '{fsapp}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.metadata"
@@ -182,7 +182,7 @@
            uri="filestorage.resource.{fsapp}.read"
            authority="ROLE_USER"
            approvalRequired="true">
-           <description>Read user files of the app '{app}'.</description>
+           <description>Read user files of the app '{fsapp}'.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.resource.read"
@@ -264,7 +264,7 @@
            uri="communicator.send.app.{capp}"
            authority="ROLE_CLIENT"
            approvalRequired="true">
-           <description>Send a notification to users from the app '{app}'.</description>
+           <description>Send a notification to users from the app '{capp}'.</description>
        </resourceMapping>
        
         <resourceMapping 
@@ -274,7 +274,7 @@
            authority="ROLE_CLIENT"
            accessibleByOthers="false"
            approvalRequired="false">
-           <description>Register data of the app '{app}'.</description>
+           <description>Register data of the app '{capp}'.</description>
        </resourceMapping>
 
         <resourceMapping 
@@ -284,7 +284,7 @@
            authority="ROLE_USER"
            accessibleByOthers="false"
            approvalRequired="false">
-           <description>Read configuration of the '{app}'.</description>
+           <description>Read configuration of the '{capp}'.</description>
        </resourceMapping>
        
          <resourceMapping 
@@ -294,7 +294,7 @@
            authority="ROLE_USER"
            accessibleByOthers="false"        
            approvalRequired="false">
-           <description>Register user of the app '{app}'.</description>
+           <description>Register user of the app '{capp}'.</description>
        </resourceMapping>
        
         <resourceMapping 
@@ -304,7 +304,7 @@
            authority="ROLE_USER"
            accessibleByOthers="false"        
            approvalRequired="false">
-           <description>Unregister user from the app '{app}'.</description>
+           <description>Unregister user from the app '{capp}'.</description>
        </resourceMapping>
    </service> 
 
