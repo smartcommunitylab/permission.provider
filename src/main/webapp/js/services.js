@@ -406,6 +406,11 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	 * generate or retrieve client access token through the implicit OAuth2 flow.
 	 */
 	$scope.getImplicitToken = function() {
+		if (!$scope.app.browserAccess) {
+			$scope.info = '';
+			$scope.error = 'Implicit token requires browser access selected!';
+			return;
+		}
 		var hostport = $location.host()+(($location.absUrl().indexOf(':'+$location.port())>0)?(":"+$location.port()):"");
 		var ctx = $location.absUrl().substring($location.absUrl().indexOf(hostport)+hostport.length);
 		ctx = ctx.substring(0,ctx.indexOf('/',1));
@@ -413,7 +418,12 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 		win.onload = function() {
 			var at = processAuthParams(win.location.hash.substring(1));
 			$timeout(function(){
-				$scope.implicitToken = at;
+				if (at) {
+					$scope.implicitToken = at;
+				} else {
+					$scope.info = '';
+					$scope.error = 'Problem retrieving the token!';
+				}
 			},100);
 			win.close();
 		};
