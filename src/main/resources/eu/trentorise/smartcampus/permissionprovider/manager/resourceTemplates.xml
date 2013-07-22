@@ -31,7 +31,7 @@
            id="smartcampus.profile.basicprofile.all" 
            name="Read all basic profiles" 
            uri="smartcampus.profile.basicprofile.all"
-           authority="ROLE_CLIENT" 
+           authority="ROLE_ANY" 
            approvalRequired="true">
            <description>Basic profile of the platform users. Read access only.</description>
        </resourceMapping>

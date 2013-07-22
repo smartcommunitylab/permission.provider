@@ -84,6 +84,7 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="ROLE_USER" />
 			<xsd:enumeration value="ROLE_CLIENT" />
+            <xsd:enumeration value="ROLE_ANY" />
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

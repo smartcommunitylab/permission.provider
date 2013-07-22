@@ -31,7 +31,7 @@ public class Config {
 	public static final String SURNAME_ATTR = "eu.trentorise.smartcampus.surname";
 	
 	/** Authorization authorities */
-	public enum AUTHORITY {ROLE_USER, ROLE_CLIENT,ROLE_CLIENT_TRUSTED};
+	public enum AUTHORITY {ROLE_USER, ROLE_CLIENT, ROLE_ANY, ROLE_CLIENT_TRUSTED};
 	
 	/** Resource visibility values: either only the specific app can see, or all the apps of the current developer, or any app */
 	public enum RESOURCE_VISIBILITY {CLIENT_APP,DEVELOPER,PUBLIC}
