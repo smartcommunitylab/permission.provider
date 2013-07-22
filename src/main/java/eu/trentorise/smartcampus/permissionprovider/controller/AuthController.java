@@ -26,7 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,7 +41,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
-import eu.trentorise.smartcampus.permissionprovider.oauth.ExternalAuthenticationToken;
 
 
 /**
@@ -140,8 +140,10 @@ public class AuthController {
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
 		
 		UserDetails user = new User(userEntity.getId().toString(),"", list);
-		Authentication a = new ExternalAuthenticationToken(user, list, authorityUrl);
-		a.setAuthenticated(true);
+		
+		AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(user, null, list);
+		//ExternalAuthenticationToken(user, list, authorityUrl);
+		a.setDetails(authorityUrl);
 
 		SecurityContextHolder.getContext().setAuthentication(a);
 		return new ModelAndView("redirect:"+target);
