@@ -30,4 +30,5 @@ import eu.trentorise.smartcampus.permissionprovider.model.User;
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
 	List<User> findByFullNameLike(String text);
+	User findBySocialId(String socialId);
 }

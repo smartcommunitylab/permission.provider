@@ -95,5 +95,16 @@ public class BasicProfileManager {
 		}
 		return Collections.emptyList();
 	}
+	/**
+	 * @param socialId
+	 * @return
+	 */
+	public BasicProfile getBasicProfileBySocialId(String socialId) {
+		try {
+			return BasicProfileConverter.toBasicProfile(userRepository.findBySocialId(socialId));
+		} catch (Exception e) {
+			throw new IllegalStateException("Problem reading users: "+e.getMessage());
+		}
+	}
 
 }

@@ -51,8 +51,7 @@ public class BasicProfileController extends AbstractController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/{userId}")
 	public @ResponseBody
-	BasicProfile getUser(HttpServletRequest request,
-			HttpServletResponse response, HttpSession session,
+	BasicProfile getUser(HttpServletResponse response,
 			@PathVariable("userId") String userId) throws IOException {
 		try {
 			return profileManager.getBasicProfileById(userId);
@@ -63,12 +62,23 @@ public class BasicProfileController extends AbstractController {
 
 	}
 
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/social/{socialId}")
+	public @ResponseBody
+	BasicProfile getUserBySocialId(HttpServletResponse response,
+			@PathVariable("socialId") String socialId) throws IOException {
+		try {
+			return profileManager.getBasicProfileBySocialId(socialId);
+		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return null;
+		}
+
+	}
+
 	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile")
 	public @ResponseBody
 	BasicProfiles searchUsers(
-			HttpServletRequest request,
 			HttpServletResponse response,
-			HttpSession session,
 			@RequestParam(value = "filter", required = false) String fullNameFilter)
 			throws IOException {
 
@@ -110,7 +120,7 @@ public class BasicProfileController extends AbstractController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/profiles")
 	public @ResponseBody
-	BasicProfiles findProfiles(HttpServletRequest request, HttpServletResponse response, @RequestParam List<String> userIds) {
+	BasicProfiles findProfiles(HttpServletResponse response, @RequestParam List<String> userIds) {
 		try {
 			BasicProfiles profiles = new BasicProfiles();
 			profiles.setProfiles(profileManager.getUsers(userIds));
