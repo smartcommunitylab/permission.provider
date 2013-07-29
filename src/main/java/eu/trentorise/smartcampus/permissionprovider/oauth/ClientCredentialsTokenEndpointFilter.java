@@ -13,13 +13,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
+/**
+ * Filter for the client credential token acquisition. Extends the standard behaviour
+ * in case of authorization code flow by checking also the 'mobile' client secret against
+ * the requested one.
+ * @author raman
+ *
+ */
 public class ClientCredentialsTokenEndpointFilter extends
 	org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter {
 
