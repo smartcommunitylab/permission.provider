@@ -120,6 +120,7 @@ public class AppController extends AbstractController {
 			entity.setAuthorizedGrantTypes(clientDetailsAdapter.defaultGrantTypes());
 			entity.setDeveloperId(getUserId());
 			entity.setClientSecret(clientDetailsAdapter.generateClientSecret());
+			entity.setClientSecretMobile(clientDetailsAdapter.generateClientSecret());
 
 			entity = clientDetailsRepository.save(entity);
 			response.setData(clientDetailsAdapter.convertToClientApp(entity));
@@ -133,22 +134,22 @@ public class AppController extends AbstractController {
 
 	@RequestMapping(method=RequestMethod.POST,value="/dev/apps/{clientId}")
 	public @ResponseBody Response resetClientData(@PathVariable String clientId,@RequestParam String reset) {
-		return reset(clientId, "clientId".equals(reset));
+		return reset(clientId, "clientSecretMobile".equals(reset));
 	}
 
 	/**
 	 * Reset clientId or client secret
 	 * @param clientId
-	 * @param resetClientId true to reset clientId, false to reset clientSecret
+	 * @param resetClientSecretMobile true to reset clientSecretMobile, false to reset clientSecret
 	 * @return {@link Response} entity containing the stored app {@link ClientAppBasic} descriptor
 	 */
-	protected Response reset(String clientId, boolean resetClientId) {
+	protected Response reset(String clientId, boolean resetClientSecretMobile) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			if (resetClientId) {
-				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientId(clientId)));
+			if (resetClientSecretMobile) {
+				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientSecretMobile(clientId)));
 			} else {
 				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientSecret(clientId)));
 			}

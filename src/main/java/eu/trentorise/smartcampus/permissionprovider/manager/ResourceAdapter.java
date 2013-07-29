@@ -511,7 +511,12 @@ public class ResourceAdapter {
 		} catch (UnsupportedEncodingException e) {
 			r.setDescription(rm.getDescription());
 		}
-		r.setName(rm.getName());
+		template = new UriTemplate(rm.getName());
+		try {
+			r.setName(URLDecoder.decode(template.expand(params).toString(),"utf8"));
+		} catch (UnsupportedEncodingException e) {
+			r.setName(rm.getName());
+		}
 		r.setResourceType(rm.getId());
 		r.setResourceUri(uri);
 		r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);

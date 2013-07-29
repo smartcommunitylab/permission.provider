@@ -78,7 +78,7 @@ public class CookieCleaner implements LogoutSuccessHandler {
 			}
 		}
 		request.getSession().invalidate();
-		authentication.setAuthenticated(false);
+		if (authentication != null) authentication.setAuthenticated(false);
 		response.sendRedirect(request.getContextPath()+redirect);
 	}
 

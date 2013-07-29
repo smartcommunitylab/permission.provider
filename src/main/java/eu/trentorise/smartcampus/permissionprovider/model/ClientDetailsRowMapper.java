@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -40,10 +41,10 @@ public class ClientDetailsRowMapper implements RowMapper<ClientDetails> {
 			BaseClientDetails details = new BaseClientDetails(rs.getString("client_id"), rs.getString("resource_ids"), rs.getString("scope"),
 					rs.getString("authorized_grant_types"), rs.getString("authorities"), rs.getString("web_server_redirect_uri"));
 			details.setClientSecret(rs.getString("client_secret"));
-			if (rs.getObject(8) != null) {
+			if (rs.getObject("access_token_validity") != null) {
 				details.setAccessTokenValiditySeconds(rs.getInt("access_token_validity"));
 			}
-			if (rs.getObject(9) != null) {
+			if (rs.getObject("refresh_token_validity") != null) {
 				details.setRefreshTokenValiditySeconds(rs.getInt("refresh_token_validity"));
 			}
 			String json = rs.getString("additional_information");
@@ -56,7 +57,10 @@ public class ClientDetailsRowMapper implements RowMapper<ClientDetails> {
 				catch (Exception e) {
 					logger .warn("Could not decode JSON for additional information: " + details, e);
 				}
+			} else {
+				details.setAdditionalInformation(new HashMap<String, Object>());
 			}
+			details.getAdditionalInformation().put("client_secret_mobile", rs.getString("client_secret_mobile"));
 			return details;
 		}
 

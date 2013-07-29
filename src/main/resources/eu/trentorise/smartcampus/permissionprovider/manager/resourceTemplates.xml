@@ -429,7 +429,7 @@
        <resourceMapping 
            id="socialservice.community.shared.write"
            name="Share/unshare community '{cid}' entities" 
-           uri="socialservice.community.{write}.shared.read"
+           uri="socialservice.community.{cid}.shared.write"
            authority="ROLE_CLIENT"
            approvalRequired="true">
            <description>Share/unshare community '{cid}' entities.</description>

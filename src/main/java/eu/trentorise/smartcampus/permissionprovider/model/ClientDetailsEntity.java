@@ -51,7 +51,10 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	@Column(name = "client_secret",nullable = false)
 	private String clientSecret;
-	
+
+	@Column(name = "client_secret_mobile",nullable = false)
+	private String clientSecretMobile;
+
 	@Column(name = "resource_ids")
 	private String resourceIds;
 	
@@ -172,6 +175,21 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
+	}
+
+	/**
+	 * @return {@link #clientSecretMobile} value
+	 */
+	public String getClientSecretMobile() {
+		return clientSecretMobile;
+	}
+
+	/**
+	 * 
+	 * @param clientSecretMobile value to set
+	 */
+	public void setClientSecretMobile(String clientSecretMobile) {
+		this.clientSecretMobile = clientSecretMobile;
 	}
 
 	/**

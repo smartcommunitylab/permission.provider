@@ -67,8 +67,7 @@
         <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/dev" />
-<!--         <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id" logout-success-url="/dev"/> -->
-        <sec:logout invalidate-session="true" logout-url="/logout" success-handler-ref="cookieCleaner" />
+        <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id" logout-success-url="/dev"/>
     </sec:http>
 	
 	<bean id="clientAuthenticationEntryPoint"
@@ -82,19 +81,24 @@
 		class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
 	<bean id="clientCredentialsTokenEndpointFilter"
-		class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
 	</bean>
 
 	<sec:authentication-manager id="clientAuthenticationManager">
 		<sec:authentication-provider
 			user-service-ref="clientDetailsUserService" />
+<!--     <sec:authentication-provider ref="extAuthProvider"/> -->
 	</sec:authentication-manager>
 
 	<sec:authentication-manager alias="authenticationManager">
-		<sec:authentication-provider
-			user-service-ref="userDetailsService" />
+		<sec:authentication-provider 
+			user-service-ref="clientDetailsUserService" />
 	</sec:authentication-manager>
+
+<!--   <bean id="extAuthProvider" class="eu.trentorise.smartcampus.permissionprovider.oauth.ExtAuthProvider"> -->
+<!--     <property name="clientDetailsService" ref="clientDetails"/> -->
+<!--   </bean> -->
 
 	<bean id="clientDetailsUserService"
 		class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
