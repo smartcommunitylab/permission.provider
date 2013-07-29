@@ -57,7 +57,7 @@ public class ClientCredentialsTokenEndpointFilter extends
 		String grant_type = request.getParameter("grant_type");
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(clientId, clientSecret);
-		if ("authorization_code".equals(grant_type)) {
+		if ("authorization_code".equals(grant_type) || "refresh_token".equals(grant_type)) {
 			
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
 			String clientSecretServer = clientDetails.getClientSecret();
