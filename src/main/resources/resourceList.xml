@@ -12,9 +12,8 @@
 	<resourceMapping uri="smartcampus.profile.basicprofile.me" pathPattern="/basicprofile/me"/>
     
     <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/social/{socialId}"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/{userId}"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile"/>
-	<resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile"/>
+    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all/{userId}"/>
+	  <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all"/>
     <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/profiles"/>
 </service>
 

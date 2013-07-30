@@ -19,9 +19,7 @@ package eu.trentorise.smartcampus.permissionprovider.controller;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +47,7 @@ public class BasicProfileController extends AbstractController {
 	@Autowired
 	private BasicProfileManager profileManager;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/{userId}")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/all/{userId}")
 	public @ResponseBody
 	BasicProfile getUser(HttpServletResponse response,
 			@PathVariable("userId") String userId) throws IOException {
@@ -75,7 +73,7 @@ public class BasicProfileController extends AbstractController {
 
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile")
+	@RequestMapping(method = RequestMethod.GET, value = "/basicprofile/all")
 	public @ResponseBody
 	BasicProfiles searchUsers(
 			HttpServletResponse response,
