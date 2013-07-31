@@ -161,9 +161,9 @@
            <description>Manage different cloud storage accounts of the app '{fsapp}'.</description>
        </resourceMapping>
        <resourceMapping 
-           id="filestorage.useraccount.me"
+           id="filestorage.useraccount.user"
            name="Account management by user"  
-           uri="filestorage.account.me.{fsapp}"
+           uri="filestorage.account.user.{fsapp}"
            authority="ROLE_USER"
            accessibleByOthers="false">
            <description>Manage different cloud storage accounts of the app '{fsapp}' for current user.</description>
