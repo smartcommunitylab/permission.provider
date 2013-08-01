@@ -218,7 +218,7 @@
        </resourceMapping>
        <resourceMapping 
            id="communicator.app.msg.read"
-           name="Read a user message of a specific app" 
+           name="Read a user message of the app '{capp}'" 
            uri="communicator.app.msg.read.{capp}"
            authority="ROLE_USER"
            approvalRequired="false">
@@ -226,7 +226,7 @@
        </resourceMapping>
        <resourceMapping 
            id="communicator.app.msg.write"
-           name="Manage a user message of a specific app" 
+           name="Manage a user message of the app '{capp}'" 
            uri="communicator.app.msg.write.{capp}"
            authority="ROLE_USER"
            approvalRequired="false">
@@ -260,7 +260,7 @@
        </resourceMapping>
        <resourceMapping 
            id="communicator.send.app"
-           name="Send notification as app" 
+           name="Send notification as app '{capp}'" 
            uri="communicator.send.app.{capp}"
            authority="ROLE_CLIENT"
            approvalRequired="true">
@@ -269,7 +269,7 @@
        
         <resourceMapping 
            id="communicator.register.app"
-           name="register gcm" 
+           name="Register push notification app '{capp}'" 
            uri="communicator.register.{capp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false"
@@ -277,35 +277,16 @@
            <description>Register data of the app '{capp}'.</description>
        </resourceMapping>
 
-        <resourceMapping 
-           id="communicator.configuration.app"
-           name="register gcm" 
-           uri="communicator.configuration.{capp}"
-           authority="ROLE_USER"
-           accessibleByOthers="false"
-           approvalRequired="false">
-           <description>Read configuration of the '{capp}'.</description>
-       </resourceMapping>
-       
          <resourceMapping 
            id="communicator.register.user"
-           name="register gcm" 
+           name="Push notification configuration for the app '{capp}'." 
            uri="communicator.register.user.{capp}"
            authority="ROLE_USER"
            accessibleByOthers="false"        
            approvalRequired="false">
-           <description>Register user of the app '{capp}'.</description>
+           <description>Manage user push notification configuration for the app '{capp}'.</description>
        </resourceMapping>
        
-        <resourceMapping 
-           id="communicator.unregister.user"
-           name="unregister gcm" 
-           uri="communicator.unregister.user.{capp}"
-           authority="ROLE_USER"
-           accessibleByOthers="false"        
-           approvalRequired="false">
-           <description>Unregister user from the app '{capp}'.</description>
-       </resourceMapping>
    </service> 
 
 
