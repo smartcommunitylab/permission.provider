@@ -146,7 +146,7 @@
        </resource>
        <resourceMapping 
            id="filestorage.storage"
-           name="Storage account management" 
+           name="Storage management" 
            uri="filestorage.storage.{fsapp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
@@ -154,11 +154,19 @@
        </resourceMapping>
        <resourceMapping 
            id="filestorage.useraccount"
-           name="Storage user account management" 
+           name="Account management" 
            uri="filestorage.account.{fsapp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
-           <description>Manage different cloud storage user accounts of the app '{fsapp}'.</description>
+           <description>Manage different cloud storage accounts of the app '{fsapp}'.</description>
+       </resourceMapping>
+       <resourceMapping 
+           id="filestorage.useraccount.user"
+           name="Account management by user"  
+           uri="filestorage.account.user.{fsapp}"
+           authority="ROLE_USER"
+           accessibleByOthers="false">
+           <description>Manage different cloud storage accounts of the app '{fsapp}' for current user.</description>
        </resourceMapping>
        <resourceMapping 
            id="filestorage.metadata"
