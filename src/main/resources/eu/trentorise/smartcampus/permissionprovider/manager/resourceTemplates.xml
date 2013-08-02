@@ -128,7 +128,7 @@
        <resourceMapping 
            id="filestorage.useraccount"
            name="Account management" 
-           uri="filestorage.account.{fsapp}"
+           uri="filestorage.account.app.{fsapp}"
            authority="ROLE_CLIENT"
            accessibleByOthers="false">
            <description>Manage different cloud storage accounts of the app '{fsapp}'.</description>
@@ -141,39 +141,85 @@
            accessibleByOthers="false">
            <description>Manage different cloud storage accounts of the app '{fsapp}' for current user.</description>
        </resourceMapping>
+       
        <resourceMapping 
-           id="filestorage.metadata"
+           id="filestorage.metadata.any"
            name="Read user resource metadata" 
-           uri="filestorage.metadata"
-           authority="ROLE_USER"
+           uri="filestorage.metadata.read"
+           authority="ROLE_CLIENT"
            approvalRequired="true">
-           <description>Read metadata descriptors of the user files.</description>
+           <description>Read user resource metadata.</description>
        </resourceMapping>
+      
        <resourceMapping 
-           id="filestorage.resource.manage"
-           name="Write " 
-           uri="filestorage.resource.{fsapp}.manage"
+           id="filestorage.resource.app.manage"
+           name="Manage resource of an application" 
+           uri="filestorage.resource.app.{fsapp}.manage"
+           authority="ROLE_CLIENT"
+           approvalRequired="true">
+           <description>Manage user files of the app {fsapp}.</description>
+       </resourceMapping>
+       
+        <resourceMapping 
+           id="filestorage.resource.user.manage"
+           name="Manage resource of an application by a user" 
+           uri="filestorage.resource.user.{fsapp}.manage"
            authority="ROLE_USER"
            approvalRequired="true">
            <description>Manage user files of the app {fsapp}.</description>
        </resourceMapping>
+       
+        
+        <resourceMapping 
+           id="filestorage.myresource.app.read"
+           name="Read a resource owned by the user stored in the application by other application" 
+           uri="filestorage.myresource.app.{fsapp}.read"
+           authority="ROLE_CLIENT"
+           approvalRequired="true">
+           <description>Read owned user files of the app '{fsapp}'.</description>
+       </resourceMapping>
+       
        <resourceMapping 
-           id="filestorage.resource.app.read"
-           name="Write " 
-           uri="filestorage.resource.{fsapp}.read"
+           id="filestorage.myresource.user.read"
+           name="Read a shared resource of a user stored in the application" 
+           uri="filestorage.myresource.user.{fsapp}.read"
            authority="ROLE_USER"
            approvalRequired="true">
-           <description>Read user files of the app '{fsapp}'.</description>
+           <description>Read owned user files of the app '{fsapp}'.</description>
        </resourceMapping>
+        
+        
+        
+        
        <resourceMapping 
-           id="filestorage.resource.read"
-           name="Read user resource" 
-           uri="filestorage.resource.read"
+           id="filestorage.resource.app.read"
+           name="Read a shared resource of a user stored in the application by other application" 
+           uri="filestorage.resource.app.{fsapp}.read"
            authority="ROLE_USER"
+           approvalRequired="true">
+           <description>Read shared user files of the app '{fsapp}'.</description>
+       </resourceMapping>
+       
+       <resourceMapping 
+           id="filestorage.resource.user.read"
+           name="Read a resource of a user stored in the application" 
+           uri="filestorage.resource.user.{fsapp}.read"
+           authority="ROLE_USER"
+           approvalRequired="true">
+           <description>Read shared user files of the app '{fsapp}'.</description>
+       </resourceMapping>
+       
+       
+       <resourceMapping 
+           id="filestorage.resource.user.any.read"
+           name="Read every user resource" 
+           uri="filestorage.resource.read"
+           authority="ROLE_CLIENT"
            approvalRequired="true">
            <description>Read an arbitrary user file.</description>
        </resourceMapping>
-       </service> 
+       
+</service>
        
    <service name="Communicator service" id="smartcampus.communicator">
        <description>Service manage notification</description>
