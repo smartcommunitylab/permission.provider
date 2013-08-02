@@ -39,20 +39,17 @@
 
     <service name="Extended profile service" id="smartcampus.profile.extprofie">
        <description>Core service for managing сustom user profiles defined by different applications.</description>
-       <resource name="App" id="app">
-               <description>Symbolic name of the application owning the profiles</description>
-               <resource name="Profile" id="profile">
-                   <description>Extended profile name</description>
-               </resource>
+       <resource name="Profile" id="profile">
+           <description>Extended profile name</description>
        </resource>
 
        <resourceMapping 
            id="smartcampus.extprofile.own" 
            name="Manage profile" 
-           uri="smartcampus.extprofile.write.{app}.{profile}"
+           uri="smartcampus.extprofile.write.{profile}"
            authority="ROLE_CLIENT" 
            accessibleByOthers="false">
-           <description>Write the profile '{profile}' of the app '{app}'.</description>
+           <description>Write the profile '{profile}'.</description>
        </resourceMapping>
        
        <resourceMapping 
@@ -63,28 +60,20 @@
            approvalRequired="true">
            <description>Read all custom profiles of the current user.</description>
            <resourceMapping 
-               id="smartcampus.extprofile.me.app.read"
-               name="Read specific app user profiles" 
-	           uri="smartcampus.extprofile.me.{app}.read"
-	           authority="ROLE_USER" 
-	           approvalRequired="true" >
-	           <description>Read app '{app}' custom profiles of the current user.</description>
-	           <resourceMapping 
-	               id="smartcampus.extprofile.me.app.profile.read"
-	               name="Read specific user profile" 
-	               uri="smartcampus.extprofile.me.{app}.{profile}.read"
-	               authority="ROLE_USER" 
-	               approvalRequired="true">
-	               <description>Read custom profile '{profile}' of the app '{app}' of the current user.</description>
-	           </resourceMapping>
-               <resourceMapping 
-                   id="smartcampus.extprofile.me.app.profile.write"
-                   name="Write specific user profile" 
-                   uri="smartcampus.extprofile.me.{app}.{profile}.write"
-                   authority="ROLE_USER" 
-                   approvalRequired="true">
-                   <description>Write custom profile '{profile}' of the app '{app}' of the current user.</description>
-               </resourceMapping>
+               id="smartcampus.extprofile.me.app.profile.read"
+               name="Read specific user profile" 
+               uri="smartcampus.extprofile.me.{profile}.read"
+               authority="ROLE_USER" 
+               approvalRequired="true">
+               <description>Read custom profile '{profile}' of the current user.</description>
+           </resourceMapping>
+           <resourceMapping 
+               id="smartcampus.extprofile.me.app.profile.write"
+               name="Write specific user profile" 
+               uri="smartcampus.extprofile.me.{profile}.write"
+               authority="ROLE_USER" 
+               approvalRequired="true">
+               <description>Write custom profile '{profile}' of the current user.</description>
            </resourceMapping>
        </resourceMapping>
        
@@ -96,20 +85,12 @@
            approvalRequired="true">
            <description>Read all custom profiles shared with the current user.</description>
            <resourceMapping 
-               id="smartcampus.extprofile.shared.app.read"
-               name="Read specific app profiles shared with user" 
-               uri="smartcampus.extprofile.shared.{app}.read"
+               id="smartcampus.extprofile.shared.app.profile.read"
+               name="Read specific profiles shared with user" 
+               uri="smartcampus.extprofile.shared.{profile}.read"
                authority="ROLE_USER" 
-               approvalRequired="true" >
-               <description>Read app '{app}' custom profiles shared with the current user.</description>
-               <resourceMapping 
-                   id="smartcampus.extprofile.shared.app.profile.read"
-                   name="Read specific profiles shared with user" 
-                   uri="smartcampus.extprofile.shared.{app}.{profile}.read"
-                   authority="ROLE_USER" 
-                   approvalRequired="true">
-                   <description>Read custom profile '{profile}' of the app '{app}' shared with the current user.</description>
-               </resourceMapping>
+               approvalRequired="true">
+               <description>Read custom profile '{profile}' shared with the current user.</description>
            </resourceMapping>
        </resourceMapping>
        
@@ -121,20 +102,12 @@
            approvalRequired="true">
            <description>Read all custom profiles.</description>
            <resourceMapping 
-               id="smartcampus.extprofile.all.app.read"
-               name="Read specific app profiles" 
-               uri="smartcampus.extprofile.all.{app}.read"
+               id="smartcampus.extprofile.all.app.profile.read"
+               name="Read specific profiles" 
+               uri="smartcampus.extprofile.all.{profile}.read"
                authority="ROLE_CLIENT" 
                approvalRequired="true">
-               <description>Read app '{app}' custom profiles.</description>
-               <resourceMapping 
-                   id="smartcampus.extprofile.all.app.profile.read"
-                   name="Read specific profiles" 
-                   uri="smartcampus.extprofile.all.{app}.{profile}.read"
-                   authority="ROLE_CLIENT" 
-                   approvalRequired="true">
-                   <description>Read custom profiles '{profile}' of the app '{app}'.</description>
-               </resourceMapping>
+               <description>Read custom profiles '{profile}'.</description>
            </resourceMapping>
        </resourceMapping>
    </service> 

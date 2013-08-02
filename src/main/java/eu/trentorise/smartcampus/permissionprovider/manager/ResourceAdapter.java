@@ -300,6 +300,7 @@ public class ResourceAdapter {
 			for (ResourceParameter rp : all) {
 				resourceParameterRepository.delete(rp);
 			}
+			// TODO clean up client scopes
 		}	
 	}
 	
