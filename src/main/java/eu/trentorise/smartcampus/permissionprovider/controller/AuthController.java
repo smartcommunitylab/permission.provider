@@ -33,10 +33,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
@@ -56,6 +59,9 @@ public class AuthController {
 	@Value("${mode.testing}")
 	private boolean testMode;
 
+	@Autowired
+	private TokenStore tokenStore;
+	
 	/**
 	 * Redirect to the login type selection page
 	 * @param req
@@ -161,5 +167,22 @@ public class AuthController {
 
 		SecurityContextHolder.getContext().setAuthentication(a);
 		return new ModelAndView("redirect:"+target);
+	}
+	
+	/**
+	 * Revoke the access token and the associated refresh token.
+	 * 
+	 * @param token
+	 */
+	@RequestMapping("/eauth/revoke/{token}")
+	public @ResponseBody String revokeToken(@PathVariable String token) {
+		OAuth2AccessToken accessTokenObj = tokenStore.readAccessToken(token);
+		if (accessTokenObj != null) {
+			if (accessTokenObj.getRefreshToken() != null) {
+				tokenStore.removeRefreshToken(accessTokenObj.getRefreshToken());
+			}
+			tokenStore.removeAccessToken(accessTokenObj);
+		}
+		return "";
 	}
 }
