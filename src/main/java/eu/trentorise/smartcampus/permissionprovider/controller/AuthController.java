@@ -107,6 +107,20 @@ public class AuthController {
 	}
 
 	/**
+	 * Entry point for resource access authorization request. Redirects to the login page of 
+	 * the specific identity provider
+	 * @param req
+	 * @param authority identity provider alias
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/eauth/authorize/{authority}")
+	public ModelAndView authoriseWithAuthority(@PathVariable String authority, HttpServletRequest req) throws Exception {
+		String target = prepareRedirect(req,"/oauth/authorize");
+		return new ModelAndView("redirect:/eauth/"+authority+"?target="+target);
+	}
+
+	/**
 	 * Generate redirect string parameter
 	 * @param req
 	 * @return
