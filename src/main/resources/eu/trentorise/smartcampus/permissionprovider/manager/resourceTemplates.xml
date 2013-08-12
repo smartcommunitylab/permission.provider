@@ -237,6 +237,15 @@
            <description>Read an arbitrary user file.</description>
        </resourceMapping>
        
+       <resourceMapping 
+           id="filestorage.resource.updatesocial"
+           name="Update resource social information" 
+           uri="filestorage.resource.app.{fsapp}.updatesocial"
+           authority="ROLE_CLIENT"
+           approvalRequired="true">
+           <description>Update resource social information.</description>
+       </resourceMapping>
+      
 </service>
        
    <service name="Communicator service" id="smartcampus.communicator">
