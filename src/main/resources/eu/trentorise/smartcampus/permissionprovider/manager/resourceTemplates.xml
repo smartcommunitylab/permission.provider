@@ -213,7 +213,7 @@
            id="filestorage.resource.app.read"
            name="Read a shared resource of a user stored in the application by other application" 
            uri="filestorage.resource.app.{fsapp}.read"
-           authority="ROLE_USER"
+           authority="ROLE_CLIENT"
            approvalRequired="true">
            <description>Read shared user files of the app '{fsapp}'.</description>
        </resourceMapping>
