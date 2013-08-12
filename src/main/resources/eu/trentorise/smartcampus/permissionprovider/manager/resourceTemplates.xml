@@ -155,7 +155,7 @@
            id="filestorage.metadata.user"
            name="Read user resource metadata of the application by the user" 
            uri="filestorage.metadata.user.{fsapp}.read"
-           authority="ROLE_CLIENT"
+           authority="ROLE_USER"
            approvalRequired="true">
            <description>Read user resource metadata of the application by the user.</description>
        </resourceMapping>
