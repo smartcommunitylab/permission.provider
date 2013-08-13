@@ -160,6 +160,24 @@
            <description>Read resource metadata of the application by the application.</description>
        </resourceMapping>
       
+        <resourceMapping 
+           id="filestorage.metadata.app.all"
+           name="Read all resource metadata of the application by the application" 
+           uri="filestorage.metadata.app.all.{fsapp}.read"
+           authority="ROLE_CLIENT"
+           approvalRequired="true">
+           <description>Read all resource metadata of the application by the application.</description>
+       </resourceMapping>
+       
+        <resourceMapping 
+           id="filestorage.metadata.user.all"
+           name="Read all resource metadata of the application by the application" 
+           uri="filestorage.metadata.user.all.{fsapp}.read"
+           authority="ROLE_USER"
+           approvalRequired="true">
+           <description>Read all resource metadata of the application by the application.</description>
+       </resourceMapping>
+       
        <resourceMapping 
            id="filestorage.resource.app.manage"
            name="Manage resource of an application" 
