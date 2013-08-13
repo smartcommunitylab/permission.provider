@@ -215,13 +215,10 @@
            <description>Read owned user files of the app '{fsapp}'.</description>
        </resourceMapping>
         
-        
-        
-        
        <resourceMapping 
            id="filestorage.resource.app.read"
            name="Read a shared resource of a user stored in the application by other application" 
-           uri="filestorage.resource.app.{fsapp}.read"
+           uri="filestorage.sharedresource.app.{fsapp}.read"
            authority="ROLE_CLIENT"
            approvalRequired="true">
            <description>Read shared user files of the app '{fsapp}'.</description>
@@ -230,7 +227,7 @@
        <resourceMapping 
            id="filestorage.resource.user.read"
            name="Read a resource of a user stored in the application" 
-           uri="filestorage.resource.user.{fsapp}.read"
+           uri="filestorage.sharedresource.user.{fsapp}.read"
            authority="ROLE_USER"
            approvalRequired="true">
            <description>Read shared user files of the app '{fsapp}'.</description>
