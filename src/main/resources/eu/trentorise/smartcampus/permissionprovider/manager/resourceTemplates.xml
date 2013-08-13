@@ -198,18 +198,18 @@
        
         
         <resourceMapping 
-           id="filestorage.myresource.app.read"
+           id="filestorage.resource.app.read"
            name="Read a resource owned by the user stored in the application by other application" 
-           uri="filestorage.myresource.app.{fsapp}.read"
+           uri="filestorage.resource.app.{fsapp}.read"
            authority="ROLE_CLIENT"
            approvalRequired="true">
            <description>Read owned user files of the app '{fsapp}'.</description>
        </resourceMapping>
        
        <resourceMapping 
-           id="filestorage.myresource.user.read"
-           name="Read a shared resource of a user stored in the application" 
-           uri="filestorage.myresource.user.{fsapp}.read"
+           id="filestorage.resource.user.read"
+           name="Read owned resource of a user stored in the application" 
+           uri="filestorage.resource.user.{fsapp}.read"
            authority="ROLE_USER"
            approvalRequired="true">
            <description>Read owned user files of the app '{fsapp}'.</description>
