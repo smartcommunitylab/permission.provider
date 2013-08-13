@@ -143,15 +143,6 @@
        </resourceMapping>
        
        <resourceMapping 
-           id="filestorage.metadata.any"
-           name="Read any resource metadata" 
-           uri="filestorage.metadata.read"
-           authority="ROLE_CLIENT"
-           approvalRequired="true">
-           <description>Read any resource metadata.</description>
-       </resourceMapping>
-       
-       <resourceMapping 
            id="filestorage.metadata.user"
            name="Read user resource metadata of the application by the user" 
            uri="filestorage.metadata.user.{fsapp}.read"
@@ -227,15 +218,6 @@
            <description>Read shared user files of the app '{fsapp}'.</description>
        </resourceMapping>
        
-       
-       <resourceMapping 
-           id="filestorage.resource.user.any.read"
-           name="Read every user resource" 
-           uri="filestorage.resource.read"
-           authority="ROLE_CLIENT"
-           approvalRequired="true">
-           <description>Read an arbitrary user file.</description>
-       </resourceMapping>
        
        <resourceMapping 
            id="filestorage.resource.updatesocial"
