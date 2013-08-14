@@ -216,7 +216,7 @@
        </resourceMapping>
         
        <resourceMapping 
-           id="filestorage.resource.app.read"
+           id="filestorage.sharedresource.app.read"
            name="Read a shared resource of a user stored in the application by other application" 
            uri="filestorage.sharedresource.app.{fsapp}.read"
            authority="ROLE_CLIENT"
@@ -225,7 +225,7 @@
        </resourceMapping>
        
        <resourceMapping 
-           id="filestorage.resource.user.read"
+           id="filestorage.sharedresource.user.read"
            name="Read a resource of a user stored in the application" 
            uri="filestorage.sharedresource.user.{fsapp}.read"
            authority="ROLE_USER"
