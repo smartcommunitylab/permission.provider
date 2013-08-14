@@ -475,5 +475,46 @@
            approvalRequired="true">
            <description>Manage entity types</description>
        </resourceMapping>
-    </service>    
+    </service>
+
+	<service name="Mobility service" id="smartcampus.mobilityservice">
+		<description>Transportation information and route planning.</description>
+
+		<resourceMapping id="mobilityservice.data"
+			name="Read mobility data" uri="mobilityservice.data"
+			authority="ROLE_ANY" approvalRequired="false">
+			<description>Access mobility information (timetables, parkings, real time data, etc.)</description>
+		</resourceMapping>
+		
+		<resourceMapping id="mobilityservice.plan"
+      name="Multimodal route planning" uri="mobilityservice.plan"
+      authority="ROLE_ANY" approvalRequired="false">
+      <description>Multimodal route planning.</description>
+    </resourceMapping>
+
+		<resourceMapping id="mobilityservice.user.itinerary.read"
+      name="Read user trips" uri="mobilityservice.user.itinerary.read"
+      authority="ROLE_USER" approvalRequired="false">
+      <description>Read saved user trip data (single and recurrent trips).</description>
+    </resourceMapping>
+				
+    <resourceMapping id="mobilityservice.user.itinerary.write"
+      name="Write user trips" uri="mobilityservice.user.itinerary.write"
+      authority="ROLE_USER" approvalRequired="false">
+      <description>Create and modify user trip data (single and recurrent trips).</description>
+    </resourceMapping>
+    
+    <resourceMapping id="mobilityservice.user.alert"
+      name="Send transport alerts as user" uri="mobilityservice.user.alert"
+      authority="ROLE_USER" approvalRequired="false">
+      <description>Send different transport alerts on behalf of the user.</description>
+    </resourceMapping>
+
+    <resourceMapping id="mobilityservice.service.alert"
+      name="Send transport alerts" uri="mobilityservice.service.alert"
+      authority="ROLE_CLIENT" approvalRequired="true">
+      <description>Send different transport alerts.</description>
+    </resourceMapping>
+    
+	</service>
 </services>
