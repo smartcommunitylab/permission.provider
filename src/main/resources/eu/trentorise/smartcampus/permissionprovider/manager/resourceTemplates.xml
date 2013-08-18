@@ -515,6 +515,28 @@
       authority="ROLE_CLIENT" approvalRequired="true">
       <description>Send different transport alerts.</description>
     </resourceMapping>
+	</service>
+	
+	 <service name="Territory service" id="smartcampus.territoryservice">
+    <description>Territory information about events, places, and itineraries.</description>
+
+    <resourceMapping id="territoryservice.data.read"
+      name="Read territory data" uri="territoryservice.data.read"
+      authority="ROLE_ANY" approvalRequired="false">
+      <description>Access territory information (events, places, stories, their search, etc.)</description>
+    </resourceMapping>
+    
+    <resourceMapping id="territoryservice.data.user.write"
+      name="Write territory data" uri="territoryservice.data.user.write"
+      authority="ROLE_USER" approvalRequired="false">
+      <description>Create and modify events, places, and stories on behalf of the user</description>
+    </resourceMapping>
+    
+    <resourceMapping id="territoryservice.communitydata.write"
+      name="Personalize territory data" uri="territoryservice.communitydata.write"
+      authority="ROLE_USER" approvalRequired="false">
+      <description>Add personal information to the territory data, such as ratings, participation, etc.</description>
+    </resourceMapping>
     
 	</service>
 </services>
