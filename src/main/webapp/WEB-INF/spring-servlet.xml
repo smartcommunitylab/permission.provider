@@ -34,7 +34,13 @@
         <sec:custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER" />
         <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
     </sec:http>
-
+    <sec:http pattern="/accountprofile/**" create-session="never" entry-point-ref="clientAuthenticationEntryPoint" >
+        <sec:anonymous enabled="false" />
+        <sec:intercept-url  pattern="/accountprofile/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER" />
+        <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
+    </sec:http>
+    
 	<sec:http pattern="/oauth/token" create-session="stateless"
 		authentication-manager-ref="clientAuthenticationManager">
 		<sec:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />

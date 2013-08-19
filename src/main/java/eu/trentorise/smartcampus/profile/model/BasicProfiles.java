@@ -1,4 +1,4 @@
-package eu.trentorise.smartcampus.basicprofile.model;
+package eu.trentorise.smartcampus.profile.model;
 
 import java.util.List;
 

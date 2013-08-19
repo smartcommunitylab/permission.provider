@@ -35,6 +35,13 @@
            approvalRequired="true">
            <description>Basic profile of the platform users. Read access only.</description>
        </resourceMapping>
+       <resourceMapping 
+           id="smartcampus.profile.accountprofile.me" 
+           name="Read user's account profile" 
+           uri="smartcampus.profile.accountprofile.me"
+           authority="ROLE_USER">
+           <description>Account profile of the current platform user. Read access only.</description>
+       </resourceMapping>
     </service>   
 
     <service name="Extended profile service" id="smartcampus.profile.extprofie">

@@ -22,15 +22,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import eu.trentorise.smartcampus.basicprofile.model.BasicProfile;
+import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
+import eu.trentorise.smartcampus.profile.model.AccountProfile;
+import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 /**
  * @author raman
  *
  */
 @Component
+@Transactional
 public class BasicProfileManager {
 
 	@Autowired
@@ -105,6 +109,14 @@ public class BasicProfileManager {
 		} catch (Exception e) {
 			throw new IllegalStateException("Problem reading users: "+e.getMessage());
 		}
+	}
+	/**
+	 * @param userId
+	 * @return
+	 */
+	public AccountProfile getAccountProfileById(String userId) {
+		User user = userRepository.findOne(Long.parseLong(userId));
+		return AccountProfileConverter.toAccountProfile(user);
 	}
 
 }

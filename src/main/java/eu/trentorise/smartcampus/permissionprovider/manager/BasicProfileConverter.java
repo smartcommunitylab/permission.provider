@@ -18,8 +18,8 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.trentorise.smartcampus.basicprofile.model.BasicProfile;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
+import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 /**
  * 

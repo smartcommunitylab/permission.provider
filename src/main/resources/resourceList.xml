@@ -10,7 +10,8 @@
 	xsi:noNamespaceSchemaLocation="../../../../resource.api/src/main/resources/jaxb/binding/resourceTemplateSchema.xsd">
 
 	<resourceMapping uri="smartcampus.profile.basicprofile.me" pathPattern="/basicprofile/me"/>
-    
+  <resourceMapping uri="smartcampus.profile.accountprofile.me" pathPattern="/accountprofile/me"/>
+	
     <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/social/{socialId}"/>
     <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all/{userId}"/>
 	  <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all"/>
