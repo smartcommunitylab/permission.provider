@@ -230,7 +230,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getResourceIds() {
 		if (resourceIds != null) {
-			return new HashSet<String>(Arrays.asList(resourceIds.split(",")));
+			Set<String> set = new HashSet<String>(Arrays.asList(resourceIds.split(",")));
+			set.remove("");
+			return set;
 		}
 		return Collections.emptySet();
 	}
@@ -253,7 +255,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getScope() {
 		if (scope != null) {
-			return new HashSet<String>(Arrays.asList(scope.split(",")));
+			Set<String> set = new HashSet<String>(Arrays.asList(scope.split(",")));
+			set.remove("");
+			return set;
 		}
 		return Collections.emptySet();
 	}

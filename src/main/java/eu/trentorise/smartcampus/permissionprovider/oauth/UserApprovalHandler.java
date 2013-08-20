@@ -88,6 +88,9 @@ public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 		if (resourceUris != null) {
 			for (String uri : resourceUris) {
 				Resource r = resourceService.loadResourceByResourceUri(uri);
+				if (r == null) {
+					continue;
+				}
 				if (r.getAuthority() == AUTHORITY.ROLE_USER && ! clientId.equals(r.getClientId())) return false;
 			}
 		}

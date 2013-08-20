@@ -276,6 +276,7 @@ public class ResourceAdapter {
 			all.add(rpdb);
 			all.addAll(findChildResourceParameters(rpdb));
 			Set<String> ids = new HashSet<String>();
+			Set<String> scopes = new HashSet<String>();
 			// aggregate all derived resource uris
 			for (ResourceParameter rp : all) {
 				Collection<String> uris = findResourceURIs(rp).keySet();
@@ -283,12 +284,17 @@ public class ResourceAdapter {
 					Resource r = resourceRepository.findByResourceUri(uri);
 					if (r != null) {
 						ids.add(r.getResourceId().toString());
+						scopes.add(r.getResourceUri());
 					}
 				}
 			}
+			ClientDetailsEntity owner = null;
 			// check the resource uri usages
 			for (ClientDetailsEntity cd : clientDetailsRepository.findAll()) {
-				if (cd.getClientId().equals(clientId)) continue;
+				if (cd.getClientId().equals(clientId)) {
+					owner = cd;
+					continue;
+				}
 				if (!Collections.disjoint(cd.getResourceIds(), ids)) {
 					throw new IllegalArgumentException("Resource is in use by other client app.");
 				}
@@ -300,7 +306,16 @@ public class ResourceAdapter {
 			for (ResourceParameter rp : all) {
 				resourceParameterRepository.delete(rp);
 			}
-			// TODO clean up client scopes
+			if (owner != null) {
+				Set<String> oldScopes = new HashSet<String>(owner.getScope());
+				oldScopes.removeAll(scopes);
+				owner.setScope(StringUtils.collectionToCommaDelimitedString(oldScopes));
+				Set<String> oldIds = new HashSet<String>(owner.getResourceIds());
+				oldIds.removeAll(ids);
+				owner.setResourceIds(StringUtils.collectionToCommaDelimitedString(oldIds));
+				clientDetailsRepository.save(owner);
+				
+			}
 		}	
 	}
 	
