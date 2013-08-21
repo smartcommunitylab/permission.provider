@@ -132,6 +132,16 @@
            accessibleByOthers="false">
            <description>Manage different cloud storage accounts of the app '{fsapp}'.</description>
        </resourceMapping>
+       
+       <resourceMapping 
+           id="filestorage.storage.user.read"
+           name="Read storages from user" 
+           uri="filestorage.storage.user.{fsapp}.read"
+           authority="ROLE_USER"
+           accessibleByOthers="false">
+           <description>Read permission on storages of the app '{fsapp}'.</description>
+       </resourceMapping>
+       
        <resourceMapping 
            id="filestorage.useraccount"
            name="Account management" 
