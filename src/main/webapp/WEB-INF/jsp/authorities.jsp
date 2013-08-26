@@ -32,13 +32,13 @@
 		<p>Please choose the provider for your login</p>
 		<ul>
             <li>
-		      <a href="<%=request.getContextPath() %>/eauth/fbk?target=${target}">FBK</a>
+		      <a href="<%=request.getContextPath() %>/eauth/fbk">FBK</a>
             </li>
             <li>
-              <a href="<%=request.getContextPath() %>/eauth/unitn?target=${target}">UNITN</a>
+              <a href="<%=request.getContextPath() %>/eauth/unitn">UNITN</a>
             </li>
             <li>
-              <a href="<%=request.getContextPath() %>/eauth/google?target=${target}">GOOGLE</a>
+              <a href="<%=request.getContextPath() %>/eauth/google">GOOGLE</a>
             </li>
 		</ul>
 	</div>

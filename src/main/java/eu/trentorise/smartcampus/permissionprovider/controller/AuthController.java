@@ -16,7 +16,6 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +73,7 @@ public class AuthController {
 		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/admin");
-		model.put("target",target);
+		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
 	}
 
@@ -90,7 +89,7 @@ public class AuthController {
 		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/dev");
-		model.put("target",target);
+		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
 	}
 	
@@ -106,8 +105,7 @@ public class AuthController {
 		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/oauth/authorize");
-		model.put("target",target);
-		
+		req.getSession().setAttribute("redirect", target);
 		
 		return new ModelAndView("authorities", model);
 	}
@@ -123,7 +121,8 @@ public class AuthController {
 	@RequestMapping("/eauth/authorize/{authority}")
 	public ModelAndView authoriseWithAuthority(@PathVariable String authority, HttpServletRequest req) throws Exception {
 		String target = prepareRedirect(req,"/oauth/authorize");
-		return new ModelAndView("redirect:/eauth/"+authority+"?target="+target);
+		req.getSession().setAttribute("redirect", target);
+		return new ModelAndView("redirect:/eauth/"+authority);
 	}
 
 	/**
@@ -134,7 +133,7 @@ public class AuthController {
 	 */
 	protected String prepareRedirect(HttpServletRequest req, String path)
 			throws UnsupportedEncodingException {
-		String target = URLEncoder.encode(path+(req.getQueryString()==null?"":"?"+req.getQueryString()),"UTF8");
+		String target = path+(req.getQueryString()==null?"":"?"+req.getQueryString());
 //		// HOOK for testing
 		if (testMode) {
 			target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
@@ -154,8 +153,11 @@ public class AuthController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/eauth/{authorityUrl}")
-	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam String target, HttpServletRequest req) throws Exception {
+	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam(required=false) String target, HttpServletRequest req) throws Exception {
 		List<GrantedAuthority> list = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+		
+		String nTarget = (String)req.getSession().getAttribute("redirect");
+		if (nTarget != null) target = nTarget;
 		
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
 		
@@ -166,6 +168,7 @@ public class AuthController {
 		a.setDetails(authorityUrl);
 
 		SecurityContextHolder.getContext().setAuthentication(a);
+
 		return new ModelAndView("redirect:"+target);
 	}
 	
