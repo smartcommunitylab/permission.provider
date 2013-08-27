@@ -1,6 +1,7 @@
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 
+import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -55,18 +58,31 @@ public class ClientCredentialsTokenEndpointFilter extends
 		clientId = clientId.trim();
 
 		String grant_type = request.getParameter("grant_type");
+		if ("implicit".equals(grant_type)) {
+			throw new InvalidGrantException("Invalid grant type for token endpoint: " + grant_type);
+		}
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(clientId, clientSecret);
 		if ("authorization_code".equals(grant_type) || "refresh_token".equals(grant_type)) {
 			
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
+			Set<String> grantTypes = clientDetails.getAuthorizedGrantTypes();
+			if (grantTypes == null || !grantTypes.contains(grant_type)) {
+				throw new InvalidGrantException("Unauthorized grant type: " + grant_type);
+			}
+			
 			String clientSecretServer = clientDetails.getClientSecret();
+			ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
 			String clientSecretMobile = clientDetails.getClientSecretMobile();
+			if (clientSecretMobile.equals(clientSecret) && !info.isNativeAppsAccess()) {
+				throw new InvalidGrantException("Native app access is not enabled");
+			}
 			
 			if (!clientSecretServer.equals(clientSecret) && !clientSecretMobile.equals(clientSecret)) {
                 throw new BadCredentialsException(messages.getMessage(
                         "AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 			}
+			
 			
 			User user = new User(clientId, clientSecret, clientDetails.getAuthorities());
 

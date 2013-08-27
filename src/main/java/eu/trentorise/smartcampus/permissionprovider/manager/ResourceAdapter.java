@@ -123,7 +123,7 @@ public class ResourceAdapter {
 				for (String uri : mappings.keySet()) {
 					ResourceMapping resourceMapping = mappings.get(uri);
 
-					Resource r = prepareResource(clientId, uri, resourceMapping);
+					Resource r = prepareResource(clientId, uri, resourceMapping, rp.getVisibility());
 					resourceRepository.save(r);
 					newSet.add(r.getResourceId().toString());
 					newScopes.add(r.getResourceUri());
@@ -165,7 +165,7 @@ public class ResourceAdapter {
 		
 		ResourceParameter rpdb = resourceParameterRepository.findOne(pk);
 		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
-			throw new IllegalArgumentException("Can delete only own resource parameters");
+			throw new IllegalArgumentException("Can update only own resource parameters");
 		} if (rpdb != null) {
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			
@@ -210,6 +210,7 @@ public class ResourceAdapter {
 			if (resources != null) {
 				for (Resource r : resources) {
 					ResourceMapping rm = resourceMappingMap.get(r.getResourceType());
+					System.err.println(r.getResourceType());
 					Map<String,String> params = new UriTemplate(rm.getUri()).match(r.getResourceUri());
 					if (params != null && rpdb.getValue().equals(params.get(rd.getName()))) {
 						r.setVisibility(rpdb.getVisibility());
@@ -488,7 +489,7 @@ public class ResourceAdapter {
 		
 		// add non-parametric resources to the target list
 		if (!isParametric(rm)) {
-			resources.add(prepareResource(null,rm.getUri(),rm));
+			resources.add(prepareResource(null,rm.getUri(),rm, RESOURCE_VISIBILITY.PUBLIC));
 		}
 		// recursion
 		if (rm.getResourceMapping() != null) {
@@ -511,9 +512,10 @@ public class ResourceAdapter {
 	 * @param clientId
 	 * @param uri
 	 * @param rm
+	 * @param visibility 
 	 * @return {@link Resource} instance out of mapping, clientID, and resource URI.
 	 */
-	protected Resource prepareResource(String clientId, String uri, ResourceMapping rm) {
+	protected Resource prepareResource(String clientId, String uri, ResourceMapping rm, RESOURCE_VISIBILITY visibility) {
 		Resource r = new Resource();
 		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
@@ -535,7 +537,7 @@ public class ResourceAdapter {
 		}
 		r.setResourceType(rm.getId());
 		r.setResourceUri(uri);
-		r.setVisibility(RESOURCE_VISIBILITY.PUBLIC);
+		r.setVisibility(visibility);
 		return r;
 	}
 

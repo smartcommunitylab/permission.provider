@@ -16,6 +16,7 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -136,10 +137,6 @@ public class AuthController {
 	protected String prepareRedirect(HttpServletRequest req, String path)
 			throws UnsupportedEncodingException {
 		String target = path+(req.getQueryString()==null?"":"?"+req.getQueryString());
-//		// HOOK for testing
-		if (testMode) {
-			target += "&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname";
-		}
 		return target;
 	}
 	
@@ -158,11 +155,17 @@ public class AuthController {
 	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam(required=false) String target, HttpServletRequest req) throws Exception {
 		List<GrantedAuthority> list = Collections.<GrantedAuthority>singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 		
+		
 		String nTarget = (String)req.getSession().getAttribute("redirect");
-		if (nTarget != null) target = nTarget;
+		if (nTarget == null) return new ModelAndView("redirect:/logout");
+
+		// HOOK for testing
+		if (testMode && target == null) {
+			return new ModelAndView("redirect:/eauth/"+authorityUrl+"?target="+URLEncoder.encode(nTarget, "UTF8")+"&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname");
+		}
 		
-		if (target == null) return new ModelAndView("redirect:/logout");
-		
+		if (!testMode && nTarget != null) target = nTarget;
+
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
 		
 		UserDetails user = new User(userEntity.getId().toString(),"", list);

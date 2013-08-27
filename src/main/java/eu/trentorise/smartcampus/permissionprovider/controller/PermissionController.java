@@ -95,10 +95,11 @@ public class PermissionController extends AbstractController {
 					info.getResourceApprovals().remove(r);
 					resourceIds.remove(r);
 					scopes.remove(resource.getResourceUri());
-				// if checked but requires approval, check whether  
+				// if checked but requires approval, check whether
+				// - is the resource of the same client, so add automatically	
 			    // - already approved (i.e., included in client resourceIds)
 				// - already requested (i.e., included in additional info approval requests map)	
-				} else if (resource.isApprovalRequired()) {
+				} else if (!clientId.equals(resource.getClientId()) && resource.isApprovalRequired()) {
 					if (!resourceIds.contains(r) && ! info.getResourceApprovals().containsKey(r)) {
 						info.getResourceApprovals().put(r, true);
 					}

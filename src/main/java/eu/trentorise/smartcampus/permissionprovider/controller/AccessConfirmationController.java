@@ -16,8 +16,11 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,17 +67,27 @@ public class AccessConfirmationController {
 		ClientAppInfo info = ClientAppInfo.convert(client.getAdditionalInformation());
 		List<Resource> resources = new ArrayList<Resource>();
 		
-		if (clientAuth.getResourceIds() != null) {
-			for (String rId : client.getResourceIds()) {
-				try {
-					Resource r = resourceRepository.findOne(Long.parseLong(rId));
-					// ask the user only for the resources associated to the user role and not managed by this client
-					if (r.getAuthority().equals(AUTHORITY.ROLE_USER) && !clientAuth.getClientId().equals(r.getClientId())) {
-						resources.add(r);
-					}
-				} catch (Exception e) {
-					logger.error("Error reading resource with id "+rId+": "+e.getMessage());
+		Set<String> all = client.getScope();
+		Set<String> requested = clientAuth.getScope();
+		if (requested == null || requested.isEmpty()) {
+			requested = all;
+		} else {
+			requested = new HashSet<String>(requested);
+			for (Iterator<String> iterator = requested.iterator(); iterator.hasNext();) {
+				String r = iterator.next();
+				if (!all.contains(r)) iterator.remove();
+			}
+		}
+		
+		for (String rUri : requested) {
+			try {
+				Resource r = resourceRepository.findByResourceUri(rUri);
+				// ask the user only for the resources associated to the user role and not managed by this client
+				if (r.getAuthority().equals(AUTHORITY.ROLE_USER) && !clientAuth.getClientId().equals(r.getClientId())) {
+					resources.add(r);
 				}
+			} catch (Exception e) {
+				logger.error("Error reading resource with uri "+rUri+": "+e.getMessage());
 			}
 		}
 		model.put("resources", resources);
