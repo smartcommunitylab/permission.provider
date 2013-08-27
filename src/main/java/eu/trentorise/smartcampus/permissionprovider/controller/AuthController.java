@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
@@ -122,6 +123,7 @@ public class AuthController {
 	public ModelAndView authoriseWithAuthority(@PathVariable String authority, HttpServletRequest req) throws Exception {
 		String target = prepareRedirect(req,"/oauth/authorize");
 		req.getSession().setAttribute("redirect", target);
+		
 		return new ModelAndView("redirect:/eauth/"+authority);
 	}
 
@@ -158,6 +160,8 @@ public class AuthController {
 		
 		String nTarget = (String)req.getSession().getAttribute("redirect");
 		if (nTarget != null) target = nTarget;
+		
+		if (target == null) return new ModelAndView("redirect:/logout");
 		
 		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
 		
