@@ -452,7 +452,7 @@
            name="Manage entity types" 
            uri="socialservice.type.all"
            authority="ROLE_ANY"
-           approvalRequired="true">
+           approvalRequired="false">
            <description>Manage entity types</description>
        </resourceMapping>
     </service>
