@@ -20,6 +20,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
@@ -78,6 +81,13 @@ public class Resource {
 	 */
 	@Enumerated(EnumType.STRING)
 	private RESOURCE_VISIBILITY visibility = RESOURCE_VISIBILITY.CLIENT_APP;
+	
+	@ManyToOne(optional=true)
+	@JoinColumns({ 
+		@JoinColumn(nullable=true, name="resourceparameterid",referencedColumnName="resourceid"),
+		@JoinColumn(nullable=true, name="resourceparametervalue",referencedColumnName="value"),
+	})
+	private ResourceParameter resourceParameter;
 	
 	/**
 	 * @return the resourceId
@@ -217,5 +227,19 @@ public class Resource {
 	 */
 	public void setVisibility(RESOURCE_VISIBILITY visibility) {
 		this.visibility = visibility;
+	}
+
+	/**
+	 * @return the resourceParameter
+	 */
+	public ResourceParameter getResourceParameter() {
+		return resourceParameter;
+	}
+
+	/**
+	 * @param resourceParameter the resourceParameter to set
+	 */
+	public void setResourceParameter(ResourceParameter resourceParameter) {
+		this.resourceParameter = resourceParameter;
 	}
 }

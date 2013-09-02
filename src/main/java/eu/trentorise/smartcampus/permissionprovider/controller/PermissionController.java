@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 import eu.trentorise.smartcampus.permissionprovider.manager.ResourceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
@@ -209,9 +212,33 @@ public class PermissionController extends AbstractController {
 				}
 			}
 		}
+		Map<String, Map<String,List<Resource>>> map = new HashMap<String, Map<String,List<Resource>>>();
+		for (Service s : permissions.getServices()) {
+			Map<String,List<Resource>> serviceMap = new TreeMap<String, List<Resource>>();
+			map.put(s.getId(), serviceMap);
+			serviceMap.put("__", new ArrayList<Resource>());
+			for (ResourceMapping rm : s.getResourceMapping()) {
+				List<Resource> list = otherResourcesMap.get(rm.getId());
+				if (list != null) {
+					for (Resource r : list) {
+						String key = r.getResourceParameter() == null ? "__"
+								: (r.getResourceParameter().getResourceId()
+										+ "__" + r.getResourceParameter()
+										.getValue());
+						List<Resource> targetList = serviceMap.get(key);
+						if (targetList == null) {
+							targetList = new ArrayList<Resource>();
+							serviceMap.put(key, targetList);
+						}
+						targetList.add(r);
+					}
+				}
+			}
+		} 
+		
 		permissions.setResourceApprovals(resourceApprovals);
 		permissions.setSelectedResources(selectedResources);
-		permissions.setAvailableResources(otherResourcesMap);
+		permissions.setAvailableResources(map);
 		return permissions;
 	}
 

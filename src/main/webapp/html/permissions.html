@@ -20,7 +20,7 @@
 		               <div ng-repeat="rd in item.resource">
 		                   <div class="row-fluid">
 	                           <div class="span11 "><strong>{{rd.name}}</strong> ({{rd.description}})</div>
-	                           <div class="span1"><a class="btn btn-mini btn-primary" href="#" ng-click="saveResourceParam(rd.id,'',item.id,clientId)"><i class="icon-plus icon-white"></i></a></div>
+	                           <div class="span1"><a class="btn btn-mini btn-primary" href="#" ng-click="saveResourceParam(rd.id,item.id,clientId)"><i class="icon-plus icon-white"></i></a></div>
 		                   </div>
 		                   <hr class="hr-min">
 		                   <div ng-repeat="r in permissions.ownResources[rd.id]">
@@ -35,53 +35,20 @@
 	                              </div>
 	                              <div class="span1"><a class="btn btn-mini" href="#" ng-click="removeResourceParam(r)"><i class="icon-minus"></i></a></div>
 	                          </div>
-	                          <div ng-repeat="rd2 in rd.resource" class="row-fluid">
-	                               <div class="row-fluid">
-	                                   <div class="span11"><strong class="shift">{{rd2.name}}</strong> ({{rd2.description}})</div>
-	                                   <div class="span1"><a class="btn btn-mini btn-primary" href="#" ng-click="saveResourceParam(rd2.id,r.value,item.id,clientId)"><i class="icon-plus icon-white"></i></a></div>
-	                               </div>
-	                               <hr class="hr-min shift">
-	                               <div class="row-fluid" ng-repeat="r2 in filteredResources(permissions.ownResources[rd2.id],r.value)">
-	                                   <div class="span8"><div class="shift">{{r2.value}}</div></div>
-                                       <div class="span3">
-  	                                     <select class="input-medium" ng-model="r2.visibility"  ng-change="changeResourceParamVis(r2)">
-	                                       <option value="CLIENT_APP">Current app</option>
-	                                       <option value="DEVELOPER">Owned apps</option>
-	                                       <option value="PUBLIC">Any app</option>
-	                                     </select>
-                                       </div>
-	                                   <div class="span1"><a class="btn btn-mini" href="#" ng-click="removeResourceParam(r2)"><i class="icon-minus"></i></a></div>
-	                               </div>
-	                           </div>
-                               <hr class="hr-min shift">
+                           <hr class="hr-min shift">
 		                   </div>
 		               </div>
                        <hr class="hr-min">
 	               </div>
 	               <div ng-switch-default>
-		               <div ng-repeat="rm in item.resourceMapping">
-		                  <div ng-repeat="r in permissions.availableResources[rm.id]" class="row-fluid">
+		               <div ng-repeat="(key,arr) in permissions.availableResources[item.id]">
+		                  <div ng-repeat="r in arr" class="row-fluid">
+                        <div class="span1">{{r.resourceParameter.value}}</div>
 		                    <div class="span5"><strong>{{r.resourceUri}}</strong></div>
-		                    <div class="span5">{{r.name}}</div>
-		                    <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
-                            <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
+		                    <div class="span4">{{r.name}}</div>
+                        <div class="span1">{{toAuthority(r.authority)}}</div>
+                        <div class="span1 pull-right"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"> <i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
 		                  </div>
-                          <div ng-repeat="rm2 in rm.resourceMapping">
-	                          <div ng-repeat="r in permissions.availableResources[rm2.id]" class="row-fluid">
-	                            <div class="span5"><strong>{{r.resourceUri}}</strong></div>
-	                            <div class="span5">{{r.name}}</div>
-	                            <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
-                                <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
-	                          </div>
-	                          <div ng-repeat="rm3 in rm2.resourceMapping">
-	                              <div ng-repeat="r in permissions.availableResources[rm3.id]" class="row-fluid">
-	                                <div class="span5"><strong>{{r.resourceUri}}</strong></div>
-	                                <div class="span5">{{r.name}}</div>
-	                                <div class="span1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"></div>
-	                                <div class="span1 pull-right"><i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
-	                              </div>
-	                          </div>
-                          </div>
 		               </div>
 	               </div>
 	           </div>

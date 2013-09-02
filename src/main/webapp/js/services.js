@@ -270,10 +270,10 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 		});
 	};
 	/**
-	 * create new resource parameter value for the specified resource parameter, service, parent value and client app
+	 * create new resource parameter value for the specified resource parameter, service, and client app
 	 */
-	$scope.saveResourceParam = function(resourceId,parentResource,serviceId,clientId) {
-		var perm = new ClientAppResourceParam({resourceId:resourceId,parentResource:parentResource,serviceId:serviceId,clientId:clientId});
+	$scope.saveResourceParam = function(resourceId,serviceId,clientId) {
+		var perm = new ClientAppResourceParam({resourceId:resourceId,serviceId:serviceId,clientId:clientId});
 		var n = prompt("Create new resource", "value");
 		if (n == null || n.trim().length==0) return;
 		perm.value = n.trim();
@@ -289,19 +289,7 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 		});
 	};
 
-	/**
-	 * filter resource to restrict to the specified parent
-	 */
-	$scope.filteredResources = function(resources, parentResource) {
-		var arr = [];
-		if (!resources) return arr;
-		for (var i = 0; i < resources.length; i++) {
-			if (resources[i].parentResource == parentResource) {
-				arr.push(resources[i]);
-			}
-		}
-		return arr;
-	};
+	
 	/**
 	 * delete resource parameter
 	 */
@@ -350,6 +338,13 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 		}
 		
 	};
+	
+	$scope.toAuthority = function(val) {
+		if ('ROLE_USER' == val) return 'U';
+		if ('ROLE_CLIENT'==val) return 'C';
+		if ('ROLE_CLIENT_TRUSTED'==val) return 'C';
+		return '*';
+	}
 	
 	/**
 	 * return icon for the app access type

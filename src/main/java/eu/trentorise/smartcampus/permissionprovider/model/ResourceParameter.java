@@ -41,12 +41,6 @@ public class ResourceParameter {
 	 */
 	private String serviceId;
 	/**
-	 * Parent resource
-	 */
-	@Id
-	private String parentResource;
-	
-	/**
 	 * parameter value
 	 */
 	@Id
@@ -83,18 +77,6 @@ public class ResourceParameter {
 	 */
 	public void setServiceId(String serviceId) {
 		this.serviceId = serviceId;
-	}
-	/**
-	 * @return the parentResource
-	 */
-	public String getParentResource() {
-		return parentResource;
-	}
-	/**
-	 * @param parentResource the parentResource to set
-	 */
-	public void setParentResource(String parentResource) {
-		this.parentResource = parentResource;
 	}
 	/**
 	 * @return the value

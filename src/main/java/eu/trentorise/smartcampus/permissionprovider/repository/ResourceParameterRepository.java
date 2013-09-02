@@ -38,5 +38,4 @@ public interface ResourceParameterRepository extends JpaRepository<ResourceParam
 
 	List<ResourceParameter> findByResourceId(String resourceId);
 	List<ResourceParameter> findByServiceId(String serviceId);
-	List<ResourceParameter> findByResourceIdAndParentResource(String id, String parentResource);
 }

@@ -69,8 +69,6 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
 @Transactional
 public class ResourceAdapter {
 
-	private static final String RP_ROOT = "_ROOT";
-	
 	private static Log logger = LogFactory.getLog(ResourceAdapter.class);
 	@Autowired
 	private ResourceStorage resourceStorage;
@@ -110,9 +108,6 @@ public class ResourceAdapter {
 		if (rpold != null && !clientId.equals(clientId)) {
 			throw new IllegalArgumentException("A parameter already used by another app");
 		} else if (rpold == null) {
-			if (rp.getParentResource() == null || rp.getParentResource().isEmpty()) {
-				rp.setParentResource(RP_ROOT);
-			}
 			resourceParameterRepository.save(rp);
 			// derived resources
 			Map<String, ResourceMapping> mappings = findResourceURIs(rp);
@@ -123,7 +118,7 @@ public class ResourceAdapter {
 				for (String uri : mappings.keySet()) {
 					ResourceMapping resourceMapping = mappings.get(uri);
 
-					Resource r = prepareResource(clientId, uri, resourceMapping, rp.getVisibility());
+					Resource r = prepareResource(clientId, rp,  uri, resourceMapping, rp.getVisibility());
 					resourceRepository.save(r);
 					newSet.add(r.getResourceId().toString());
 					newScopes.add(r.getResourceUri());
@@ -169,12 +164,6 @@ public class ResourceAdapter {
 		} if (rpdb != null) {
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			
-			ResourceParameter parent = findParentResourceParameter(rpdb);
-			
-			if (parent != null && !Config.checkVisibility(parent.getVisibility(),visibility)) {
-				throw new IllegalArgumentException("Can not increase visibility with respect to the parent resource");
-			} 
-			
 			Map<String, RESOURCE_VISIBILITY> visibilityMap = new HashMap<String, Config.RESOURCE_VISIBILITY>();
 			rpdb.setVisibility(visibility);
 			for (String uri : findResourceURIs(rpdb).keySet()) {
@@ -182,22 +171,6 @@ public class ResourceAdapter {
 				Resource res = resourceRepository.findByResourceUri(uri);
 				res.setVisibility(visibility);
 				resourceRepository.save(res);
-			}
-			
-			List<ResourceParameter> children = findChildResourceParameters(rpdb);
-
-			for (ResourceParameter child : children) {
-				RESOURCE_VISIBILITY newVis = Config.alignVisibility(visibility,child.getVisibility()); 
-				if (newVis != child.getVisibility()) {
-					for (String uri : findResourceURIs(child).keySet()) {
-						visibilityMap.put(uri, newVis);
-						Resource res = resourceRepository.findByResourceUri(uri);
-						res.setVisibility(newVis);
-						resourceRepository.save(res);
-					}
-				}
-				child.setVisibility(newVis);
-				resourceParameterRepository.save(child);
 			}
 			
 			if (!checkUsages(visibilityMap, clientId, client.getDeveloperId())) {
@@ -272,21 +245,15 @@ public class ResourceAdapter {
 		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
 			throw new IllegalArgumentException("Can delete only own resource parameters");
 		} if (rpdb != null) {
-			// main and all children
-			List<ResourceParameter> all = new ArrayList<ResourceParameter>();
-			all.add(rpdb);
-			all.addAll(findChildResourceParameters(rpdb));
 			Set<String> ids = new HashSet<String>();
 			Set<String> scopes = new HashSet<String>();
 			// aggregate all derived resource uris
-			for (ResourceParameter rp : all) {
-				Collection<String> uris = findResourceURIs(rp).keySet();
-				for (String uri : uris) {
-					Resource r = resourceRepository.findByResourceUri(uri);
-					if (r != null) {
-						ids.add(r.getResourceId().toString());
-						scopes.add(r.getResourceUri());
-					}
+			Collection<String> uris = findResourceURIs(rpdb).keySet();
+			for (String uri : uris) {
+				Resource r = resourceRepository.findByResourceUri(uri);
+				if (r != null) {
+					ids.add(r.getResourceId().toString());
+					scopes.add(r.getResourceUri());
 				}
 			}
 			ClientDetailsEntity owner = null;
@@ -303,9 +270,6 @@ public class ResourceAdapter {
 			// delete main and its children
 			for (String id : ids){
 				resourceRepository.delete(Long.parseLong(id));
-			}
-			for (ResourceParameter rp : all) {
-				resourceParameterRepository.delete(rp);
 			}
 			if (owner != null) {
 				Set<String> oldScopes = new HashSet<String>(owner.getScope());
@@ -328,18 +292,12 @@ public class ResourceAdapter {
 	private Map<String,ResourceMapping> findResourceURIs(ResourceParameter rpdb) {
 		Map<String, ResourceMapping> res = new HashMap<String, ResourceMapping>();
 		Map<String,String> params = new HashMap<String, String>();
-		ResourceParameter rp = rpdb;
+		params.put(rpdb.getResourceId(), rpdb.getValue());
 		// the service where parameter is defined
 		Service service = serviceMap.get(rpdb.getServiceId());
 		if (service == null) {
 			throw new IllegalArgumentException("Service "+rpdb.getServiceId() +" is not found.");
 		}
-		// find all the parent parameters
-		while (true) {
-			params.put(rp.getResourceId(), rp.getValue());
-			rp = findParentResourceParameter(rp);
-			if (rp == null) break;
-		}	
 		// all the service resource mappings
 		List<ResourceMapping> list = flatServiceMappings.get(service.getId());
 		if (list != null) {
@@ -357,43 +315,6 @@ public class ResourceAdapter {
 		
 		return res;
 	}
-	/**
-	 * @param child
-	 * @return parant resource parameter of the specified one
-	 */
-	private ResourceParameter findParentResourceParameter(ResourceParameter child) {
-		ResourceParameterKey rpk = new ResourceParameterKey();
-		rpk.resourceId = resourceTreeMap.get(child.getResourceId());
-		if (rpk.resourceId == null) {
-			return null;
-		}
-		rpk.value = child.getParentResource();
-		return resourceParameterRepository.findOne(rpk);
-	}
-	
-	/**
-	 * Find all the children parameters of the specified parameter.
-	 * @param parent
-	 * @return
-	 */
-	private List<ResourceParameter> findChildResourceParameters(ResourceParameter parent) {
-		ResourceDeclaration rd = resourceDeclarationMap.get(parent.getResourceId());
-		List<ResourceParameter> result = new ArrayList<ResourceParameter>();
-		if (rd != null && rd.getResource() != null) {
-			// child declarations
-			for (ResourceDeclaration childDeclaration : rd.getResource()) {
-				// child instances
-				List<ResourceParameter> children = resourceParameterRepository.findByResourceIdAndParentResource(childDeclaration.getId(), parent.getValue());
-				result.addAll(children);
-				for (ResourceParameter child : children) {
-					// recursion
-					result.addAll(findChildResourceParameters(child));
-				}
-			}
-		}
-		return result;
-	}
-
 
 	/**
 	 * Read resource parameters owned by the specified client, optionally restricting 
@@ -489,7 +410,7 @@ public class ResourceAdapter {
 		
 		// add non-parametric resources to the target list
 		if (!isParametric(rm)) {
-			resources.add(prepareResource(null,rm.getUri(),rm, RESOURCE_VISIBILITY.PUBLIC));
+			resources.add(prepareResource(null, null, rm.getUri(),rm, RESOURCE_VISIBILITY.PUBLIC));
 		}
 		// recursion
 		if (rm.getResourceMapping() != null) {
@@ -510,17 +431,19 @@ public class ResourceAdapter {
 
 	/**
 	 * @param clientId
+	 * @param rp 
 	 * @param uri
 	 * @param rm
 	 * @param visibility 
 	 * @return {@link Resource} instance out of mapping, clientID, and resource URI.
 	 */
-	protected Resource prepareResource(String clientId, String uri, ResourceMapping rm, RESOURCE_VISIBILITY visibility) {
+	protected Resource prepareResource(String clientId, ResourceParameter rp, String uri, ResourceMapping rm, RESOURCE_VISIBILITY visibility) {
 		Resource r = new Resource();
 		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
 		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority()));
 		r.setClientId(clientId);
+		r.setResourceParameter(rp);
 		UriTemplate template = new UriTemplate(rm.getUri());
 		Map<String,String> params = template.match(uri);
 		template = new UriTemplate(rm.getDescription());

@@ -32,23 +32,10 @@ public class Permissions {
 
 	private Map<String,List<ResourceParameter>> ownResources;
 	private Collection<Service> services;
-	private Map<String,List<Resource>> availableResources;
+	private Map<String,Map<String, List<Resource>>> availableResources;
 	private Map<String,Boolean> selectedResources;
 	
 	private Map<String,Integer> resourceApprovals;
-	
-	/**
-	 * @return the availableResources
-	 */
-	public Map<String, List<Resource>> getAvailableResources() {
-		return availableResources;
-	}
-	/**
-	 * @param availableResources the availableResources to set
-	 */
-	public void setAvailableResources(Map<String, List<Resource>> availableResources) {
-		this.availableResources = availableResources;
-	}
 	/**
 	 * @return the ownResources
 	 */
@@ -78,6 +65,19 @@ public class Permissions {
 	 */
 	public Map<String, Boolean> getSelectedResources() {
 		return selectedResources;
+	}
+	/**
+	 * @return the availableResources
+	 */
+	public Map<String, Map<String, List<Resource>>> getAvailableResources() {
+		return availableResources;
+	}
+	/**
+	 * @param availableResources the availableResources to set
+	 */
+	public void setAvailableResources(
+			Map<String, Map<String, List<Resource>>> availableResources) {
+		this.availableResources = availableResources;
 	}
 	/**
 	 * @param selectedResources the selectedResources to set
