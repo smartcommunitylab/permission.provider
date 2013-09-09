@@ -28,9 +28,10 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
@@ -62,13 +63,14 @@ public class ResourceAccessController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping("/resources/{resourceUri}/access")
-	public @ResponseBody Boolean canAccessResource(@RequestHeader("Authorization") String token, @PathVariable String resourceUri, HttpServletRequest request) {
+	@RequestMapping("/resources/access")
+	public @ResponseBody Boolean canAccessResource(@RequestHeader("Authorization") String token, @RequestParam String scope, HttpServletRequest request) {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			Collection<String> scope = auth.getAuthorizationRequest().getScope();
-			if (scope != null && !scope.isEmpty() && scope.contains(resourceUri)) {
+			Collection<String> actualScope = auth.getAuthorizationRequest().getScope();
+			Collection<String> scopeSet = StringUtils.commaDelimitedListToSet(scope);
+			if (actualScope != null && !actualScope.isEmpty() && actualScope.containsAll(scopeSet)) {
 				return true;
 			}
 		} catch (AuthenticationException e) {
