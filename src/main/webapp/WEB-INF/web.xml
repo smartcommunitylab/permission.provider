@@ -48,7 +48,6 @@
         <url-pattern>/html/*</url-pattern>
         <url-pattern>/js/*</url-pattern>
         <url-pattern>/index.html</url-pattern>
-        <url-pattern>/resources/*</url-pattern>
     </servlet-mapping>
     
 
