@@ -9,7 +9,9 @@ function AdminController($scope, $resource) {
 	$scope.error = '';
 	// info message
 	$scope.info = '';
-
+	// title
+	$scope.title = 'App Approvals';
+	
 	$scope.currentView = 'approvals';
 	$scope.activeView = function(view) {
 		return view == $scope.currentView ? 'active' : '';
@@ -18,8 +20,14 @@ function AdminController($scope, $resource) {
 	    window.document.location = "./admin/logout";
 	};
 	
-	// resource reference for the app API
+	// resource reference for the approval API
 	var ClientApprovals = $resource('admin/approvals/:clientId', {}, {
+		query : { method : 'GET' },
+		approve : {method : 'POST'}
+	});
+
+	// resource reference for the IdP API
+	var IdPApprovals = $resource('admin/idps/:clientId', {}, {
 		query : { method : 'GET' },
 		approve : {method : 'POST'}
 	});
@@ -36,6 +44,14 @@ function AdminController($scope, $resource) {
 				$scope.error = 'Failed to load approval requests: '+response.errorMessage;
 			}	
 		});
+		IdPApprovals.query(function(response){
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.idps = response.data;
+			} else {
+				$scope.error = 'Failed to load IdP requests: '+response.errorMessage;
+			}	
+		});
 	};
 	init();
 	
@@ -48,6 +64,19 @@ function AdminController($scope, $resource) {
 				$scope.approvals = response.data;
 			} else {
 				$scope.error = 'Failed to approve resource access: '+response.errorMessage;
+			}	
+		});
+	};
+	
+	$scope.approveIdP = function(clientId) {
+		var newClient = new IdPApprovals();
+		newClient.$approve({clientId:clientId},function(response){
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.info = 'IdP approved successfully';
+				$scope.idps = response.data;
+			} else {
+				$scope.error = 'Failed to approve IdP: '+response.errorMessage;
 			}	
 		});
 	};

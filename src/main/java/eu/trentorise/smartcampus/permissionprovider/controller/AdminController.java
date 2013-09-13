@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,6 +42,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.ApprovalData;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.IdPData;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
@@ -116,7 +118,7 @@ public class AdminController extends AbstractController{
 			List<ApprovalData> list = new ArrayList<ApprovalData>();
 			for (ClientDetailsEntity e : clients) {
 				ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
-				if (!info.getResourceApprovals().isEmpty()) {
+				if (info.getResourceApprovals() != null && !info.getResourceApprovals().isEmpty()) {
 					ApprovalData data = new ApprovalData();
 					data.setClientId(e.getClientId());
 					data.setName(info.getName());
@@ -131,13 +133,48 @@ public class AdminController extends AbstractController{
 			}
 			result.setData(list);
 		} catch (Exception e) {
+			e.printStackTrace();
 			result.setResponseCode(RESPONSE.ERROR);
 			result.setErrorMessage(e.getMessage());
 		}
 		return result;
 	}
 
-	@RequestMapping("/admin/approvals/{clientId}")
+	@RequestMapping("/admin/idps")
+	public @ResponseBody Response getIdPs() {
+		Response result = new Response();
+		result.setResponseCode(RESPONSE.OK);
+		
+		try {
+			List<ClientDetailsEntity> clients = clientDetailsRepository.findAll();
+			List<IdPData> list = new ArrayList<IdPData>();
+			for (ClientDetailsEntity e : clients) {
+				ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
+				if (info.getIdentityProviders() != null && !info.getIdentityProviders().isEmpty()) {
+					IdPData data = new IdPData();
+					data.setClientId(e.getClientId());
+					data.setName(info.getName());
+					data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
+					data.setIdps(new ArrayList<String>());
+					for (String key : info.getIdentityProviders().keySet()) {
+						Integer value = info.getIdentityProviders().get(key);
+						if (ClientAppInfo.REQUESTED == value) {
+							data.getIdps().add(key);
+						}
+					}
+					if (!data.getIdps().isEmpty()) list.add(data);
+				}
+			}
+			result.setData(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setResponseCode(RESPONSE.ERROR);
+			result.setErrorMessage(e.getMessage());
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="/admin/approvals/{clientId}", method=RequestMethod.POST)
 	public @ResponseBody Response approve(@PathVariable String clientId) {
 		try {
 			ClientDetailsEntity e = clientDetailsRepository.findByClientId(clientId);
@@ -159,6 +196,27 @@ public class AdminController extends AbstractController{
 				clientDetailsRepository.save(e);
 			}
 			return getApprovals();
+		} catch (Exception e) {
+			Response result = new Response();
+			result.setResponseCode(RESPONSE.ERROR);
+			result.setErrorMessage(e.getMessage());
+			return result;
+		}
+	}
+
+	@RequestMapping(value="/admin/idps/{clientId}", method=RequestMethod.POST)
+	public @ResponseBody Response approveIdP(@PathVariable String clientId) {
+		try {
+			ClientDetailsEntity e = clientDetailsRepository.findByClientId(clientId);
+			ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
+			if (!info.getIdentityProviders().isEmpty()) {
+				for (String key : info.getIdentityProviders().keySet()) {
+					info.getIdentityProviders().put(key, ClientAppInfo.APPROVED);
+				}
+				e.setAdditionalInformation(info.toJson());
+				clientDetailsRepository.save(e);
+			}
+			return getIdPs();
 		} catch (Exception e) {
 			Response result = new Response();
 			result.setResponseCode(RESPONSE.ERROR);

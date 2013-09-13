@@ -33,9 +33,9 @@
     <div class="navbar navbar-fixed-top navbar-inverse ">
       <div class="navbar-inner">
         <div class="container" >
-          <ul class="nav" role="navigation">
-            <li class="active"><a href="#" ng-click="currentView='approvals'">App approvals</a></li>
-          </ul>
+<!--           <ul class="nav" role="navigation"> -->
+<!--             <li class="active"><a href="#" ng-click="currentView='approvals'">App approvals</a></li> -->
+<!--           </ul> -->
           <ul class="nav pull-right">
             <li id="fat-menu" class="dropdown">
               <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown"><%=request.getAttribute("username") %> <b class="caret"></b></a>
@@ -48,7 +48,27 @@
       </div>
     </div>
     <div class="container">
-        <div ng-include="'./html/'+currentView+'.html'"></div>
+      <div class="row">
+        <div class="span2">
+			    <div class="well sidebar-nav">
+			      <ul class="nav nav-list">
+			        <li><a href="#" ng-click="currentView='approvals';title='App Approvals'">App approvals</a></li>
+              <li><a href="#" ng-click="currentView='idps';title='IdP Approvals'">IdP approvals</a></li>
+			      </ul>
+			    </div>
+		    <!--/.well -->
+		    </div>
+			  <div class="span9 well">
+			    <div class="alert alert-error" ng-show="error != ''">{{error}}</div>
+			    <div class="alert alert-success" ng-show="info != ''">{{info}}</div>
+			    <div class="row">
+			      <div class="span7">
+			          <strong>{{title}}</strong>
+			      </div>
+			    </div>
+	        <div ng-include="'./html/'+currentView+'.html'"></div>
+	      </div>
+      </div>
 	    <hr>
 	    <footer>
 	      <p>&copy; SmartCampus 2013</p>
