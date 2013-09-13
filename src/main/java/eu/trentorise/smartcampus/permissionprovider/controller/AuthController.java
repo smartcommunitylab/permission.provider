@@ -126,11 +126,15 @@ public class AuthController {
 			model.put("message", "No Identity Providers assigned to the app");
 			return new ModelAndView("oauth_error", model);	
 		}
-		
-		model.put("authorities", authorities);
+
 		String target = prepareRedirect(req,"/oauth/authorize");
 		req.getSession().setAttribute("redirect", target);
 		req.getSession().setAttribute("client_id", clientId);
+		
+		if (authorities.size() == 1) {
+			return new ModelAndView("redirect:/eauth/"+authorities.keySet().iterator().next());
+		}
+		model.put("authorities", authorities);
 		
 		return new ModelAndView("authorities", model);
 	}

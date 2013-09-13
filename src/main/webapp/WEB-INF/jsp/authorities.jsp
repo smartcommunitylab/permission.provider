@@ -15,6 +15,7 @@
        limitations under the License.
 
 --%>
+<%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF8"%>
 <!DOCTYPE html>
 <html>
@@ -31,15 +32,12 @@
 	<div class="authorities">
 		<p>Please choose the provider for your login</p>
 		<ul>
+<% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
+   for (String s : authorities.keySet()) {%>		
             <li>
-		      <a href="<%=request.getContextPath() %>/eauth/fbk">FBK</a>
+		      <a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a>
             </li>
-            <li>
-              <a href="<%=request.getContextPath() %>/eauth/unitn">UNITN</a>
-            </li>
-            <li>
-              <a href="<%=request.getContextPath() %>/eauth/google">GOOGLE</a>
-            </li>
+<%  } %>            
 		</ul>
 	</div>
 </body>
