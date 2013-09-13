@@ -35,6 +35,16 @@
             <th>Native app access</th>
             <td><input type="checkbox" ng-model="app.nativeAppsAccess"></td>
         </tr>
+        <tr>
+	        <th>Enabled identity providers</th>
+	        <td>
+	           <table class="idps">
+	             <tr ng-repeat="(k,v) in app.identityProviders">
+	             <td>{{k}}</td><td><input type="checkbox" ng-model="app.identityProviders[k]"></td><td><i class="{{idpIcon(v,app.identityProviderApproval[k])}}"></i></td>
+	             </tr>
+	           </table>
+	        </td>
+        </tr>
     </table>
     <button type="submit" class="btn btn-primary">Save settings</button>
 </form>

@@ -88,6 +88,26 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	init();
 
 	/**
+	 * Generate string of identity providers allowed for the app
+	 */
+	$scope.identityProviders = function(app) {
+		var res = '';
+		for (var i in app.identityProviderApproval) {
+			if (app.identityProviderApproval[i]) {
+				res += i+' ';
+			}
+		}
+		return res;
+	};
+	
+	$scope.idpIcon = function(req,app) {
+		if (!req) return null;
+		if (app == null) return 'icon-time';
+		if (app) return 'icon-ok';
+		return 'icon-remove';
+	};
+	
+	/**
 	 * return 'active' if the specified client is selected
 	 */
 	$scope.activeClient = function(clientId) {
@@ -344,7 +364,7 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 		if ('ROLE_CLIENT'==val) return 'C';
 		if ('ROLE_CLIENT_TRUSTED'==val) return 'C';
 		return '*';
-	}
+	};
 	
 	/**
 	 * return icon for the app access type

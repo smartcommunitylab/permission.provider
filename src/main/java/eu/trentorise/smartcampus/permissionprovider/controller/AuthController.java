@@ -19,8 +19,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,9 +43,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 
 
@@ -59,6 +61,9 @@ public class AuthController {
 	private AttributesAdapter attributesAdapter;
 	@Value("${mode.testing}")
 	private boolean testMode;
+	@Autowired
+	private ClientDetailsAdapter clientDetailsAdapter;
+	
 
 	@Autowired
 	private TokenStore tokenStore;
@@ -105,9 +110,27 @@ public class AuthController {
 	public ModelAndView authorise(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		
+		String clientId = req.getParameter("client_id");
+		if (clientId == null || clientId.isEmpty()) {
+			model.put("message", "Missing client_id");
+			return new ModelAndView("oauth_error", model);	
+		}
+		Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
+		Set<String> all = new HashSet<String>(authorities.keySet());
+		for (String idp : all) {
+			if (!idps.contains(idp)) authorities.remove(idp);
+		}
+		
+		if (authorities.isEmpty()) {
+			model.put("message", "No Identity Providers assigned to the app");
+			return new ModelAndView("oauth_error", model);	
+		}
+		
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/oauth/authorize");
 		req.getSession().setAttribute("redirect", target);
+		req.getSession().setAttribute("client_id", clientId);
 		
 		return new ModelAndView("authorities", model);
 	}
@@ -122,8 +145,23 @@ public class AuthController {
 	 */
 	@RequestMapping("/eauth/authorize/{authority}")
 	public ModelAndView authoriseWithAuthority(@PathVariable String authority, HttpServletRequest req) throws Exception {
+		String clientId = req.getParameter("client_id");
+		if (clientId == null || clientId.isEmpty()) {
+			Map<String,Object> model = new HashMap<String, Object>();
+			model.put("message", "Missing client_id");
+			return new ModelAndView("oauth_error", model);	
+		}
+		Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
+		if (!idps.contains(authority)) {
+			Map<String,Object> model = new HashMap<String, Object>();
+			model.put("message", "incorrect identity provider for the app");
+			return new ModelAndView("oauth_error", model);	
+		}
+
+		
 		String target = prepareRedirect(req,"/oauth/authorize");
 		req.getSession().setAttribute("redirect", target);
+		req.getSession().setAttribute("client_id", clientId);
 		
 		return new ModelAndView("redirect:/eauth/"+authority);
 	}
@@ -159,6 +197,16 @@ public class AuthController {
 		String nTarget = (String)req.getSession().getAttribute("redirect");
 		if (nTarget == null) return new ModelAndView("redirect:/logout");
 
+		String clientId = (String) req.getSession().getAttribute("client_id");
+		if (clientId != null) {
+			Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
+			if (!idps.contains(authorityUrl)) {
+				Map<String,Object> model = new HashMap<String, Object>();
+				model.put("message", "incorrect identity provider for the app");
+				return new ModelAndView("oauth_error", model);	
+			}
+		}
+		
 		// HOOK for testing
 		if (testMode && target == null) {
 			return new ModelAndView("redirect:/eauth/"+authorityUrl+"?target="+URLEncoder.encode(nTarget, "UTF8")+"&openid.ext1.value.email=my@mail&openid.ext1.value.name=name&openid.ext1.value.surname=surname");

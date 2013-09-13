@@ -26,6 +26,12 @@ import org.codehaus.jackson.map.ObjectMapper;
  *
  */
 public class ClientAppInfo {
+	
+	public static final int APPROVED = 1;
+	public static final int REJECTED = 2;
+	public static final int REQUESTED = 0;
+	public static final Integer UNKNOWN = -1;
+
 
 	private static ObjectMapper mapper = new ObjectMapper();
 	
@@ -34,6 +40,8 @@ public class ClientAppInfo {
 	private boolean nativeAppsAccess;
 
 	private Map<String, Boolean> resourceApprovals;
+	
+	private Map<String, Integer> identityProviders;
 	
 	public static ClientAppInfo convert(Map<String,Object> map) {
 		return mapper.convertValue(map, ClientAppInfo.class);
@@ -83,5 +91,19 @@ public class ClientAppInfo {
 	 */
 	public void setResourceApprovals(Map<String, Boolean> resourceApprovals) {
 		this.resourceApprovals = resourceApprovals;
+	}
+
+	/**
+	 * @return the identityProviders
+	 */
+	public Map<String, Integer> getIdentityProviders() {
+		return identityProviders;
+	}
+
+	/**
+	 * @param identityProviders the identityProviders to set
+	 */
+	public void setIdentityProviders(Map<String, Integer> identityProviders) {
+		this.identityProviders = identityProviders;
 	}
 }

@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
@@ -62,6 +64,8 @@ public class ClientDetailsAdapter {
 	private ResourceRepository resourceRepository;
 	@Autowired
 	private ResourceParameterRepository resourceParameterRepository;
+	@Autowired
+	private AttributesAdapter attributesAdapter;
 	/**
 	 * Generate new value to be used as clientId (String)
 	 * @return
@@ -104,10 +108,38 @@ public class ClientDetailsAdapter {
 		res.setClientSecretMobile(e.getClientSecretMobile());
 		res.setGrantedTypes(e.getAuthorizedGrantTypes());
 		
+		// approval status
+		res.setIdentityProviderApproval(new HashMap<String, Boolean>());
+		// request status
+		res.setIdentityProviders(new HashMap<String, Boolean>());
+		for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
+			res.getIdentityProviders().put(key, false);
+		}
+		
+		
 		ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
 		if (info != null) {
 			res.setName(info.getName());
 			res.setNativeAppsAccess(info.isNativeAppsAccess());
+			if (info.getIdentityProviders() != null) {
+				for (String key : info.getIdentityProviders().keySet()) {
+					switch (info.getIdentityProviders().get(key)) {
+					case ClientAppInfo.APPROVED:
+						res.getIdentityProviderApproval().put(key, true);
+						res.getIdentityProviders().put(key, true);
+						break;
+					case ClientAppInfo.REJECTED:
+						res.getIdentityProviderApproval().put(key, false);
+						res.getIdentityProviders().put(key, true);
+						break;
+					case ClientAppInfo.REQUESTED:
+						res.getIdentityProviders().put(key, true);
+						break;
+					default:
+						break;
+					}
+				}
+			}
 		}
 		// access server-side corresponds to the 'authorization grant' flow.
 		res.setServerSideAccess(e.getAuthorizedGrantTypes().contains(GT_AUTHORIZATION_CODE));
@@ -148,14 +180,12 @@ public class ClientDetailsAdapter {
 			}
 			info.setName(data.getName());
 			info.setNativeAppsAccess(data.isNativeAppsAccess());
-			client.setAdditionalInformation(info.toJson());
 			Set<String> types = new HashSet<String>(client.getAuthorizedGrantTypes());
 			if (data.isBrowserAccess()) {
 				types.add(GT_IMPLICIT);
 			} else {
 				types.remove(GT_IMPLICIT);
 			} 
-			// TODO decide the grant type for native app access
 			if (data.isServerSideAccess() || data.isNativeAppsAccess()) {
 				types.add(GT_AUTHORIZATION_CODE);
 				types.add(GT_REFRESH_TOKEN);
@@ -164,7 +194,23 @@ public class ClientDetailsAdapter {
 				types.remove(GT_REFRESH_TOKEN);
 			}
 			client.setAuthorizedGrantTypes(StringUtils.collectionToCommaDelimitedString(types));
+			if (info.getIdentityProviders() == null) {
+				info.setIdentityProviders(new HashMap<String, Integer>());
+			}
 			
+			for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
+				if (data.getIdentityProviders().get(key)) {
+					Integer value = info.getIdentityProviders().get(key);
+					AuthorityMapping a = attributesAdapter.getAuthority(key);
+					if (value == null || value == ClientAppInfo.UNKNOWN) {
+						info.getIdentityProviders().put(key, a.isPublic() ? ClientAppInfo.APPROVED : ClientAppInfo.REQUESTED);
+					}
+				} else {
+					info.getIdentityProviders().remove(key);
+				}
+			}
+			
+			client.setAdditionalInformation(info.toJson());
 			client.setRedirectUri(data.getRedirectUris());
 		} catch (Exception e) {
 			log .error("failed to convert an object: "+e.getMessage(), e);
@@ -218,5 +264,24 @@ public class ClientDetailsAdapter {
 		}
 		clientDetailsRepository.save(client);
 		return client;
+	}
+	/**
+	 * Return the set of identity providers allowed for the client
+	 * @param clientId
+	 * @return set of identity providers IDs (authorities)
+	 */
+	public Set<String> getIdentityProviders(String clientId) {
+		ClientDetailsEntity entity = clientDetailsRepository.findByClientId(clientId);
+		if (entity == null) throw new IllegalArgumentException("client not found");
+		ClientAppInfo info = ClientAppInfo.convert(entity.getAdditionalInformation());
+		Set<String> res = new HashSet<String>();
+		if (info.getIdentityProviders() != null) {
+			for (String s : info.getIdentityProviders().keySet()) {
+				if (ClientAppInfo.APPROVED == info.getIdentityProviders().get(s)) {
+					res.add(s);
+				}
+			}
+		}
+		return res;
 	}
 }

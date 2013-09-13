@@ -173,4 +173,12 @@ public class AttributesAdapter {
 		return identityAttributes.containsKey(a.getAuthority().getName()) && 
 				identityAttributes.get(a.getAuthority().getName()).contains(a.getKey());
 	}
+
+	/**
+	 * @param key
+	 * @return
+	 */
+	public AuthorityMapping getAuthority(String key) {
+		return authorities.get(key);
+	}
 }

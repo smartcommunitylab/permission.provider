@@ -16,6 +16,7 @@
 
 package eu.trentorise.smartcampus.permissionprovider.model;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,11 +32,14 @@ public class ClientAppBasic {
 	private String name;
 	private String redirectUris;
 	private Set<String> grantedTypes;
-	
+
 	private boolean nativeAppsAccess;
 	private boolean browserAccess;
 	private boolean serverSideAccess;
-	
+
+	private Map<String,Boolean> identityProviders;
+	private Map<String,Boolean> identityProviderApproval;
+
 	/**
 	 * @return the clientId
 	 */
@@ -143,5 +147,30 @@ public class ClientAppBasic {
 	 */
 	public void setClientSecretMobile(String clientSecretMobile) {
 		this.clientSecretMobile = clientSecretMobile;
+	}
+	/**
+	 * @return the identityProviders
+	 */
+	public Map<String, Boolean> getIdentityProviders() {
+		return identityProviders;
+	}
+	/**
+	 * @param identityProviders the identityProviders to set
+	 */
+	public void setIdentityProviders(Map<String, Boolean> identityProviders) {
+		this.identityProviders = identityProviders;
+	}
+	/**
+	 * @return the identityProviderApproval
+	 */
+	public Map<String, Boolean> getIdentityProviderApproval() {
+		return identityProviderApproval;
+	}
+	/**
+	 * @param identityProviderApproval the identityProviderApproval to set
+	 */
+	public void setIdentityProviderApproval(
+			Map<String, Boolean> identityProviderApproval) {
+		this.identityProviderApproval = identityProviderApproval;
 	}
 }

@@ -60,7 +60,6 @@ public class ClientDetailsRowMapper implements RowMapper<ClientDetails> {
 			} else {
 				details.setAdditionalInformation(new HashMap<String, Object>());
 			}
-			details.getAdditionalInformation().put("client_secret_mobile", rs.getString("client_secret_mobile"));
 			return details;
 		}
 

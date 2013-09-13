@@ -183,7 +183,6 @@ public class ResourceAdapter {
 			if (resources != null) {
 				for (Resource r : resources) {
 					ResourceMapping rm = resourceMappingMap.get(r.getResourceType());
-					System.err.println(r.getResourceType());
 					Map<String,String> params = new UriTemplate(rm.getUri()).match(r.getResourceUri());
 					if (params != null && rpdb.getValue().equals(params.get(rd.getName()))) {
 						r.setVisibility(rpdb.getVisibility());
@@ -281,6 +280,7 @@ public class ResourceAdapter {
 				clientDetailsRepository.save(owner);
 				
 			}
+			resourceParameterRepository.delete(rpdb);
 		}	
 	}
 	

@@ -76,6 +76,9 @@ public class AuthorityMapping {
     @XmlAttribute(name = "useParams", required = false)
     protected boolean useParams;
 
+    @XmlAttribute(name = "public", required = false)
+    protected boolean _public;
+
     /**
      * Gets the value of the attributes property.
      * 
@@ -194,6 +197,20 @@ public class AuthorityMapping {
 	 */
 	public void setUseParams(boolean useParams) {
 		this.useParams = useParams;
+	}
+
+	/**
+	 * @return the _public
+	 */
+	public boolean isPublic() {
+		return _public;
+	}
+
+	/**
+	 * @param _public the _public to set
+	 */
+	public void setPublic(boolean _public) {
+		this._public = _public;
 	}
 
     

@@ -18,6 +18,9 @@
       .sidebar-nav {
         padding: 9px 0;
       }
+      table.idps, table.idps th, table.idps td {  
+        border: none;  
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
