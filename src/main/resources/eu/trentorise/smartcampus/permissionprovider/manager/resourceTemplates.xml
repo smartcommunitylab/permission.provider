@@ -367,4 +367,49 @@
 		</resourceMapping>
 
 	</service>
+	
+		<service name="Unidata service" id="smartcampus.unidataservice">
+		<description>Information about students.</description>
+		
+	    <resourceMapping id="smartcampus.unidataservice.studentdata.me"
+	      name="Student data" uri="smartcampus.unidataservice.studentdata.me"
+	      authority="ROLE_USER" approvalRequired="false">
+	      <description>Get student university data</description>
+	    </resourceMapping>    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.studentexams.me"
+	      name="Student exams" uri="smartcampus.unidataservice.studentexams.me"
+	      authority="ROLE_USER" approvalRequired="false">
+	      <description>Get student exams</description>
+	    </resourceMapping>      
+	    
+	    <resourceMapping id="smartcampus.unidataservice.operacard.me"
+	      name="Student opera card" uri="smartcampus.unidataservice.operacard.me"
+	      authority="ROLE_USER" approvalRequired="false">
+	      <description>Get student Opera Universitaria card</description>
+	    </resourceMapping>   
+	    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.studentdata.app"
+	      name="Student data" uri="smartcampus.unidataservice.studentdata.app"
+	      authority="ROLE_CLIENT" approvalRequired="true">
+	      <description>Get student university data</description>
+	    </resourceMapping>    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.studentexams.app"
+	      name="Student exams" uri="smartcampus.unidataservice.studentexams.app"
+	      authority="ROLE_CLIENT" approvalRequired="true">
+	      <description>Get student exams</description>
+	    </resourceMapping>      
+	    
+	    <resourceMapping id="smartcampus.unidataservice.operacard.app"
+	      name="Student opera card" uri="smartcampus.unidataservice.operacard.app"
+	      authority="ROLE_CLIENT" approvalRequired="true">
+	      <description>Get student Opera Universitaria card</description>
+	    </resourceMapping>   	    
+	    
+    </service>		
+		
+	
+	
 </services>
