@@ -28,7 +28,7 @@
 		</resourceMapping>
     <resourceMapping id="smartcampus.profile.accountprofile.all"
       name="Read all account profiles" uri="smartcampus.profile.accountprofile.all"
-      authority="ROLE_ANY">
+      authority="ROLE_CLIENT" approvalRequired="true">
       <description>Account profile of the platform users. Read access only.</description>
     </resourceMapping>
 			</service>

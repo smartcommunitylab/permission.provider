@@ -156,11 +156,6 @@ public class BasicProfileController extends AbstractController {
 	AccountProfiles findAccountProfiles(HttpServletResponse response, @RequestParam List<String> userIds)
 			throws IOException {
 		try {
-			Long user = getUserId();
-			if (user == null) {
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				return null;
-			}
 			AccountProfiles profiles = new AccountProfiles();
 			profiles.setProfiles(profileManager.getAccountProfilesById(userIds));
 			return profiles;
