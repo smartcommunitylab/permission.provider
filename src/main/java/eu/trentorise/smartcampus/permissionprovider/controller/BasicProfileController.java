@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.profile.model.AccountProfile;
+import eu.trentorise.smartcampus.profile.model.AccountProfiles;
 import eu.trentorise.smartcampus.profile.model.BasicProfile;
 import eu.trentorise.smartcampus.profile.model.BasicProfiles;
 
@@ -143,6 +144,26 @@ public class BasicProfileController extends AbstractController {
 				return null;
 			}
 			return profileManager.getAccountProfileById(user.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return null;
+		}
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/accountprofile/profiles")
+	public @ResponseBody
+	AccountProfiles findAccountProfiles(HttpServletResponse response, @RequestParam List<String> userIds)
+			throws IOException {
+		try {
+			Long user = getUserId();
+			if (user == null) {
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				return null;
+			}
+			AccountProfiles profiles = new AccountProfiles();
+			profiles.setProfiles(profileManager.getAccountProfilesById(userIds));
+			return profiles;
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -118,5 +118,18 @@ public class BasicProfileManager {
 		User user = userRepository.findOne(Long.parseLong(userId));
 		return AccountProfileConverter.toAccountProfile(user);
 	}
+	/**
+	 * @param userIds
+	 * @return
+	 */
+	public List<AccountProfile> getAccountProfilesById(List<String> userIds) {
+		List<AccountProfile> list = new ArrayList<AccountProfile>();
+		if (userIds != null) {
+			for (String userId : userIds) {
+				list.add(getAccountProfileById(userId));
+			}
+		}
+		return list;
+	}
 
 }

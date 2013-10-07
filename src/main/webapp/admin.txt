@@ -1,2 +1,2 @@
 #the following format expected: authority;attrkey;attrvalue
-google;openid.ext1.value.email;my@mail
+google;openid.ext1.value.email;kazhamiakin@gmail.com
