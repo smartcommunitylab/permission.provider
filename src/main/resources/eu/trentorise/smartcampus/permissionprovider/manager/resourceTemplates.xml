@@ -26,7 +26,12 @@
 			authority="ROLE_USER">
 			<description>Account profile of the current platform user. Read access only.</description>
 		</resourceMapping>
-	</service>
+    <resourceMapping id="smartcampus.profile.accountprofile.all"
+      name="Read all account profiles" uri="smartcampus.profile.accountprofile.all"
+      authority="ROLE_CLIENT" approvalRequired="true">
+      <description>Account profile of the platform users. Read access only.</description>
+    </resourceMapping>
+			</service>
 
 	<service name="Extended profile service" id="smartcampus.profile.extprofie">
 		<description>Core service for managing сustom user profiles defined by different applications.</description>
