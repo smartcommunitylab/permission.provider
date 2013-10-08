@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -98,7 +99,7 @@ public class ProviderServiceAdapter {
 		}
 		// fillin attribute list
 		list.clear();
-		populateAttributes(auth, attributes, list);
+		populateAttributes(auth, attributes, list, users.isEmpty() ? null : users.get(0).getAttributeEntities());
 
 		// check the access rights for the user with respect to the whitelist
 		if (!secAdapter.access(auth.getName(), new ArrayList<String>(attributes.keySet()), attributes)) {
@@ -157,7 +158,7 @@ public class ProviderServiceAdapter {
 			throw new IllegalArgumentException("The request attributes identify more than one user");
 		}
 
-		populateAttributes(auth, attributes, list);
+		populateAttributes(auth, attributes, list, user.getAttributeEntities());
 		user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 
 		// add security whitelist
@@ -169,7 +170,7 @@ public class ProviderServiceAdapter {
 		return user;
 	}
 
-	private void populateAttributes(Authority auth, Map<String, String> attributes, List<Attribute> list) {
+	private void populateAttributes(Authority auth, Map<String, String> attributes, List<Attribute> list, Set<Attribute> old) {
 		for (String key : attributes.keySet()) {
 			String value = attributes.get(key);
 			Attribute attr = new Attribute();
@@ -177,6 +178,15 @@ public class ProviderServiceAdapter {
 			attr.setKey(key);
 			attr.setValue(value);
 			list.add(attr);
+		}
+		for (Attribute a : old) {
+			if (!a.getAuthority().equals(auth)) {
+				Attribute attr = new Attribute();
+				attr.setAuthority(a.getAuthority());
+				attr.setKey(a.getKey());
+				attr.setValue(a.getValue());
+				list.add(attr);
+			}
 		}
 	}
 
