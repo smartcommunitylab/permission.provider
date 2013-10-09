@@ -26,12 +26,12 @@
 			authority="ROLE_USER">
 			<description>Account profile of the current platform user. Read access only.</description>
 		</resourceMapping>
-    <resourceMapping id="smartcampus.profile.accountprofile.all"
-      name="Read all account profiles" uri="smartcampus.profile.accountprofile.all"
-      authority="ROLE_CLIENT" approvalRequired="true">
-      <description>Account profile of the platform users. Read access only.</description>
-    </resourceMapping>
-			</service>
+		<resourceMapping id="smartcampus.profile.accountprofile.all"
+			name="Read all account profiles" uri="smartcampus.profile.accountprofile.all"
+			authority="ROLE_CLIENT" approvalRequired="true">
+			<description>Account profile of the platform users. Read access only.</description>
+		</resourceMapping>
+	</service>
 
 	<service name="Extended profile service" id="smartcampus.profile.extprofie">
 		<description>Core service for managing сustom user profiles defined by different applications.</description>
@@ -369,6 +369,47 @@
 			name="Personalize territory data" uri="territoryservice.communitydata.write"
 			authority="ROLE_USER" approvalRequired="false">
 			<description>Add personal information to the territory data, such as ratings, participation, etc.</description>
+		</resourceMapping>
+
+	</service>
+
+	<service name="Unidata service" id="smartcampus.unidataservice">
+		<description>Information about students.</description>
+		<resourceMapping id="smartcampus.unidataservice.studentdata.me"
+			name="Student data" uri="smartcampus.unidataservice.studentdata.me"
+			authority="ROLE_USER" approvalRequired="false">
+			<description>Get student university data</description>
+		</resourceMapping>
+
+		<resourceMapping id="smartcampus.unidataservice.studentexams.me"
+			name="Student exams" uri="smartcampus.unidataservice.studentexams.me"
+			authority="ROLE_USER" approvalRequired="false">
+			<description>Get student exams</description>
+		</resourceMapping>
+
+		<resourceMapping id="smartcampus.unidataservice.operacard.me"
+			name="Student opera card" uri="smartcampus.unidataservice.operacard.me"
+			authority="ROLE_USER" approvalRequired="false">
+			<description>Get student Opera Universitaria card</description>
+		</resourceMapping>
+
+
+		<resourceMapping id="smartcampus.unidataservice.studentdata.app"
+			name="Student data" uri="smartcampus.unidataservice.studentdata.app"
+			authority="ROLE_CLIENT" approvalRequired="true">
+			<description>Get student university data</description>
+		</resourceMapping>
+
+		<resourceMapping id="smartcampus.unidataservice.studentexams.app"
+			name="Student exams" uri="smartcampus.unidataservice.studentexams.app"
+			authority="ROLE_CLIENT" approvalRequired="true">
+			<description>Get student exams</description>
+		</resourceMapping>
+
+		<resourceMapping id="smartcampus.unidataservice.operacard.app"
+			name="Student opera card" uri="smartcampus.unidataservice.operacard.app"
+			authority="ROLE_CLIENT" approvalRequired="true">
+			<description>Get student Opera Universitaria card</description>
 		</resourceMapping>
 
 	</service>
