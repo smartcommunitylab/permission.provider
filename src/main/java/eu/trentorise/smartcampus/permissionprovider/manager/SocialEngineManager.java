@@ -118,4 +118,13 @@ public class SocialEngineManager implements SocialEngine {
 		}
 	}
 
+	public static void main(String[] args) throws SocialEngineException {
+		SocialEngineManager manager = new SocialEngineManager();
+		manager.socialEngineHost = "sweb.smartcampuslab.it";
+		manager.socialEnginePort = 8080;
+		
+		System.err.println(manager.createUser());
+		System.err.println(manager.createUser());
+		System.err.println(manager.createUser());
+	}
 }
