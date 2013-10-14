@@ -179,13 +179,15 @@ public class ProviderServiceAdapter {
 			attr.setValue(value);
 			list.add(attr);
 		}
-		for (Attribute a : old) {
-			if (!a.getAuthority().equals(auth)) {
-				Attribute attr = new Attribute();
-				attr.setAuthority(a.getAuthority());
-				attr.setKey(a.getKey());
-				attr.setValue(a.getValue());
-				list.add(attr);
+		if (old != null) {
+			for (Attribute a : old) {
+				if (!a.getAuthority().equals(auth)) {
+					Attribute attr = new Attribute();
+					attr.setAuthority(a.getAuthority());
+					attr.setKey(a.getKey());
+					attr.setValue(a.getValue());
+					list.add(attr);
+				}
 			}
 		}
 	}
