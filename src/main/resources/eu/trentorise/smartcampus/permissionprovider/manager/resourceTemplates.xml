@@ -413,7 +413,63 @@
 	      <description>Get student Opera Universitaria card</description>
 	    </resourceMapping>   	    
 	    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.facolta.app"
+	      name="Facolta list" uri="smartcampus.unidataservice.facolta.app"
+	      authority="ROLE_CLIENT" approvalRequired="false">
+	      <description>Get Facolta list</description>
+	    </resourceMapping>  	    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.cds.app"
+	      name="Cds List" uri="smartcampus.unidataservice.cds.app"
+	      authority="ROLE_CLIENT" approvalRequired="false">
+	      <description>Get Cds list</description>
+	    </resourceMapping> 	    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.ad.app"
+	      name="Ad List" uri="smartcampus.unidataservice.ad.app"
+	      authority="ROLE_CLIENT" approvalRequired="false">
+	      <description>Get Ad list</description>
+	    </resourceMapping> 		    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.timetable.app"
+	      name="Timetable" uri="smartcampus.unidataservice.timetable.app"
+	      authority="ROLE_CLIENT" approvalRequired="false">
+	      <description>Get Timetable</description>
+	    </resourceMapping> 		    
+	    
+	 </service>
+	 
+		<!-- 
+		<service name="Trentinofamiglia service" id="smartcampus.trentinofamiglia">
+		<description>Trentinofamiglia services.</description>		    
+	    
+		<resourceMapping id="trentinofamiglia.data.read"
+			name="Sync Trentinofamiglia Data" uri="trentinofamiglia.data.read"
+			authority="ROLE_USER" approvalRequired="false">	 
+	      <description>Sync Trentinofamiglia Data</description>
+	    </resourceMapping> 		    			   
+		
+		<resourceMapping id="trentinofamiglia.data.rate"
+			name="Sync Trentinofamiglia Data" uri="trentinofamiglia.data.rate"
+			authority="ROLE_USER" approvalRequired="false">	 
+	      <description>Rate Trentinofamiglia Data</description>
+	    </resourceMapping> 	
+
+		<resourceMapping id="trentinofamiglia.data.review.read"
+			name="Read Trentinofamiglia Data reviews" uri="trentinofamiglia.data.review.read"
+			authority="ROLE_USER" approvalRequired="false">	 
+	      <description>Read Trentinofamiglia Data reviews</description>
+	    </resourceMapping> 			
+			    
+		<resourceMapping id="trentinofamiglia.data.review.create"
+			name="Review Trentinofamiglia Data" uri="trentinofamiglia.data.review.create"
+			authority="ROLE_USER" approvalRequired="false">	 
+	      <description>Review Trentinofamiglia Data</description>
+	    </resourceMapping> 					
+		
     </service>		
+     -->
 		
 	
 	
