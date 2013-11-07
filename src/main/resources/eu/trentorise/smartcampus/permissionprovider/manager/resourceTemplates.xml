@@ -321,7 +321,7 @@
 		</resourceMapping>
 
 		<resourceMapping id="mobilityservice.plan" name="Multimodal route planning"
-			uri="mobilityservice.plan" authority="ROLE_ANY" approvalRequired="true">
+			uri="mobilityservice.plan" authority="ROLE_ANY" approvalRequired="false">
 			<description>Multimodal route planning.</description>
 		</resourceMapping>
 

@@ -96,6 +96,7 @@ public class BasicProfileManager {
 					throw new IllegalStateException("Problem reading users: "+e.getMessage());
 				}
 			}
+			return list;
 		}
 		return Collections.emptyList();
 	}
