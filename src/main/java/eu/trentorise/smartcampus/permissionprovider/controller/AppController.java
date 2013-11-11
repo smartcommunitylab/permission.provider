@@ -17,12 +17,15 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +36,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsAdapter;
+import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
@@ -61,15 +67,44 @@ public class AppController extends AbstractController {
 	private ClientDetailsAdapter clientDetailsAdapter;
 	@Autowired
 	private UserRepository userRepository;
-	
+	@Autowired
+	private AttributesAdapter attributesAdapter;
+	@Autowired
+	private AdminManager adminManager;
+	@Value("${mode.restricted}")
+	private boolean accessMode;
+
 	/**
 	 * Retrieve the with the user data: currently on the username is added.
 	 * @return
 	 */
 	@RequestMapping("/dev")
 	public ModelAndView developer() {
-		Map<String,Object> model = new HashMap<String, Object>();
 		User user =  userRepository.findOne(getUserId());
+		Map<String,Object> model = new HashMap<String, Object>();
+
+		if (accessMode) {
+			String authority = getUserAuthority();
+			Set<String> identityAttrs = new HashSet<String>();
+			for (Attribute a : user.getAttributeEntities()) {
+				if (a.getAuthority().getName().equals(authority) && 
+					attributesAdapter.isIdentityAttr(a)) {
+					identityAttrs.add(authority+";"+a.getKey()+";"+a.getValue());
+				}
+			}
+			
+			try {
+				if (!adminManager.checkAccount(identityAttrs)) {
+					model.put("error", "Not authorized");
+					return new ModelAndView("redirect:/logout");
+				}
+			} catch (Exception e) {
+				model.put("error", e.getMessage());
+				logger.error("Problem checking user account: "+e.getMessage());
+				return new ModelAndView("redirect:/logout");
+			}
+		}
+		
 		String username = getUserName(user);
 		model.put("username",username);
 		return new ModelAndView("index", model);
