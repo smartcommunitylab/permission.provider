@@ -73,9 +73,7 @@ public class User implements Serializable {
 	public User(String socialId, String name, String surname, HashSet<Attribute> attrs) {
 		super();
 		this.socialId = socialId;
-		this.name = name;
-		this.surname = surname;
-		this.fullName = (name+" "+surname).toLowerCase();
+		updateNames(name, surname);
 		this.attributeEntities = attrs;
 	}
 
@@ -144,6 +142,6 @@ public class User implements Serializable {
 	public void updateNames(String name, String surname) {
 		if (name != null) setName(name);
 		if (surname != null) setSurname(surname);
-		setFullName((name+" "+surname).toLowerCase());
+		setFullName((getName()+" "+getSurname()).trim().toLowerCase());
 	}
 }

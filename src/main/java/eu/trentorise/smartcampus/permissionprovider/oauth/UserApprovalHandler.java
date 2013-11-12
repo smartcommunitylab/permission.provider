@@ -22,6 +22,7 @@ import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler;
 
@@ -72,11 +73,14 @@ public class UserApprovalHandler extends TokenServicesUserApprovalHandler {
 		if (approved) return true;
 		
 		// or trusted client
+		if (authorizationRequest.getAuthorities() != null) {
+			for (GrantedAuthority ga : authorizationRequest.getAuthorities())
+				if (Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString().equals(ga.getAuthority())) return true;
+		}
 		// or test token redirect uri
 		// or accesses only own resources
-		return authorizationRequest.getAuthorities().contains(Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString())
-				|| authorizationRequest.getRedirectUri().equals(ExtRedirectResolver.testTokenPath(servletContext))
-				|| useOwnResourcesOnly(authorizationRequest.getClientId(), authorizationRequest.getScope());
+		return authorizationRequest.getRedirectUri().equals(ExtRedirectResolver.testTokenPath(servletContext))
+			   || useOwnResourcesOnly(authorizationRequest.getClientId(), authorizationRequest.getScope());
 	}
 
 	/**
