@@ -122,7 +122,7 @@
 	<bean id="resourceStorage" class="eu.trentorise.smartcampus.permissionprovider.oauth.CachedResourceStorage"/>
 	
 	<bean id="tokenServices"
-		class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+		class="eu.trentorise.smartcampus.permissionprovider.oauth.NonRemovingTokenServices">
 		<property name="tokenStore" ref="tokenStore" />
 		<property name="supportRefreshToken" value="true" />
 		<property name="clientDetailsService" ref="clientDetails" />
