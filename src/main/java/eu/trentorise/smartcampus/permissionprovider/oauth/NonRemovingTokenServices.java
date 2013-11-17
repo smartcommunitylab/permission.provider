@@ -20,20 +20,29 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author raman
  *
  */
+@Transactional
 public class NonRemovingTokenServices extends DefaultTokenServices {
 
-	private TokenStore localtokenStore;
+	private ExtTokenStore localtokenStore;
 
 	private Log logger = LogFactory.getLog(getClass());
+
+	/** threshold for access token */
+	protected int tokenThreshold = 60*60;
 	
 	/**
 	 * Do not remove access token if expired
@@ -53,11 +62,55 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 		return result;
 	}
 
+	@Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.SERIALIZABLE)
+	public OAuth2AccessToken refreshAccessToken(String refreshTokenValue, AuthorizationRequest request) throws AuthenticationException {
+		return refreshWithRepeat(refreshTokenValue, request, false);
+	}
+
+	private OAuth2AccessToken refreshWithRepeat(String refreshTokenValue, AuthorizationRequest request, boolean repeat) {
+		OAuth2AccessToken accessToken = localtokenStore.readAccessTokenForRefreshToken(refreshTokenValue);
+		if (accessToken == null) {
+			throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
+		}
+
+		System.err.println("REFRESHING: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
+		
+		int validity = getAccessTokenValiditySeconds(request);
+		long created = accessToken.getExpiration().getTime() - validity*1000L;
+		if (System.currentTimeMillis()-created < tokenThreshold*1000L ) {
+			System.err.println("REFRESHING reuse: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
+			return accessToken;
+		}
+
+		try {
+			OAuth2AccessToken res = super.refreshAccessToken(refreshTokenValue, request);
+			System.err.println("REFRESHING new: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue() + " new value "+res.getValue());
+			return res;
+		} catch (RuntimeException e) {
+			// do retry: it may be the case of race condition so retry the operation but only once
+			System.err.println("REFRESHING retry: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
+			if (!repeat) return refreshWithRepeat(refreshTokenValue, request, true);
+			throw e;
+		}
+	}
+
+	@Transactional(isolation=Isolation.SERIALIZABLE)
+	public OAuth2AccessToken createAccessToken(OAuth2Authentication authentication) throws AuthenticationException {
+		return super.createAccessToken(authentication);
+	}
+
 	@Override
 	public void setTokenStore(TokenStore tokenStore) {
 		super.setTokenStore(tokenStore);
-		this.localtokenStore = tokenStore;
+		assert tokenStore instanceof ExtTokenStore;
+		this.localtokenStore = (ExtTokenStore)tokenStore;
 	}
 
+	/**
+	 * @param tokenThreshold the tokenThreshold to set
+	 */
+	public void setTokenThreshold(int tokenThreshold) {
+		this.tokenThreshold = tokenThreshold;
+	}
 	
 }
