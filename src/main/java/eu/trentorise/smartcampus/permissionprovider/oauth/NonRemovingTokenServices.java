@@ -16,6 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -73,22 +76,17 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 			throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
 		}
 
-		System.err.println("REFRESHING: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
-		
 		int validity = getAccessTokenValiditySeconds(request);
 		long created = accessToken.getExpiration().getTime() - validity*1000L;
 		if (System.currentTimeMillis()-created < tokenThreshold*1000L ) {
-			System.err.println("REFRESHING reuse: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
 			return accessToken;
 		}
 
 		try {
 			OAuth2AccessToken res = super.refreshAccessToken(refreshTokenValue, request);
-			System.err.println("REFRESHING new: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue() + " new value "+res.getValue());
 			return res;
 		} catch (RuntimeException e) {
 			// do retry: it may be the case of race condition so retry the operation but only once
-			System.err.println("REFRESHING retry: token "+accessToken.getValue()+" refresh token "+accessToken.getRefreshToken().getValue());
 			if (!repeat) return refreshWithRepeat(refreshTokenValue, request, true);
 			throw e;
 		}
