@@ -112,7 +112,7 @@ public class ClientDetailsAdapter {
 		res.setIdentityProviderApproval(new HashMap<String, Boolean>());
 		// request status
 		res.setIdentityProviders(new HashMap<String, Boolean>());
-		for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
+		for (String key : attributesAdapter.getVisibleAuthorityUrls().keySet()) {
 			res.getIdentityProviders().put(key, false);
 		}
 		
@@ -198,7 +198,7 @@ public class ClientDetailsAdapter {
 				info.setIdentityProviders(new HashMap<String, Integer>());
 			}
 			
-			for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
+			for (String key : attributesAdapter.getVisibleAuthorityUrls().keySet()) {
 				if (data.getIdentityProviders().get(key)) {
 					Integer value = info.getIdentityProviders().get(key);
 					AuthorityMapping a = attributesAdapter.getAuthority(key);

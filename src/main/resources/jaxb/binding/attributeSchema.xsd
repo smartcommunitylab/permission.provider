@@ -40,6 +40,8 @@
 		<xsd:attribute name="url" type="xsd:string" use="required" />
 		<xsd:attribute name="useParams" type="xsd:boolean" use="optional" />
     <xsd:attribute name="public" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="web" type="xsd:boolean" use="optional" default="true"/>
+    <xsd:attribute name="visible" type="xsd:boolean" use="optional" default="true"/>
 	</xsd:complexType>
 	<xsd:complexType name="attributes">
 		<xsd:annotation>

@@ -33,10 +33,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.http.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Attributes;
+import eu.trentorise.smartcampus.permissionprovider.authority.AuthorityHandler;
+import eu.trentorise.smartcampus.permissionprovider.authority.AuthorityHandlerContainer;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Authorities;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
@@ -55,6 +57,9 @@ public class AttributesAdapter {
 	private Map<String, AuthorityMapping> authorities;
 	private Map<String, Set<String>> identityAttributes;
 
+	@Autowired
+	private AuthorityHandlerContainer authorityHandlerManager;
+	
 	/**
 	 * Load attributes from the XML descriptor.
 	 * @throws JAXBException
@@ -92,46 +97,25 @@ public class AttributesAdapter {
 	 * 
 	 * @param authority
 	 *            the authority specified
+	 * @param map 
+	 * 			  the original request parameters in addition to the current request ones	
 	 * @param request
 	 *            the http request to process
 	 * @return a map of user attributes
 	 */
 	public Map<String, String> getAttributes(String authority,
-			HttpServletRequest request) {
+			Map<String, String> map, HttpServletRequest request) {
 		AuthorityMapping mapping = authorities.get(authority);
 		if (mapping == null) {
 			throw new IllegalArgumentException("Unsupported authority: "
 					+ authority);
 		}
-		Map<String, String> attrs = new HashMap<String, String>();
-		for (String key : mapping.getIdentifyingAttributes()) {
-			Object value = readAttribute(request, key, mapping.isUseParams());
-			if (value != null) {
-				attrs.put(key, value.toString());
-			}
-		}
-		for (Attributes attribute : mapping.getAttributes()) {
-			// used alias if present to set attribute in map
-			String key = (attribute.getAlias() != null && !attribute.getAlias()
-					.isEmpty()) ? attribute.getAlias() : attribute.getValue();
-			Object value = readAttribute(request,attribute.getValue(), mapping.isUseParams());
-			if (value != null) {
-				attrs.put(key, value.toString());
-			}
-		}
+		
+		AuthorityHandler handler = authorityHandlerManager.getAuthorityHandler(authority);
+//		if (!handler.extractAttributes(request)) throw new SecurityException("Invalid attributes for authority "+authority);
+		
+		Map<String, String> attrs = handler.extractAttributes(request, map, mapping);
 		return attrs;
-	}
-
-	/**
-	 * Read either request attribute or a request parameter from HTTP request
-	 * @param request
-	 * @param key
-	 * @param useParams whether to extract parameter instead of attribute 
-	 * @return
-	 */
-	private Object readAttribute(HttpServletRequest request, String key, boolean useParams) {
-		if (useParams) return request.getParameter(key);
-		return request.getAttribute(key);
 	}
 
 	/**
@@ -166,6 +150,45 @@ public class AttributesAdapter {
 	}
 
 	/**
+	 * @return the authorities to show on user web-based login
+	 */
+	public Map<String, String> getVisibleWebAuthorityUrls() {
+		Map<String, String> map = new HashMap<String, String>();
+		for (AuthorityMapping mapping : authorities.values()) {
+			if (mapping.isWeb() && mapping.isVisible()) {
+				map.put(mapping.getName(), mapping.getUrl());
+			}
+		}
+		return map;
+	}
+
+	/**
+	 * @return the authorities to show on user web-based login
+	 */
+	public Map<String, String> getVisibleAuthorityUrls() {
+		Map<String, String> map = new HashMap<String, String>();
+		for (AuthorityMapping mapping : authorities.values()) {
+			if (mapping.isVisible()) {
+				map.put(mapping.getName(), mapping.getUrl());
+			}
+		}
+		return map;
+	}
+
+	/**
+	 * @return the authorities to show on any web-based login
+	 */
+	public Map<String, String> getWebAuthorityUrls() {
+		Map<String, String> map = new HashMap<String, String>();
+		for (AuthorityMapping mapping : authorities.values()) {
+			if (mapping.isWeb()) {
+				map.put(mapping.getName(), mapping.getUrl());
+			}
+		}
+		return map;
+	}
+	
+	/**
 	 * @param a
 	 * @return true if the specified attribute is the identity attribute for the authority
 	 */
@@ -181,4 +204,5 @@ public class AttributesAdapter {
 	public AuthorityMapping getAuthority(String key) {
 		return authorities.get(key);
 	}
+
 }

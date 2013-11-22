@@ -16,6 +16,7 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -77,7 +80,7 @@ public class AuthController {
 	@RequestMapping("/eauth/admin")
 	public ModelAndView admin(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/admin");
 		req.getSession().setAttribute("redirect", target);
@@ -93,7 +96,7 @@ public class AuthController {
 	@RequestMapping("/eauth/dev")
 	public ModelAndView developer(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getVisibleWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/dev");
 		req.getSession().setAttribute("redirect", target);
@@ -109,7 +112,7 @@ public class AuthController {
 	@RequestMapping("/eauth/authorize")
 	public ModelAndView authorise(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getVisibleWebAuthorityUrls();
 		
 		String clientId = req.getParameter("client_id");
 		if (clientId == null || clientId.isEmpty()) {
@@ -218,12 +221,13 @@ public class AuthController {
 		
 		if (!testMode && nTarget != null) target = nTarget;
 
-		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, req);
+		List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(nTarget), "UTF-8");
+		
+		eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter.updateUser(authorityUrl, toMap(pairs), req);
 		
 		UserDetails user = new User(userEntity.getId().toString(),"", list);
 		
 		AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(user, null, list);
-		//ExternalAuthenticationToken(user, list, authorityUrl);
 		a.setDetails(authorityUrl);
 
 		SecurityContextHolder.getContext().setAuthentication(a);
@@ -231,6 +235,19 @@ public class AuthController {
 		return new ModelAndView("redirect:"+target);
 	}
 	
+	/**
+	 * @param pairs
+	 * @return
+	 */
+	private Map<String,String> toMap(List<NameValuePair> pairs) {
+		if (pairs == null) return Collections.emptyMap();
+		Map<String,String> map = new HashMap<String, String>();
+		for (NameValuePair nvp : pairs) {
+			map.put(nvp.getName(), nvp.getValue());
+		}
+		return map;
+	}
+
 	/**
 	 * Revoke the access token and the associated refresh token.
 	 * 
@@ -247,4 +264,6 @@ public class AuthController {
 		}
 		return "";
 	}
+
+	
 }

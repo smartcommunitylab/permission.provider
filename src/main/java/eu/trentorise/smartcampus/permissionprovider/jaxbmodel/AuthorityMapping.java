@@ -77,7 +77,13 @@ public class AuthorityMapping {
     protected boolean useParams;
 
     @XmlAttribute(name = "public", required = false)
-    protected boolean _public;
+    protected boolean _public = false;
+
+    @XmlAttribute(name = "web", required = false)
+    protected boolean web = true;
+
+    @XmlAttribute(name = "visible", required = false)
+    protected boolean visible = true;
 
     /**
      * Gets the value of the attributes property.
@@ -213,5 +219,31 @@ public class AuthorityMapping {
 		this._public = _public;
 	}
 
-    
+	/**
+	 * @return the web
+	 */
+	public boolean isWeb() {
+		return web;
+	}
+
+	/**
+	 * @param web the web to set
+	 */
+	public void setWeb(boolean web) {
+		this.web = web;
+	}
+
+	/**
+	 * @return the visible
+	 */
+	public boolean isVisible() {
+		return visible;
+	}
+
+	/**
+	 * @param visible the visible to set
+	 */
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
 }

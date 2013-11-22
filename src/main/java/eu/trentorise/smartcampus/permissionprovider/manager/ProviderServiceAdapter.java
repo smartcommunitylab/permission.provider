@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
+import org.apache.http.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -76,18 +77,19 @@ public class ProviderServiceAdapter {
 	 * 
 	 * @param authorityUrl
 	 *            the url of authority used from user to authenticate himself
+	 * @param map 
 	 * @param req
 	 *            the http request
 	 * @return the authentication token of the user (renew if it's expired)
 	 * @throws AcServiceException
 	 */
-	public User updateUser(String authorityUrl, HttpServletRequest req) {
+	public User updateUser(String authorityUrl, Map<String, String> map, HttpServletRequest req) {
 		Authority auth = authorityRepository.findByRedirectUrl(authorityUrl);
 		if (auth == null) {
 			throw new IllegalArgumentException("Unknown authority URL: " + authorityUrl);
 		}
 		// read received attribute values
-		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), req);
+		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), map, req);
 		List<Attribute> list = extractIdentityAttributes(auth, attributes);
 		
 		// find user by identity attributes
@@ -125,48 +127,6 @@ public class ProviderServiceAdapter {
 			user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 			userRepository.save(user);
 		}
-		return user;
-	}
-
-	/*
-	 * promote user from anonymous account to other authority
-	 */
-	public User promoteUser(String authorityUrl, Long id, HttpServletRequest req) {
-		Authority auth = authorityRepository.findByRedirectUrl(authorityUrl);
-		if (auth == null) {
-			throw new IllegalArgumentException("Unknown authority URL: " + authorityUrl);
-		}
-
-		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), req);
-		List<Attribute> list = extractIdentityAttributes(auth, attributes);
-
-		List<User> users = userRepository.getUsersByAttributes(list);
-		list.clear();
-
-		User user = userRepository.findOne(id);
-		if (user == null) {
-			throw new IllegalArgumentException("The user with id " + id + " does not exist.");
-		}
-
-		if (users == null || users.isEmpty()) {
-			// no account exists, update anonymous account to the specified one
-			// do nothing for the moment
-		} else if (users.size() == 1) {
-			// already have an account: switch to this account
-			user = users.get(0);
-		} else {
-			throw new IllegalArgumentException("The request attributes identify more than one user");
-		}
-
-		populateAttributes(auth, attributes, list, user.getAttributeEntities());
-		user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
-
-		// add security whitelist
-		if (!secAdapter.access(auth.getName(), new ArrayList<String>(attributes.keySet()), attributes)) {
-			throw new SecurityException("Access denied to user");
-		}
-
-		userRepository.save(user);
 		return user;
 	}
 
