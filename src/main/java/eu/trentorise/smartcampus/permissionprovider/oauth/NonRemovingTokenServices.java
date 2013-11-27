@@ -16,11 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -43,6 +41,7 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 	private ExtTokenStore localtokenStore;
 
 	private Log logger = LogFactory.getLog(getClass());
+	private static final Logger traceUserLogger = Logger.getLogger("traceUserToken");
 
 	/** threshold for access token */
 	protected int tokenThreshold = 60*60;
@@ -84,6 +83,8 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 
 		try {
 			OAuth2AccessToken res = super.refreshAccessToken(refreshTokenValue, request);
+			OAuth2Authentication auth = localtokenStore.readAuthentication(res);
+			traceUserLogger.info(String.format("'type':'refresh','user':'%s','token':'%s'", auth.getName(), res.getValue()));
 			return res;
 		} catch (RuntimeException e) {
 			// do retry: it may be the case of race condition so retry the operation but only once
@@ -94,7 +95,9 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 
 	@Transactional(isolation=Isolation.SERIALIZABLE)
 	public OAuth2AccessToken createAccessToken(OAuth2Authentication authentication) throws AuthenticationException {
-		return super.createAccessToken(authentication);
+		OAuth2AccessToken res = super.createAccessToken(authentication);
+		traceUserLogger.info(String.format("'type':'new','user':'%s','token':'%s'", authentication.getName(), res.getValue()));
+		return res;
 	}
 
 	@Override
