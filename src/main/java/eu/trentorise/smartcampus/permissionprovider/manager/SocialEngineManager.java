@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import eu.trentorise.smartcampus.permissionprovider.model.SocialEngineException;
 
@@ -38,7 +37,6 @@ import eu.trentorise.smartcampus.permissionprovider.model.SocialEngineException;
  * @author mirko perillo
  * 
  */
-@Component
 public class SocialEngineManager implements SocialEngine {
 
 	@Value("${smartcampus.vas.web.socialengine.host}")
@@ -66,7 +64,7 @@ public class SocialEngineManager implements SocialEngine {
 	 * @throws SocialEngineException
 	 *             if social engine threw an internal exception
 	 */
-	public long createUser() throws SocialEngineException {
+	public String createUser(String usertId) throws SocialEngineException {
 		long socialId = -1;
 		EntityBase eb = null;
 		Long entityBaseId = null;
@@ -109,7 +107,7 @@ public class SocialEngineManager implements SocialEngine {
 			throw new SocialEngineException();
 		}
 
-		return socialId;
+		return ""+socialId;
 	}
 	
 	private String generateId() {
@@ -118,13 +116,4 @@ public class SocialEngineManager implements SocialEngine {
 		}
 	}
 
-	public static void main(String[] args) throws SocialEngineException {
-		SocialEngineManager manager = new SocialEngineManager();
-		manager.socialEngineHost = "sweb.smartcampuslab.it";
-		manager.socialEnginePort = 8080;
-		
-		System.err.println(manager.createUser());
-		System.err.println(manager.createUser());
-		System.err.println(manager.createUser());
-	}
 }

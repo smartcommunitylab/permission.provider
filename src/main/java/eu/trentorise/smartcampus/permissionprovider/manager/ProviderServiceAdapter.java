@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
-import org.apache.http.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -111,15 +110,17 @@ public class ProviderServiceAdapter {
 		User user = null;
 		if (users.isEmpty()) {
 			String socialId = "1";
+			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
+			user = userRepository.save(user);
 			if (!testMode) {
 				try {
-					socialId = ""+socialEngine.createUser();
+					socialId = socialEngine.createUser(""+user.getId());
+					user.setSocialId(socialId);
+					userRepository.save(user);
 				} catch (SocialEngineException e) {
 					throw new IllegalArgumentException(e.getMessage(),e);
 				}
 			}
-			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
-			userRepository.save(user);
 		} else {
 			user = users.get(0);
 			attributeRepository.deleteInBatch(user.getAttributeEntities());

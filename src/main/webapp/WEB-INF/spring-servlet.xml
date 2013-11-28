@@ -189,7 +189,9 @@
 	        </map>
 	    </constructor-arg>
 	</bean>
-	
+
+	<bean id="socialEngine" class="${social.engine.impl}"/>
+		
 	<import resource="datalayer.xml"/>
 
 	    <!-- Scheduler refreshing security list -->
