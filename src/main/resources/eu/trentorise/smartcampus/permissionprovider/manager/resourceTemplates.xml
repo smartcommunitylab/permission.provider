@@ -416,25 +416,25 @@
 	    
 	    <resourceMapping id="smartcampus.unidataservice.facolta.app"
 	      name="Facolta list" uri="smartcampus.unidataservice.facolta.app"
-	      authority="ROLE_CLIENT" approvalRequired="true">
+	      authority="ROLE_ANY" approvalRequired="true">
 	      <description>Get Facolta list</description>
 	    </resourceMapping>  	    
 	    
 	    <resourceMapping id="smartcampus.unidataservice.cds.app"
 	      name="Cds List" uri="smartcampus.unidataservice.cds.app"
-	      authority="ROLE_CLIENT" approvalRequired="false">
+	      authority="ROLE_ANY" approvalRequired="false">
 	      <description>Get Cds list</description>
 	    </resourceMapping> 	    
 	    
 	    <resourceMapping id="smartcampus.unidataservice.ad.app"
 	      name="Ad List" uri="smartcampus.unidataservice.ad.app"
-	      authority="ROLE_CLIENT" approvalRequired="false">
+	      authority="ROLE_ANY" approvalRequired="false">
 	      <description>Get Ad list</description>
 	    </resourceMapping> 		    
 	    
 	    <resourceMapping id="smartcampus.unidataservice.timetable.app"
 	      name="Timetable" uri="smartcampus.unidataservice.timetable.app"
-	      authority="ROLE_CLIENT" approvalRequired="false">
+	      authority="ROLE_ANY" approvalRequired="false">
 	      <description>Get Timetable</description>
 	    </resourceMapping> 		    
 	    
