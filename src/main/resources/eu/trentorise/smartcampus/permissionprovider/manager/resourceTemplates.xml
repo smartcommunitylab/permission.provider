@@ -438,6 +438,13 @@
 	      <description>Get Timetable</description>
 	    </resourceMapping> 		    
 	    
+	    <resourceMapping id="smartcampus.unidataservice.data.app"
+	      name="Timetable" uri="smartcampus.unidataservice.data.app"
+	      authority="ROLE_ANY" approvalRequired="false">
+	      <description>University Data</description>
+	    </resourceMapping> 	    
+	    	    
+	    
 	 </service>
 
 	<service name="Moderation service" id="smartcampus.moderation">
