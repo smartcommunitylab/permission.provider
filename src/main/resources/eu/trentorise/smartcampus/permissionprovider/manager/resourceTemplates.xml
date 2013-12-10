@@ -439,5 +439,42 @@
 	    </resourceMapping> 		    
 	    
 	 </service>
-	 
+
+	<service name="Moderation service" id="smartcampus.moderation">
+    <description>Service to manage content filtering / moderation</description>
+    <resource name="App" id="app">
+      <description>Symbolic name of the application managing the content</description>
+    </resource>
+
+    <resourceMapping id="moderator.keyword.app"
+      name="App '{app}' keyword management" uri="moderator.keyword.{app}"
+      authority="ROLE_CLIENT" approvalRequired="false">
+      <description>Manage the keyword of the automatic filter in this '{app}'.</description>
+    </resourceMapping>
+
+    <resourceMapping id="moderator.content.keyword.app"
+      name="Keyword-based filtering in '{app}'." uri="moderator.content.keyword.{app}"
+      authority="ROLE_CLIENT" approvalRequired="false">
+      <description>Manage the content with the automatic keyword-based filtering in '{app}'.</description>
+    </resourceMapping>
+
+    <resourceMapping id="moderator.content.manual.app"
+      name="Manual filtering in '{app}'." uri="moderator.content.manual.{app}"
+      authority="ROLE_CLIENT" approvalRequired="false">
+      <description>Manage the content with the  manual filtering in '{app}'.</description>
+    </resourceMapping>
+    
+    <resourceMapping id="moderator.keyword.system" name="Manage the base set of keywords"
+      uri="moderator.keyword.system" authority="ROLE_CLIENT" approvalRequired="true">
+      <description>Manage the base set of keywords.</description>
+    </resourceMapping>
+
+    <resourceMapping id="moderator.content.all" name="Moderate all apps"
+      uri="moderator.content.all" authority="ROLE_CLIENT" approvalRequired="true">
+      <description>Manage the content for all the apps.</description>
+    </resourceMapping>
+
+    
+  </service>
+					  	 
 </services>
