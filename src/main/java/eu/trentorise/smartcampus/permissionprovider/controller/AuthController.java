@@ -96,7 +96,7 @@ public class AuthController {
 	@RequestMapping("/eauth/dev")
 	public ModelAndView developer(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getVisibleWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/dev");
 		req.getSession().setAttribute("redirect", target);
