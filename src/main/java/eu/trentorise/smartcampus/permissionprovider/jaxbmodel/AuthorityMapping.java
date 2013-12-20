@@ -52,6 +52,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="url" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="useParams" use="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="public" use="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="web" use="optional" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -81,9 +83,6 @@ public class AuthorityMapping {
 
     @XmlAttribute(name = "web", required = false)
     protected boolean web = true;
-
-    @XmlAttribute(name = "visible", required = false)
-    protected boolean visible = true;
 
     /**
      * Gets the value of the attributes property.
@@ -231,19 +230,5 @@ public class AuthorityMapping {
 	 */
 	public void setWeb(boolean web) {
 		this.web = web;
-	}
-
-	/**
-	 * @return the visible
-	 */
-	public boolean isVisible() {
-		return visible;
-	}
-
-	/**
-	 * @param visible the visible to set
-	 */
-	public void setVisible(boolean visible) {
-		this.visible = visible;
 	}
 }
