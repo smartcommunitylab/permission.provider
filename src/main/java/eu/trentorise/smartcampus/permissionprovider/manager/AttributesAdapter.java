@@ -33,7 +33,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.http.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -145,32 +144,6 @@ public class AttributesAdapter {
 		Map<String, String> map = new HashMap<String, String>();
 		for (AuthorityMapping mapping : authorities.values()) {
 			map.put(mapping.getName(), mapping.getUrl());
-		}
-		return map;
-	}
-
-	/**
-	 * @return the authorities to show on user web-based login
-	 */
-	public Map<String, String> getVisibleWebAuthorityUrls() {
-		Map<String, String> map = new HashMap<String, String>();
-		for (AuthorityMapping mapping : authorities.values()) {
-			if (mapping.isWeb() && mapping.isVisible()) {
-				map.put(mapping.getName(), mapping.getUrl());
-			}
-		}
-		return map;
-	}
-
-	/**
-	 * @return the authorities to show on user web-based login
-	 */
-	public Map<String, String> getVisibleAuthorityUrls() {
-		Map<String, String> map = new HashMap<String, String>();
-		for (AuthorityMapping mapping : authorities.values()) {
-			if (mapping.isVisible()) {
-				map.put(mapping.getName(), mapping.getUrl());
-			}
 		}
 		return map;
 	}

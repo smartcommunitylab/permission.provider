@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.permissionprovider.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,7 +89,7 @@ public class AuthController {
 	}
 
 	/**
-	 * Redirect to the login type selection page
+	 * Redirect to the login type selection page. 
 	 * @param req
 	 * @return
 	 * @throws Exception
@@ -96,7 +97,7 @@ public class AuthController {
 	@RequestMapping("/eauth/dev")
 	public ModelAndView developer(HttpServletRequest req) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getVisibleWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req,"/dev");
 		req.getSession().setAttribute("redirect", target);
@@ -104,15 +105,17 @@ public class AuthController {
 	}
 	
 	/**
-	 * Entry point for resource access authorization request. Redirects to the login page
+	 * Entry point for resource access authorization request. Redirects to the login page.
+	 * In addition to standard OAuth parameters, it is possible to specify a comma-separated
+	 * list of authorities to be used for login as 'authorities' parameter
 	 * @param req
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping("/eauth/authorize")
-	public ModelAndView authorise(HttpServletRequest req) throws Exception {
+	public ModelAndView authorise(HttpServletRequest req, @RequestParam(value="authorities",required=false) String loginAuthorities) throws Exception {
 		Map<String,Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter.getVisibleWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		
 		String clientId = req.getParameter("client_id");
 		if (clientId == null || clientId.isEmpty()) {
@@ -120,24 +123,31 @@ public class AuthController {
 			return new ModelAndView("oauth_error", model);	
 		}
 		Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
-		Set<String> all = new HashSet<String>(authorities.keySet());
+		
+		Set<String> all = null;
+		if (loginAuthorities != null && !loginAuthorities.isEmpty()) {
+			all = new HashSet<String>(Arrays.asList(loginAuthorities.split(",")));
+		} else {
+			all = new HashSet<String>(authorities.keySet());
+		}
+		Map<String,String> resultAuthorities = new HashMap<String, String>();
 		for (String idp : all) {
-			if (!idps.contains(idp)) authorities.remove(idp);
+			if (authorities.containsKey(idp) && idps.contains(idp)) resultAuthorities.put(idp,authorities.get(idp));
 		}
 		
-		if (authorities.isEmpty()) {
+		if (resultAuthorities.isEmpty()) {
 			model.put("message", "No Identity Providers assigned to the app");
 			return new ModelAndView("oauth_error", model);	
 		}
-
+		
 		String target = prepareRedirect(req,"/oauth/authorize");
 		req.getSession().setAttribute("redirect", target);
 		req.getSession().setAttribute("client_id", clientId);
 		
-		if (authorities.size() == 1) {
-			return new ModelAndView("redirect:/eauth/"+authorities.keySet().iterator().next());
+		if (resultAuthorities.size() == 1) {
+			return new ModelAndView("redirect:/eauth/"+resultAuthorities.keySet().iterator().next());
 		}
-		model.put("authorities", authorities);
+		model.put("authorities", resultAuthorities);
 		
 		return new ModelAndView("authorities", model);
 	}
