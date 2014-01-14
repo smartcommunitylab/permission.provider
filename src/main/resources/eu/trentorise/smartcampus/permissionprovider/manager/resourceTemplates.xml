@@ -444,6 +444,17 @@
 	      <description>University Data</description>
 	    </resourceMapping> 	    
 	    	    
+	    <resourceMapping id="smartcampus.unidataservice.menu.app"
+	      name="Timetable" uri="smartcampus.unidataservice.menu.app"
+	      authority="ROLE_ANY" approvalRequired="false">
+	      <description>Get Canteen Menu</description>
+	    </resourceMapping> 		    
+	    
+	    <resourceMapping id="smartcampus.unidataservice.opening.app"
+	      name="Timetable" uri="smartcampus.unidataservice.opening.app"
+	      authority="ROLE_ANY" approvalRequired="false">
+	      <description>Get Canteen Opening</description>
+	    </resourceMapping> 	  
 	    
 	 </service>
 
