@@ -21,6 +21,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 
 /**
  * 
@@ -32,4 +34,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
 	public Resource findByResourceUri(String resourceUri);
 	public List<Resource> findByClientId(String clientId);
+	public List<Resource> findByResourceParameter(ResourceParameter rpdb);
+	public List<Resource> findByService(ServiceDescriptor s);
 }

@@ -20,22 +20,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 
 /**
- * Persistent repository of {@link ResourceParameter} entities
+ * 
  * @author raman
  *
  */
 @Repository
-public interface ResourceParameterRepository extends JpaRepository<ResourceParameter, Long> {
+public interface ServiceRepository extends JpaRepository<ServiceDescriptor, String> {
 
-	List<ResourceParameter> findByClientId(String clientId);
-	List<ResourceParameter>  findByService(ServiceDescriptor s);
-//	List<ResourceParameter> findByClientIdAndServiceId(String clientId, String serviceId);
-//	List<ResourceParameter> findByClientIdAndResourceId(String clientId, String resourceId);
-//
-//	List<ResourceParameter> findByResourceId(String resourceId);
-//	List<ResourceParameter> findByServiceId(String serviceId);
+	public List<ServiceDescriptor> findByOwnerId(String ownerId);
 }

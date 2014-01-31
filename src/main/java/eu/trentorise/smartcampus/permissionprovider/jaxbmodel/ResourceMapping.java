@@ -8,8 +8,6 @@
 
 package eu.trentorise.smartcampus.permissionprovider.jaxbmodel;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -48,15 +46,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "resourceMapping", propOrder = {
-    "description",
-    "resourceMapping"
-})
+@XmlType(name = "resourceMapping", propOrder = {"description"})
 public class ResourceMapping {
 
     @XmlElement(required = true)
     protected String description;
-    protected List<ResourceMapping> resourceMapping;
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
@@ -95,35 +89,6 @@ public class ResourceMapping {
      */
     public void setDescription(String value) {
         this.description = value;
-    }
-
-    /**
-     * Gets the value of the resourceMapping property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the resourceMapping property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getResourceMapping().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ResourceMapping }
-     * 
-     * 
-     */
-    public List<ResourceMapping> getResourceMapping() {
-        if (resourceMapping == null) {
-            resourceMapping = new ArrayList<ResourceMapping>();
-        }
-        return this.resourceMapping;
     }
 
     /**

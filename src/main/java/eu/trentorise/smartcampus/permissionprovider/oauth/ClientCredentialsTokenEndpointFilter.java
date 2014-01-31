@@ -77,6 +77,7 @@ public class ClientCredentialsTokenEndpointFilter extends
 			if (clientSecretMobile.equals(clientSecret) && !info.isNativeAppsAccess()) {
 				throw new InvalidGrantException("Native app access is not enabled");
 			}
+			// TODO Check the native app hash
 			
 			if (!clientSecretServer.equals(clientSecret) && !clientSecretMobile.equals(clientSecret)) {
                 throw new BadCredentialsException(messages.getMessage(

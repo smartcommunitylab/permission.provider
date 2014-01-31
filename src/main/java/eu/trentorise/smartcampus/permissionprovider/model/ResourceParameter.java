@@ -18,9 +18,12 @@ package eu.trentorise.smartcampus.permissionprovider.model;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
 
@@ -31,19 +34,23 @@ import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
  *
  */
 @Entity
-@IdClass(ResourceParameterKey.class)
-@Table(name="resource_parameter")
+@Table(name="resource_parameter",
+       uniqueConstraints={@UniqueConstraint(columnNames={"parameter", "value", "serviceid"})})
 public class ResourceParameter {
 	@Id
-	private String resourceId;
+	@GeneratedValue
+	private Long id;
+	
+	private String parameter;
 	/**
-	 * Service
+	 * ServiceDescriptor
 	 */
-	private String serviceId;
+	@ManyToOne(optional=false)
+	@JoinColumn(nullable=false, name="serviceid",referencedColumnName="serviceId")
+	private ServiceDescriptor service;
 	/**
 	 * parameter value
 	 */
-	@Id
 	private String value;
 	/**
 	 * Owning client app
@@ -54,29 +61,42 @@ public class ResourceParameter {
 	 */
 	@Enumerated(EnumType.STRING)
 	private RESOURCE_VISIBILITY visibility = RESOURCE_VISIBILITY.CLIENT_APP;
+
 	/**
-	 * @return the resourceId
+	 * @return the id
 	 */
-	public String getResourceId() {
-		return resourceId;
+	public Long getId() {
+		return id;
 	}
 	/**
-	 * @param resourceId the resourceId to set
+	 * @param id the id to set
 	 */
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	/**
-	 * @return the serviceId
+	 * @return the parameter
 	 */
-	public String getServiceId() {
-		return serviceId;
+	public String getParameter() {
+		return parameter;
 	}
 	/**
-	 * @param serviceId the serviceId to set
+	 * @param parameter the parameter to set
 	 */
-	public void setServiceId(String serviceId) {
-		this.serviceId = serviceId;
+	public void setParameter(String parameter) {
+		this.parameter = parameter;
+	}
+	/**
+	 * @return the service
+	 */
+	public ServiceDescriptor getService() {
+		return service;
+	}
+	/**
+	 * @param service the service to set
+	 */
+	public void setService(ServiceDescriptor service) {
+		this.service = service;
 	}
 	/**
 	 * @return the value

@@ -49,8 +49,6 @@
 		<xsd:sequence>
 			<xsd:element name="description" type="xsd:string"
 				minOccurs="1" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="resource"
-				type="resourceDeclaration" />
 		</xsd:sequence>
 		<xsd:attribute name="id" type="xsd:ID" use="required" />
 		<xsd:attribute name="name" type="xsd:string" use="required" />
@@ -67,8 +65,6 @@
 		<xsd:sequence>
 			<xsd:element name="description" type="xsd:string"
 				minOccurs="1" />
-			<xsd:element name="resourceMapping" type="resourceMapping"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="id" type="xsd:ID" use="required" />
 		<xsd:attribute name="name" type="xsd:string" use="required" />

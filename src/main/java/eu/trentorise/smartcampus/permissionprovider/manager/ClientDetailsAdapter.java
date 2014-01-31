@@ -121,6 +121,7 @@ public class ClientDetailsAdapter {
 		if (info != null) {
 			res.setName(info.getName());
 			res.setNativeAppsAccess(info.isNativeAppsAccess());
+			res.setNativeAppSignatures(info.getNativeAppSignatures());
 			if (info.getIdentityProviders() != null) {
 				for (String key : info.getIdentityProviders().keySet()) {
 					switch (info.getIdentityProviders().get(key)) {
@@ -180,6 +181,7 @@ public class ClientDetailsAdapter {
 			}
 			info.setName(data.getName());
 			info.setNativeAppsAccess(data.isNativeAppsAccess());
+			info.setNativeAppSignatures(data.getNativeAppSignatures());
 			Set<String> types = new HashSet<String>(client.getAuthorizedGrantTypes());
 			if (data.isBrowserAccess()) {
 				types.add(GT_IMPLICIT);
@@ -232,6 +234,9 @@ public class ClientDetailsAdapter {
 		// for server-side or native access redirect URLs are required
 		if ((data.isServerSideAccess() || data.isNativeAppsAccess()) && (data.getRedirectUris() == null || data.getRedirectUris().trim().isEmpty())) {
 			return "redirect URL is required for Server-side or native access";
+		}
+		if (data.isNativeAppsAccess() && (data.getNativeAppSignatures() == null || data.getNativeAppSignatures().isEmpty())) {
+			return "app signature is required for native access";
 		}
 		return null;
 	}

@@ -21,7 +21,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -82,12 +81,19 @@ public class Resource {
 	@Enumerated(EnumType.STRING)
 	private RESOURCE_VISIBILITY visibility = RESOURCE_VISIBILITY.CLIENT_APP;
 	
+	/**
+	 * Reference to the resource Parameter
+	 */
 	@ManyToOne(optional=true)
-	@JoinColumns({ 
-		@JoinColumn(nullable=true, name="resourceparameterid",referencedColumnName="resourceid"),
-		@JoinColumn(nullable=true, name="resourceparametervalue",referencedColumnName="value"),
-	})
+	@JoinColumn(nullable=true, name="resourceparameterid",referencedColumnName="id")
 	private ResourceParameter resourceParameter;
+	
+	/**
+	 * ServiceDescriptor ID
+	 */
+	@ManyToOne(optional=false)
+	@JoinColumn(nullable=false, name="serviceid",referencedColumnName="serviceId")
+	private ServiceDescriptor service;
 	
 	/**
 	 * @return the resourceId
@@ -241,5 +247,19 @@ public class Resource {
 	 */
 	public void setResourceParameter(ResourceParameter resourceParameter) {
 		this.resourceParameter = resourceParameter;
+	}
+
+	/**
+	 * @return the service
+	 */
+	public ServiceDescriptor getService() {
+		return service;
+	}
+
+	/**
+	 * @param service the service to set
+	 */
+	public void setService(ServiceDescriptor service) {
+		this.service = service;
 	}
 }

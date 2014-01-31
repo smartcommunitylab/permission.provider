@@ -34,6 +34,7 @@ public class ClientAppBasic {
 	private Set<String> grantedTypes;
 
 	private boolean nativeAppsAccess;
+	private String nativeAppSignatures;
 	private boolean browserAccess;
 	private boolean serverSideAccess;
 
@@ -111,6 +112,18 @@ public class ClientAppBasic {
 	 */
 	public void setNativeAppsAccess(boolean nativeAppsAccess) {
 		this.nativeAppsAccess = nativeAppsAccess;
+	}
+	/**
+	 * @return the nativeAppSignatures
+	 */
+	public String getNativeAppSignatures() {
+		return nativeAppSignatures;
+	}
+	/**
+	 * @param nativeAppSignatures the nativeAppSignatures to set
+	 */
+	public void setNativeAppSignatures(String nativeAppSignatures) {
+		this.nativeAppSignatures = nativeAppSignatures;
 	}
 	/**
 	 * @return the browserAccess

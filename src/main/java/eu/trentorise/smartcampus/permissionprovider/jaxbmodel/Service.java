@@ -194,4 +194,17 @@ public class Service {
         this.name = value;
     }
 
+	/**
+	 * @param resource the resource to set
+	 */
+	public void setResource(List<ResourceDeclaration> resource) {
+		this.resource = resource;
+	}
+
+	/**
+	 * @param resourceMapping the resourceMapping to set
+	 */
+	public void setResourceMapping(List<ResourceMapping> resourceMapping) {
+		this.resourceMapping = resourceMapping;
+	}
 }

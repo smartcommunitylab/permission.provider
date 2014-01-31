@@ -17,7 +17,6 @@
 package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +46,8 @@ import org.springframework.web.util.UriTemplate;
 import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.common.ResourceException;
+import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
@@ -54,11 +55,12 @@ import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Services;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
-import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameterKey;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceStorage;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.ServiceRepository;
 
 /**
  * Class used to operate resource model.
@@ -67,9 +69,9 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
  */
 @Component
 @Transactional
-public class ResourceAdapter {
+public class ResourceManager {
 
-	private static Log logger = LogFactory.getLog(ResourceAdapter.class);
+	private static Log logger = LogFactory.getLog(ResourceManager.class);
 	@Autowired
 	private ResourceStorage resourceStorage;
 	@Autowired
@@ -78,17 +80,24 @@ public class ResourceAdapter {
 	private ResourceRepository resourceRepository;
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
+	@Autowired
+	private ServiceRepository serviceRepository;
 	
-	private Map<String,Service> serviceMap = new HashMap<String, Service>(); 
-	private Map<String,ResourceDeclaration> resourceDeclarationMap = new HashMap<String, ResourceDeclaration>();
-	private Map<String,ResourceMapping> resourceMappingMap = new HashMap<String, ResourceMapping>();
-	private Map<String,String> resourceTreeMap = new HashMap<String, String>();
-	private Map<String,String> resourceServiceMap = new HashMap<String, String>();
-	private Map<String,List<ResourceMapping>> flatServiceMappings = new HashMap<String, List<ResourceMapping>>();
+//	/** map serviceId to {@link ServiceDescriptor} instance */
+//	private Map<String,ServiceDescriptor> serviceMap = new HashMap<String, ServiceDescriptor>(); 
+//	/** map resource declaration Id to {@link ResourceDeclaration} instance */
+//	private Map<String,ResourceDeclaration> resourceDeclarationMap = new HashMap<String, ResourceDeclaration>();
+//	/** map resource mapping Id to {@link ResourceMapping} instance */
+//	private Map<String,ResourceMapping> resourceMappingMap = new HashMap<String, ResourceMapping>();
+//	/** map resource declaration Id to service Id */
+//	private Map<String,String> resourceServiceMap = new HashMap<String, String>();
+//	/** map service Id to resource mappings of the service */ 
+//	private Map<String,List<ResourceMapping>> flatServiceMappings = new HashMap<String, List<ResourceMapping>>();
 	
 	@PostConstruct 
-	public void init() {
-		processServiceResourceTemplates();
+	public void init() throws ResourceException {
+		List<Service> services = loadResourceTemplates();
+		processServiceObjects(services, null);
 	}
 
 	/**
@@ -98,11 +107,7 @@ public class ResourceAdapter {
 	 * @param rp
 	 */
 	public void storeResourceParameter(ResourceParameter rp) {
-		ResourceParameterKey pk = new ResourceParameterKey();
-		pk.resourceId = rp.getResourceId();
-		pk.value = rp.getValue();
-		
-		ResourceParameter rpold = resourceParameterRepository.findOne(pk);
+		ResourceParameter rpold = resourceParameterRepository.findOne(rp.getId());
 		// check uniqueness
 		String clientId = rp.getClientId();
 		if (rpold != null && !clientId.equals(clientId)) {
@@ -145,23 +150,15 @@ public class ResourceAdapter {
 	 * clients that use the corresponding resources, an exception is thrown. Also, if the new
 	 * visibility is more relaxing than that of the parent, the exception is thrown.
 	 * 
-	 * @param resourceId id of the changed resource parameter definition
-	 * @param value parameter value
-	 * @param clientId owning client id
+	 * @param id id of the changed resource parameter
 	 * @param visibility new visibility value
 	 * @return changed parameter
 	 */
-	public ResourceParameter updateResourceParameterVisibility(String resourceId, String value, String clientId, RESOURCE_VISIBILITY visibility) {
+	public ResourceParameter updateResourceParameterVisibility(Long id, RESOURCE_VISIBILITY visibility) {
 		assert visibility != null;
-		
-		ResourceParameterKey pk = new ResourceParameterKey();
-		pk.resourceId = resourceId;
-		pk.value = value;
-		
-		ResourceParameter rpdb = resourceParameterRepository.findOne(pk);
-		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
-			throw new IllegalArgumentException("Can update only own resource parameters");
-		} if (rpdb != null) {
+		ResourceParameter rpdb = resourceParameterRepository.findOne(id);
+		if (rpdb != null) {
+			String clientId = rpdb.getClientId();
 			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
 			
 			Map<String, RESOURCE_VISIBILITY> visibilityMap = new HashMap<String, Config.RESOURCE_VISIBILITY>();
@@ -177,16 +174,15 @@ public class ResourceAdapter {
 				throw new IllegalArgumentException("Resource is in use, cannot reduce visibility");
 			}
 			
-			
-			ResourceDeclaration rd = resourceDeclarationMap.get(rpdb.getResourceId());
-			List<Resource> resources = resourceRepository.findByClientId(clientId);
+			List<Resource> resources = resourceRepository.findByResourceParameter(rpdb);//.findByClientId(clientId);
 			if (resources != null) {
 				for (Resource r : resources) {
-					ResourceMapping rm = resourceMappingMap.get(r.getResourceType());
-					Map<String,String> params = new UriTemplate(rm.getUri()).match(r.getResourceUri());
-					if (params != null && rpdb.getValue().equals(params.get(rd.getName()))) {
-						r.setVisibility(rpdb.getVisibility());
-					}
+					r.setVisibility(rpdb.getVisibility());
+//					ResourceMapping rm = resourceMappingMap.get(r.getResourceType());
+//					Map<String,String> params = new UriTemplate(rm.getUri()).match(r.getResourceUri());
+//					if (params != null && rpdb.getValue().equals(params.get(rd.getName()))) {
+//						r.setVisibility(rpdb.getVisibility());
+//					}
 				}
 			}
 			
@@ -231,19 +227,13 @@ public class ResourceAdapter {
 	/**
 	 * Try to remove the resource parameter and its children. Operation is recursive.
 	 * If one of the derived resources is already in use, an exception is thrown.
-	 * @param resourceId
-	 * @param value
-	 * @param clientId
+	 * @param rpId
 	 */
-	public void removeResourceParameter(String resourceId, String value, String clientId) {
-		ResourceParameterKey pk = new ResourceParameterKey();
-		pk.resourceId = resourceId;
-		pk.value = value;
+	public void removeResourceParameter(Long rpId) {
 		// main parameter
-		ResourceParameter rpdb = resourceParameterRepository.findOne(pk);
-		if (rpdb != null && !rpdb.getClientId().equals(clientId)) {
-			throw new IllegalArgumentException("Can delete only own resource parameters");
-		} if (rpdb != null) {
+		ResourceParameter rpdb = resourceParameterRepository.findOne(rpId);
+		if (rpdb != null) {
+			String clientId = rpdb.getClientId();
 			Set<String> ids = new HashSet<String>();
 			Set<String> scopes = new HashSet<String>();
 			// aggregate all derived resource uris
@@ -291,27 +281,27 @@ public class ResourceAdapter {
 	 */
 	private Map<String,ResourceMapping> findResourceURIs(ResourceParameter rpdb) {
 		Map<String, ResourceMapping> res = new HashMap<String, ResourceMapping>();
-		Map<String,String> params = new HashMap<String, String>();
-		params.put(rpdb.getResourceId(), rpdb.getValue());
-		// the service where parameter is defined
-		Service service = serviceMap.get(rpdb.getServiceId());
-		if (service == null) {
-			throw new IllegalArgumentException("Service "+rpdb.getServiceId() +" is not found.");
-		}
-		// all the service resource mappings
-		List<ResourceMapping> list = flatServiceMappings.get(service.getId());
-		if (list != null) {
-			for (ResourceMapping rm : list) {
-				UriTemplate template = new UriTemplate(rm.getUri());
-				// if the extracted parameters contain all the template parameters, the mapping is updated
-				if (template.getVariableNames() != null) {
-					if (new HashSet<String>(template.getVariableNames()).equals(params.keySet())) {
-						URI uri = template.expand(params);
-						res.put(uri.toString(), rm);
-					}
-				}
-			}
-		}
+//		Map<String,String> params = new HashMap<String, String>();
+//		params.put(rpdb.getResourceId(), rpdb.getValue());
+//		// the service where parameter is defined
+//		ServiceDescriptor service = serviceMap.get(rpdb.getServiceId());
+//		if (service == null) {
+//			throw new IllegalArgumentException("ServiceDescriptor "+rpdb.getServiceId() +" is not found.");
+//		}
+//		// all the service resource mappings
+//		List<ResourceMapping> list = flatServiceMappings.get(service.getId());
+//		if (list != null) {
+//			for (ResourceMapping rm : list) {
+//				UriTemplate template = new UriTemplate(rm.getUri());
+//				// if the extracted parameters contain all the template parameters, the mapping is updated
+//				if (template.getVariableNames() != null) {
+//					if (new HashSet<String>(template.getVariableNames()).equals(params.keySet())) {
+//						URI uri = template.expand(params);
+//						res.put(uri.toString(), rm);
+//					}
+//				}
+//			}
+//		}
 		
 		return res;
 	}
@@ -320,20 +310,18 @@ public class ResourceAdapter {
 	 * Read resource parameters owned by the specified client, optionally restricting 
 	 * to the specified service and resource parameter ID
 	 * @param clientId
-	 * @param serviceId
-	 * @param resourceId
 	 * @return
 	 */
-	public List<ResourceParameter> getOwnResourceParameters(String clientId, String serviceId, String resourceId) {
+	public List<ResourceParameter> getOwnResourceParameters(String clientId) {
 		if (clientId == null) {
 			return Collections.emptyList();
 		}
-		if (resourceId != null) {
-			return resourceParameterRepository.findByClientIdAndResourceId(clientId,resourceId);
-		}
-		if (serviceId != null) {
-			return resourceParameterRepository.findByClientIdAndServiceId(clientId,serviceId);
-		}
+//		if (resourceId != null) {
+//			return resourceParameterRepository.findByClientIdAndResourceId(clientId,resourceId);
+//		}
+//		if (serviceId != null) {
+//			return resourceParameterRepository.findByClientIdAndServiceId(clientId,serviceId);
+//		}
 		return resourceParameterRepository.findByClientId(clientId);
 	}
 	
@@ -343,7 +331,7 @@ public class ResourceAdapter {
 	 */
 	private List<Service> loadResourceTemplates() {
 		try {
-			JAXBContext jaxb = JAXBContext.newInstance(Service.class, Services.class, ResourceMapping.class, ResourceDeclaration.class);
+			JAXBContext jaxb = JAXBContext.newInstance(ServiceDescriptor.class, Services.class, ResourceMapping.class, ResourceDeclaration.class);
 			Unmarshaller unm = jaxb.createUnmarshaller();
 			JAXBElement<Services> element = (JAXBElement<Services>) unm
 					.unmarshal(
@@ -356,40 +344,155 @@ public class ResourceAdapter {
 		}
 	}
 
-	/**
-	 * Parse the resource template descriptor
-	 */
-	private void processServiceResourceTemplates() {
-		List<Service> services = loadResourceTemplates();
+	private void processServiceObjects(List<Service> services, String ownerId) throws ResourceException {
+		List<ServiceDescriptor> dbServices = serviceRepository.findByOwnerId(ownerId);
+		Map<String,ServiceDescriptor> dbServiceMap = new HashMap<String, ServiceDescriptor>();
+		for (ServiceDescriptor s : dbServices) {
+			dbServiceMap.put(s.getServiceId(), s); 
+		}
+		// split objects in created/updated/deleted
+		Set<ServiceDescriptor> deleted  = new HashSet<ServiceDescriptor>();
+		Map<Service,ServiceDescriptor> updated = new HashMap<Service,ServiceDescriptor>(); 
+		Set<Service> created = new HashSet<Service>();
+		Set<String> newOnes = new HashSet<String>();
 		for (Service s : services) {
-			// service descriptor
-			serviceMap.put(s.getId(), s);
-			if (s.getResource() != null) {
-				// process resource parameter declarations
-				for (ResourceDeclaration rd : s.getResource()) {
-					// resource parameter declaration
-					resourceDeclarationMap.put(rd.getId(), rd);
-					// map resource parameter to service
-					resourceServiceMap.put(rd.getId(), s.getId());
-					// extract parameters recursively
-					extractRDs(rd.getResource(),rd.getId(),s.getId());
-				}
+			if (!dbServiceMap.containsKey(s.getId())) {
+				created.add(s);
+			} else {
+				updated.put(s, dbServiceMap.get(s.getId()));
 			}
-			// process resource mappings
-			if (s.getResourceMapping() != null) {
-				List<Resource> resources = new ArrayList<Resource>();
-				for (ResourceMapping  rm : s.getResourceMapping()) {
-					// extract resource mappings recursively
-					extractResources(rm,resources, s);
-				}
-				// store the extracted non-parametric resource mappings
-				if (!resources.isEmpty()) {
-					resourceStorage.storeResources(resources);
-				}
+			newOnes.add(s.getId());
+		}
+		for (ServiceDescriptor s : dbServices) {
+			if (!newOnes.contains(s.getServiceId())) {
+				deleted.add(s);
 			}
-			// TODO validate service data
+		}
+		
+		// process changes
+		for (ServiceDescriptor s : deleted) {
+			deleteService(s, ownerId);
+		}
+		for (Service service: updated.keySet()) {
+			updateService(service, updated.get(service), ownerId);
+		}
+		for (Service service: created) {
+			createService(service, ownerId);
 		}
 	}
+	
+	/**
+	 * @param newService
+	 * @param oldService
+	 * @param ownerId
+	 * @return 
+	 */
+	private Service updateService(Service newService, ServiceDescriptor oldService, String ownerId) {
+		// TODO
+		// - resource param/resource mapping change => delete/add
+		// - if is in use throw exception, otherwise delete
+		// TODO extract non-parametric resources and store if no conflicts
+		// TODO delete unused resources 
+		return newService;
+	}
+
+	/**
+	 * @param s
+	 * @param ownerId
+	 * @throws ResourceException 
+	 */
+	private void deleteService(ServiceDescriptor s, String ownerId) throws ResourceException {
+		List<Resource> resources = resourceRepository.findByService(s);
+		// check the service resources are in use by the clients
+		if (resources != null && ! resources.isEmpty()) {
+			Set<String> ids = new HashSet<String>();
+			for (Resource r : resources) {
+				ids.add(""+r.getResourceId());
+			}
+			List<ClientDetailsEntity> clients = clientDetailsRepository.findAll();
+			for (ClientDetailsEntity c : clients) {
+				if (!Collections.disjoint(ids, c.getResourceIds())) {
+					throw new ResourceException("Resource in use by client: "+c.getClientId());
+				}
+			}
+		}
+		resourceRepository.delete(resources);
+		resourceParameterRepository.delete(resourceParameterRepository.findByService(s));
+		// delete service
+		serviceRepository.delete(s);
+	}
+	
+	/**
+	 * Create new service for the specified owner
+	 * @param service
+	 * @param ownerId
+	 * @return created {@link Service} object
+	 * @throws ResourceException 
+	 */
+	public Service createService(Service service, String ownerId) throws ResourceException {
+		ServiceDescriptor entity = Utils.toServiceEntity(service);
+		entity.setOwnerId(ownerId);
+		// saving new service
+		entity = serviceRepository.save(entity);
+		// read non-parametric service resources 
+		List<Resource> resourcesToStore = extractResources(service);
+		if (resourcesToStore != null && !resourcesToStore.isEmpty()) {
+			for (Iterator<Resource> iterator = resourcesToStore.iterator(); iterator.hasNext();) {
+				Resource r = iterator.next();
+				Resource existing = resourceRepository.findByResourceUri(r.getResourceUri());
+				// if resource already exists and belongs to a different service, throw an exception
+				if (existing != null && !existing.getService().getServiceId().equals(service.getId())) {
+					throw new ResourceException("resource not unique: "+r.getResourceUri());
+				} else if (existing != null) {
+					iterator.remove();
+				} else {
+					r.setService(entity);
+				}
+			}
+			// store new non-parametric resources
+			resourceStorage.storeResources(resourcesToStore);
+		}
+		return Utils.toServiceObject(entity); 
+	}
+
+	/**
+	 * Update the specified service object
+	 * @param s
+	 * @param ownerId
+	 * @return updated {@link Service} object
+	 */
+	public Service updateService(Service s, String ownerId) {
+		ServiceDescriptor old = serviceRepository.findOne(s.getId());
+		return updateService(s, old, ownerId);
+	} 
+	
+	/**
+	 * Delete the specified service
+	 * @param serviceId
+	 * @param ownerId
+	 * @throws ResourceException 
+	 */
+	public void deleteService(String serviceId, String ownerId) throws ResourceException {
+		ServiceDescriptor old = serviceRepository.findOne(serviceId);
+		deleteService(old, ownerId);
+	}
+
+	private List<Resource> extractResources(Service s) {
+		List<Resource> resources = new ArrayList<Resource>();
+		// process resource mappings
+		if (s.getResourceMapping() != null) {
+			for (ResourceMapping  rm : s.getResourceMapping()) {
+				// extract resource mappings recursively
+				extractResources(rm,resources, s);
+			}
+//			// store the extracted non-parametric resource mappings
+//			if (!resources.isEmpty()) {
+//				resourceStorage.storeResources(resources);
+//			}
+		}
+		return resources;
+	}
+
 	
 	/**
 	 * Extract resource mappings recursively
@@ -398,25 +501,9 @@ public class ResourceAdapter {
 	 * @param s 
 	 */
 	private void extractResources(ResourceMapping rm, List<Resource> resources, Service s) {
-		// resource mapping
-		resourceMappingMap.put(rm.getId(), rm);
-		// flat list of resource mappings associated to the service
-		List<ResourceMapping> list = flatServiceMappings.get(s.getId());
-		if (list == null) {
-			list = new ArrayList<ResourceMapping>();
-			flatServiceMappings.put(s.getId(), list);
-		}
-		list.add(rm);
-		
 		// add non-parametric resources to the target list
 		if (!isParametric(rm)) {
 			resources.add(prepareResource(null, null, rm.getUri(),rm, RESOURCE_VISIBILITY.PUBLIC));
-		}
-		// recursion
-		if (rm.getResourceMapping() != null) {
-			for (ResourceMapping child : rm.getResourceMapping()) {
-				extractResources(child, resources, s);
-			}
 		}
 	}
 
@@ -464,32 +551,16 @@ public class ResourceAdapter {
 		return r;
 	}
 
-
-	/**
-	 * Recursively extract resource parameter declarations
-	 * @param list
-	 * @param id
-	 */
-	private void extractRDs(List<ResourceDeclaration> list, String parent, String serviceId) {
-		if (list != null) {
-			for (ResourceDeclaration rd : list) {
-				// resource declaration map
-				resourceDeclarationMap.put(rd.getId(), rd);
-				// map property to its parent if any
-				resourceTreeMap.put(rd.getId(), parent);
-				// map resource to the service
-				resourceServiceMap.put(rd.getId(), serviceId);
-				// recursion
-				extractRDs(rd.getResource(),rd.getId(),serviceId);
-			}
-		}
-	}
-
 	/**
 	 * @return
 	 */
-	public Collection<Service> getServices() {
-		return Collections.unmodifiableCollection(serviceMap.values());
+	public Collection<Service> getServiceObjects() {
+		List<ServiceDescriptor> services = serviceRepository.findAll();
+		List<Service> res = new ArrayList<Service>();
+		for (ServiceDescriptor s : services) {
+			res.add(Utils.toServiceObject(s));
+		}
+		return res;
 	}
 
 	/**
