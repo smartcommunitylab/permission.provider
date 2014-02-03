@@ -22,7 +22,7 @@
         border: none;  
       }
     </style>
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="css/bootstrap.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
@@ -37,7 +37,7 @@
       <div class="navbar-inner">
         <div class="container" >
           <ul class="nav" role="navigation">
-	        <li class="{{activeView('apps')}}"><a href="#" ng-click="currentView='apps'">Apps</a></li>
+	        <li class="{{activeView('apps')}}"><a href="#" ng-click="currentView='apps'">API Clients</a></li>
 	        <li class="{{activeView('profile')}}"><a href="#" ng-click="currentView='profile'">Profile</a></li>
           </ul>
           <ul class="nav pull-right">

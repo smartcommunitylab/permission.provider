@@ -32,7 +32,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.error = '';
 	// info message
 	$scope.info = '';
-	// permissions of the current client 
+	$scope.services = null;
+	// permissions of the current client and services
 	$scope.permissions = null;
 	// permissions subview (available permissions/own resources)
 	$scope.permView = 'avail';
@@ -53,14 +54,19 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	});
 
 	// resource reference for the permissions API
-	var ClientAppPermissions = $resource('dev/permissions/:clientId', {}, {
+	var ClientAppPermissions = $resource('dev/permissions/:clientId/:serviceId', {}, {
 		update : { method : 'PUT' },		
 	});
 
 	// resource reference for the resources API
-	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value/', {}, {
+	var ClientAppResourceParam = $resource('dev/resourceparams/:id', {}, {
 		create : { method : 'POST' },
 		changeVis : {method : 'PUT'}
+	});
+	
+	// resource reference for the services API
+	var AppServices = $resource('dev/services/:clientId', {}, {
+		query : {method : 'GET'}
 	});
 	/**
 	 * Initialize the app: load list of the developer's apps and reset views
@@ -148,17 +154,15 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	};
 
 	/**
-	 * select a different service container
+	 * open permissions of a service 
 	 */
-	$scope.switchPermService = function(idx) {
-		if (idx == $scope.permService) {
-			$scope.permServiceCollapsed = !$scope.permServiceCollapsed;
-		} else {
-			$scope.permServiceCollapsed = false;
-			$scope.permService = idx;
-			$scope.switchPermView('avail');
-		}
+	$scope.changeServicePermissions = function(item) {
+			$scope.service = item;
+			loadPermissions(item, function() {
+				$('#myModal').modal({keyboard:false});
+			});
 	};
+	
 	/**
 	 * Whether the specified service container is collapsed
 	 */
@@ -183,23 +187,39 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.viewPermissions = function() {
 		$scope.permissions = null;
 		$scope.switchClientView('permissions');
-		loadPermissions();
+		loadServices();
 	};
 
 	/**
 	 * load permissions of the current app.
 	 */
-	function loadPermissions() {
+	function loadPermissions(service, callback) {
 		var newClient = new ClientAppPermissions();
-		newClient.$get({clientId:$scope.clientId}, function(response) {
+		newClient.$get({clientId:$scope.clientId, serviceId: service.id}, function(response) {
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.permissions = response.data;
+				callback();
 			} else {
 				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
 			}	
 		});
 	}
+	/**
+	 * load services available
+	 */
+	function loadServices() {
+		var newClient = new AppServices();
+		newClient.$query({clientId:$scope.clientId}, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.services = response.data;
+			} else {
+				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
+			}	
+		});
+	}
+	
 	/**
 	 * switch to different client
 	 */
@@ -277,9 +297,10 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	/**
 	 * Save current app permissions
 	 */
-	$scope.savePermissions = function() {
+	$scope.savePermissions = function(service) {
 		var perm = new ClientAppPermissions($scope.permissions);
-		perm.$update({clientId:$scope.clientId}, function(response) {
+		perm.$update({clientId:$scope.clientId, serviceId:service.id}, function(response) {
+			$('#myModal').modal('hide');
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.info = 'App permissions saved!';
@@ -292,17 +313,17 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	/**
 	 * create new resource parameter value for the specified resource parameter, service, and client app
 	 */
-	$scope.saveResourceParam = function(resourceId,serviceId,clientId) {
-		var perm = new ClientAppResourceParam({resourceId:resourceId,serviceId:serviceId,clientId:clientId});
+	$scope.saveResourceParam = function(parameter,serviceId,clientId) {
+		var perm = new ClientAppResourceParam({parameter:parameter,service:{serviceId:serviceId},clientId:clientId});
 		var n = prompt("Create new resource", "value");
 		if (n == null || n.trim().length==0) return;
 		perm.value = n.trim();
 		
 		perm.$create(function(response) {
+			$('#myModal').modal('hide');
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.info = 'Resource added!';
-				loadPermissions();
 			} else {
 				$scope.error = 'Failed to save own resource: '+response.errorMessage;
 			}	
@@ -316,11 +337,11 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.removeResourceParam = function(r) {
 		if (confirm('Are you sure you want to delete this resource and subresources?')) {
 			var perm = new ClientAppResourceParam();
-			perm.$delete({clientId:r.clientId,resourceId:r.resourceId,value:r.value},function(response){
+			perm.$delete({id:r.id},function(response){
+				$('#myModal').modal('hide');
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					$scope.info = 'Resource removed!';
-					loadPermissions();
 				} else {
 					$scope.error = 'Failed to remove resource: '+response.errorMessage;
 				}	
@@ -334,7 +355,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.changeResourceParamVis = function(r) {
 		if (confirm('Change visibility of the resource?')) {
 			var perm = new ClientAppResourceParam();
-			perm.$changeVis({clientId:r.clientId,resourceId:r.resourceId,value:r.value,vis:r.visibility},function(response){
+			perm.$changeVis({id:r.id,vis:r.visibility},function(response){
+				$('#myModal').modal('hide');
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					$scope.info = 'Resource visibility updated!';

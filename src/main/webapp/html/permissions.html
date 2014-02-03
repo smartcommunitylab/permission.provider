@@ -1,61 +1,11 @@
-<form ng-submit="savePermissions()" >
-	<div class="accordion" id="permissions" >
-	  <div ng-repeat="item in permissions.services" class="accordion-group">
-	    <div class="accordion-heading">
-	      <a class="accordion-toggle" ng-class="{collapsed:isPermServiceCollapsed($index)}" ng-click="switchPermService($index)">
-	        {{item.name}}
-	      </a>
-	    </div>
-	    <div class="accordion-body"  ng-class="{collapse:isPermServiceCollapsed($index)}" style="background-color: #ffffff">
-	      <div class="accordion-inner body ">
-	        {{item.description}}
-	        <p/>
-	        <div>
-	           <ul class="nav nav-tabs">
-                   <li class="{{activePermView('avail')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('avail')">Available Resources</a></li>
-	               <li class="{{activePermView('own')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('own')">Own Resources</a></li>
-	           </ul>
-	           <div ng-switch on="permView">
-	               <div  ng-switch-when="own">
-		               <div ng-repeat="rd in item.resource">
-		                   <div class="row-fluid">
-	                           <div class="span11 "><strong>{{rd.name}}</strong> ({{rd.description}})</div>
-	                           <div class="span1"><a class="btn btn-mini btn-primary" href="#" ng-click="saveResourceParam(rd.id,item.id,clientId)"><i class="icon-plus icon-white"></i></a></div>
-		                   </div>
-		                   <hr class="hr-min">
-		                   <div ng-repeat="r in permissions.ownResources[rd.id]">
-	                          <div class="row-fluid" >
-	                              <div class="span8">{{r.value}}</div>
-	                              <div class="span3">
-	                                <select class="input-medium" ng-model="r.visibility" ng-change="changeResourceParamVis(r)">
-	                                  <option value="CLIENT_APP">Current app</option>
-                                      <option value="DEVELOPER">Owned apps</option>
-                                      <option value="PUBLIC">Any app</option>
-	                                </select>
-	                              </div>
-	                              <div class="span1"><a class="btn btn-mini" href="#" ng-click="removeResourceParam(r)"><i class="icon-minus"></i></a></div>
-	                          </div>
-                           <hr class="hr-min shift">
-		                   </div>
-		               </div>
-                       <hr class="hr-min">
-	               </div>
-	               <div ng-switch-default>
-		               <div ng-repeat="(key,arr) in permissions.availableResources[item.id]">
-		                  <div ng-repeat="r in arr" class="row-fluid">
-                        <div class="span1">{{r.resourceParameter.value}}</div>
-		                    <div class="span5"><strong>{{r.resourceUri}}</strong></div>
-		                    <div class="span4">{{r.name}}</div>
-                        <div class="span1">{{toAuthority(r.authority)}}</div>
-                        <div class="span1 pull-right"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"> <i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
-		                  </div>
-		               </div>
-	               </div>
-	           </div>
-	        </div>
-	      </div>
-	    </div>
-	  </div>
-	</div>    
-    <button type="submit" class="btn btn-primary">Save permissions</button>
-</form>
+  <table class="table table-bordered">
+	  <tr ng-repeat="item in services">
+	    <td> 
+	    <bold><a ng-click="changeServicePermissions(item)">{{item.name}}</a></bold>
+	    <p/>
+      {{item.description}}
+      </td>
+	  </tr>
+  </table>
+  <div ng-include="'./html/service-perm.html'"></div>
+

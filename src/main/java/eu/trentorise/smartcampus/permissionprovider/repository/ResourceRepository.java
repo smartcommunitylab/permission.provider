@@ -15,6 +15,7 @@
  */
 package eu.trentorise.smartcampus.permissionprovider.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,5 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 	public List<Resource> findByClientId(String clientId);
 	public List<Resource> findByResourceParameter(ResourceParameter rpdb);
 	public List<Resource> findByService(ServiceDescriptor s);
+	public List<Resource> findByServiceAndResourceType(ServiceDescriptor service, String resourceType);
 }

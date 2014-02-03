@@ -17,6 +17,7 @@
 package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import org.springframework.web.util.UriTemplate;
 import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.common.PatternMatcher;
 import eu.trentorise.smartcampus.permissionprovider.common.ResourceException;
 import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
@@ -83,17 +85,6 @@ public class ResourceManager {
 	@Autowired
 	private ServiceRepository serviceRepository;
 	
-//	/** map serviceId to {@link ServiceDescriptor} instance */
-//	private Map<String,ServiceDescriptor> serviceMap = new HashMap<String, ServiceDescriptor>(); 
-//	/** map resource declaration Id to {@link ResourceDeclaration} instance */
-//	private Map<String,ResourceDeclaration> resourceDeclarationMap = new HashMap<String, ResourceDeclaration>();
-//	/** map resource mapping Id to {@link ResourceMapping} instance */
-//	private Map<String,ResourceMapping> resourceMappingMap = new HashMap<String, ResourceMapping>();
-//	/** map resource declaration Id to service Id */
-//	private Map<String,String> resourceServiceMap = new HashMap<String, String>();
-//	/** map service Id to resource mappings of the service */ 
-//	private Map<String,List<ResourceMapping>> flatServiceMappings = new HashMap<String, List<ResourceMapping>>();
-	
 	@PostConstruct 
 	public void init() throws ResourceException {
 		List<Service> services = loadResourceTemplates();
@@ -106,13 +97,30 @@ public class ResourceManager {
 	 * all the derived resources. 
 	 * @param rp
 	 */
-	public void storeResourceParameter(ResourceParameter rp) {
-		ResourceParameter rpold = resourceParameterRepository.findOne(rp.getId());
+	public void storeResourceParameter(ResourceParameter rp, String serviceId) {
+		ResourceParameter rpold = rp.getId() == null ? null : resourceParameterRepository.findOne(rp.getId());
 		// check uniqueness
 		String clientId = rp.getClientId();
 		if (rpold != null && !clientId.equals(clientId)) {
 			throw new IllegalArgumentException("A parameter already used by another app");
 		} else if (rpold == null) {
+			ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+			if (sd == null) {
+				throw new IllegalArgumentException("Unknown service: "+serviceId);
+			} else {
+				Service s = Utils.toServiceObject(sd);
+				boolean found = false;
+				for (ResourceDeclaration rd : s.getResource()) {
+					if (rd.getId().equals(rp.getParameter())) {
+						found = true; break;
+					}
+				}
+				if (!found) {
+					throw new IllegalArgumentException("Unknown parameter '"+rp.getParameter()+"' for service: "+serviceId);
+				}
+				rp.setService(sd);
+			}
+			
 			resourceParameterRepository.save(rp);
 			// derived resources
 			Map<String, ResourceMapping> mappings = findResourceURIs(rp);
@@ -124,6 +132,7 @@ public class ResourceManager {
 					ResourceMapping resourceMapping = mappings.get(uri);
 
 					Resource r = prepareResource(clientId, rp,  uri, resourceMapping, rp.getVisibility());
+					r.setService(sd);
 					resourceRepository.save(r);
 					newSet.add(r.getResourceId().toString());
 					newScopes.add(r.getResourceUri());
@@ -178,11 +187,6 @@ public class ResourceManager {
 			if (resources != null) {
 				for (Resource r : resources) {
 					r.setVisibility(rpdb.getVisibility());
-//					ResourceMapping rm = resourceMappingMap.get(r.getResourceType());
-//					Map<String,String> params = new UriTemplate(rm.getUri()).match(r.getResourceUri());
-//					if (params != null && rpdb.getValue().equals(params.get(rd.getName()))) {
-//						r.setVisibility(rpdb.getVisibility());
-//					}
 				}
 			}
 			
@@ -281,27 +285,28 @@ public class ResourceManager {
 	 */
 	private Map<String,ResourceMapping> findResourceURIs(ResourceParameter rpdb) {
 		Map<String, ResourceMapping> res = new HashMap<String, ResourceMapping>();
-//		Map<String,String> params = new HashMap<String, String>();
-//		params.put(rpdb.getResourceId(), rpdb.getValue());
-//		// the service where parameter is defined
-//		ServiceDescriptor service = serviceMap.get(rpdb.getServiceId());
-//		if (service == null) {
-//			throw new IllegalArgumentException("ServiceDescriptor "+rpdb.getServiceId() +" is not found.");
-//		}
-//		// all the service resource mappings
-//		List<ResourceMapping> list = flatServiceMappings.get(service.getId());
-//		if (list != null) {
-//			for (ResourceMapping rm : list) {
-//				UriTemplate template = new UriTemplate(rm.getUri());
-//				// if the extracted parameters contain all the template parameters, the mapping is updated
-//				if (template.getVariableNames() != null) {
-//					if (new HashSet<String>(template.getVariableNames()).equals(params.keySet())) {
-//						URI uri = template.expand(params);
-//						res.put(uri.toString(), rm);
-//					}
-//				}
-//			}
-//		}
+		Map<String,String> params = new HashMap<String, String>();
+		params.put(rpdb.getParameter(), rpdb.getValue());
+		// the service where parameter is defined
+		ServiceDescriptor sd = rpdb.getService();
+		if (sd == null) {
+			throw new IllegalArgumentException("ServiceDescriptor is not found.");
+		}
+		Service s = Utils.toServiceObject(sd);
+		// all the service resource mappings
+		List<ResourceMapping> list = s.getResourceMapping();
+		if (list != null) {
+			for (ResourceMapping rm : list) {
+				UriTemplate template = new UriTemplate(rm.getUri());
+				// if the extracted parameters contain all the template parameters, the mapping is updated
+				if (template.getVariableNames() != null) {
+					if (new HashSet<String>(template.getVariableNames()).equals(params.keySet())) {
+						URI uri = template.expand(params);
+						res.put(uri.toString(), rm);
+					}
+				}
+			}
+		}
 		
 		return res;
 	}
@@ -316,12 +321,6 @@ public class ResourceManager {
 		if (clientId == null) {
 			return Collections.emptyList();
 		}
-//		if (resourceId != null) {
-//			return resourceParameterRepository.findByClientIdAndResourceId(clientId,resourceId);
-//		}
-//		if (serviceId != null) {
-//			return resourceParameterRepository.findByClientIdAndServiceId(clientId,serviceId);
-//		}
 		return resourceParameterRepository.findByClientId(clientId);
 	}
 	
@@ -345,6 +344,8 @@ public class ResourceManager {
 	}
 
 	private void processServiceObjects(List<Service> services, String ownerId) throws ResourceException {
+		checkServiceListConsistency(services);
+
 		List<ServiceDescriptor> dbServices = serviceRepository.findByOwnerId(ownerId);
 		Map<String,ServiceDescriptor> dbServiceMap = new HashMap<String, ServiceDescriptor>();
 		for (ServiceDescriptor s : dbServices) {
@@ -380,19 +381,129 @@ public class ResourceManager {
 			createService(service, ownerId);
 		}
 	}
+
+	/**
+	 * Check input service list consistency:
+	 * <ul>
+	 * <li> in the input list: </li>
+	 * <li> check duplicate rm IDs in the service </li>
+	 * <li> check duplicate r IDs in the service </li>
+	 * <li> check matching URIs across services </li>
+     * <li> with respect to DB data: </li>
+	 * <li> check matching URIs across stored services (if matching, should be of the same service) </li>
+     * </ul>
+	 * @param services
+	 * @throws ResourceException
+	 */
+	private void checkServiceListConsistency(List<Service> services) throws ResourceException {
+		Map<String,String> uriServiceMap = new HashMap<String, String>();
+		Set<ServiceKey> rmIDServiceSet = new HashSet<ServiceKey>();
+		Set<ServiceKey> resIDServiceSet = new HashSet<ServiceKey>();
+		for (Service s : services) {
+			for (ResourceMapping rm: s.getResourceMapping()) {
+				// check duplicate URIs in the list
+				if (uriServiceMap.containsKey(rm.getUri())) {
+					throw new ResourceException("Duplicate mapping URI in service resources: "+rm.getUri());
+				}
+				uriServiceMap.put(rm.getUri(), s.getId());
+				// check duplicate mappings for the same service
+				ServiceKey key = new ServiceKey(rm.getId(), s.getId());
+				if (rmIDServiceSet.contains(key)) {
+					throw new ResourceException("Duplicate mapping in service resources: "+rm.getId());
+				}
+				rmIDServiceSet.add(key);
+			}
+			for (ResourceDeclaration res: s.getResource()) {
+				// check duplicate parameters for the same service
+				ServiceKey key = new ServiceKey(res.getId(), s.getId());
+				if (rmIDServiceSet.contains(key)) {
+					throw new ResourceException("Duplicate resource parameter in service resources: "+res.getId());
+				}
+				resIDServiceSet.add(key);
+			}
+		}
+
+		// read DB uri mappings
+		Map<String,String> dbUriServiceMap = new HashMap<String, String>();
+		List<ServiceDescriptor> dbServices = serviceRepository.findAll();
+		for (ServiceDescriptor sd : dbServices) {
+			Service s = Utils.toServiceObject(sd);
+			for (ResourceMapping rm : s.getResourceMapping()) {
+				dbUriServiceMap.put(rm.getUri(), s.getId());
+			}
+		}
+		for (String inUri: uriServiceMap.keySet()) {
+			// check if the same uri is already used by the same 
+			if (dbUriServiceMap.containsKey(inUri)) {
+				if (!dbUriServiceMap.get(inUri).equals(uriServiceMap.get(inUri))) {
+					throw new ResourceException("Reseouce URI mapping '"+inUri+"' is in use by another service: "+dbUriServiceMap.get(inUri));
+				}
+				dbUriServiceMap.remove(inUri);
+				continue;
+			}
+			for (String dbUri : dbUriServiceMap.keySet()) {
+				if (new PatternMatcher(inUri, dbUri).compute()) {
+					if (!dbUriServiceMap.get(dbUri).equals(uriServiceMap.get(inUri))) {
+						throw new ResourceException("Reseouce URI mapping '"+inUri+"' matches another pattern '"+dbUri+"' of service: "+dbUriServiceMap.get(dbUri));
+					}
+				}
+			}
+		}
+	}
 	
 	/**
 	 * @param newService
-	 * @param oldService
+	 * @param oldSd
 	 * @param ownerId
 	 * @return 
+	 * @throws ResourceException 
 	 */
-	private Service updateService(Service newService, ServiceDescriptor oldService, String ownerId) {
-		// TODO
-		// - resource param/resource mapping change => delete/add
-		// - if is in use throw exception, otherwise delete
-		// TODO extract non-parametric resources and store if no conflicts
-		// TODO delete unused resources 
+	private Service updateService(Service newService, ServiceDescriptor oldSd, String ownerId) throws ResourceException {
+		Service oldService = Utils.toServiceObject(oldSd);
+		Map<String,ResourceMapping> oldMappings = new HashMap<String, ResourceMapping>();
+		Map<String,ResourceDeclaration> oldParams = new HashMap<String, ResourceDeclaration>();
+		for (ResourceMapping rm : oldService.getResourceMapping()) {
+			oldMappings.put(rm.getId(), rm);
+		}
+		for (ResourceDeclaration rd : oldService.getResource()) {
+			oldParams.put(rd.getId(), rd);
+		}
+		
+		List<Resource> resourcesToCreate = new ArrayList<Resource>();
+		List<Resource> resourcesToDelete = new ArrayList<Resource>();
+		List<ResourceParameter> paramsToDelete = new ArrayList<ResourceParameter>();
+		
+		for (ResourceMapping rm : newService.getResourceMapping()) {
+			// if a mapping is new or has the URI changed, mark it as new (or deleted/new)
+			if (!oldMappings.containsKey(rm.getId()) ||
+				!oldMappings.get(rm.getId()).getUri().equals(rm.getUri())) 
+			{
+				extractResources(rm, resourcesToCreate);
+			// if remains the same, remove it from oldMappings so it will not be deleted
+			} else {
+				oldMappings.remove(rm.getId());
+			}
+		}
+		for (ResourceDeclaration rd : newService.getResource()) {
+			// if parameter exists, remove it from oldParams so it will not be deleted
+			if (oldParams.containsKey(rd.getId())) {
+				oldParams.remove(rd.getId());
+			}
+		}
+
+		// extract resources to be deleted, if possible (not used)
+		for (ResourceMapping rm : oldMappings.values()) {
+			resourcesToDelete.addAll(resourceRepository.findByServiceAndResourceType(oldSd,rm.getId()));
+		}
+		// extract parameters to be deleted, if possible (not used)
+		for (ResourceDeclaration rd : oldParams.values()) {
+			paramsToDelete.addAll(resourceParameterRepository.findByServiceAndParameter(oldSd,rd.getId()));
+		}
+		cleanServiceResources(resourcesToDelete, paramsToDelete);
+		ServiceDescriptor service = Utils.toServiceEntity(newService);
+		service.setOwnerId(ownerId);
+		serviceRepository.save(service);
+		storeServiceResources(service, resourcesToCreate);
 		return newService;
 	}
 
@@ -403,6 +514,20 @@ public class ResourceManager {
 	 */
 	private void deleteService(ServiceDescriptor s, String ownerId) throws ResourceException {
 		List<Resource> resources = resourceRepository.findByService(s);
+		List<ResourceParameter> parameters = resourceParameterRepository.findByService(s);
+		// clean up unused resources and parameters 
+		cleanServiceResources(resources, parameters);
+		// delete service
+		serviceRepository.delete(s);
+	}
+
+	/**
+	 * Delete specified resources and parameters if not in use by some client
+	 * @param resources
+	 * @param parameters
+	 * @throws ResourceException
+	 */
+	private void cleanServiceResources(List<Resource> resources, List<ResourceParameter> parameters) throws ResourceException {
 		// check the service resources are in use by the clients
 		if (resources != null && ! resources.isEmpty()) {
 			Set<String> ids = new HashSet<String>();
@@ -417,9 +542,7 @@ public class ResourceManager {
 			}
 		}
 		resourceRepository.delete(resources);
-		resourceParameterRepository.delete(resourceParameterRepository.findByService(s));
-		// delete service
-		serviceRepository.delete(s);
+		resourceParameterRepository.delete(parameters);
 	}
 	
 	/**
@@ -429,39 +552,59 @@ public class ResourceManager {
 	 * @return created {@link Service} object
 	 * @throws ResourceException 
 	 */
-	public Service createService(Service service, String ownerId) throws ResourceException {
+	private Service createService(Service service, String ownerId) throws ResourceException {
 		ServiceDescriptor entity = Utils.toServiceEntity(service);
 		entity.setOwnerId(ownerId);
 		// saving new service
 		entity = serviceRepository.save(entity);
 		// read non-parametric service resources 
 		List<Resource> resourcesToStore = extractResources(service);
+		// store resources
+		storeServiceResources(entity, resourcesToStore);
+		return Utils.toServiceObject(entity); 
+	}
+
+	private void storeServiceResources(ServiceDescriptor sd, List<Resource> resourcesToStore)
+			throws ResourceException {
 		if (resourcesToStore != null && !resourcesToStore.isEmpty()) {
 			for (Iterator<Resource> iterator = resourcesToStore.iterator(); iterator.hasNext();) {
 				Resource r = iterator.next();
 				Resource existing = resourceRepository.findByResourceUri(r.getResourceUri());
 				// if resource already exists and belongs to a different service, throw an exception
-				if (existing != null && !existing.getService().getServiceId().equals(service.getId())) {
+				if (existing != null && !existing.getService().getServiceId().equals(sd.getServiceId())) {
 					throw new ResourceException("resource not unique: "+r.getResourceUri());
 				} else if (existing != null) {
 					iterator.remove();
 				} else {
-					r.setService(entity);
+					r.setService(sd);
 				}
 			}
 			// store new non-parametric resources
 			resourceStorage.storeResources(resourcesToStore);
 		}
-		return Utils.toServiceObject(entity); 
 	}
 
+	/**
+	 * Store a new Service object
+	 * @param service
+	 * @param ownerId
+	 * @return
+	 * @throws ResourceException
+	 */
+	public Service registerService(Service service, String ownerId) throws ResourceException {
+		checkServiceListConsistency(Collections.singletonList(service));
+		return createService(service, ownerId);
+	}
+	
 	/**
 	 * Update the specified service object
 	 * @param s
 	 * @param ownerId
 	 * @return updated {@link Service} object
+	 * @throws ResourceException 
 	 */
-	public Service updateService(Service s, String ownerId) {
+	public Service updateService(Service s, String ownerId) throws ResourceException {
+		checkServiceListConsistency(Collections.singletonList(s));
 		ServiceDescriptor old = serviceRepository.findOne(s.getId());
 		return updateService(s, old, ownerId);
 	} 
@@ -483,12 +626,8 @@ public class ResourceManager {
 		if (s.getResourceMapping() != null) {
 			for (ResourceMapping  rm : s.getResourceMapping()) {
 				// extract resource mappings recursively
-				extractResources(rm,resources, s);
+				extractResources(rm,resources);
 			}
-//			// store the extracted non-parametric resource mappings
-//			if (!resources.isEmpty()) {
-//				resourceStorage.storeResources(resources);
-//			}
 		}
 		return resources;
 	}
@@ -498,9 +637,8 @@ public class ResourceManager {
 	 * Extract resource mappings recursively
 	 * @param rm
 	 * @param resources
-	 * @param s 
 	 */
-	private void extractResources(ResourceMapping rm, List<Resource> resources, Service s) {
+	private void extractResources(ResourceMapping rm, List<Resource> resources) {
 		// add non-parametric resources to the target list
 		if (!isParametric(rm)) {
 			resources.add(prepareResource(null, null, rm.getUri(),rm, RESOURCE_VISIBILITY.PUBLIC));
@@ -554,15 +692,26 @@ public class ResourceManager {
 	/**
 	 * @return
 	 */
-	public Collection<Service> getServiceObjects() {
+	public Service getServiceObject(String serviceId) {
+		ServiceDescriptor service = serviceRepository.findOne(serviceId);
+		return Utils.toServiceObject(service);
+	}
+
+	/**
+	 * @return all the services
+	 */
+	public List<Service> getServiceObjects() {
 		List<ServiceDescriptor> services = serviceRepository.findAll();
 		List<Service> res = new ArrayList<Service>();
-		for (ServiceDescriptor s : services) {
-			res.add(Utils.toServiceObject(s));
+		for (ServiceDescriptor sd : services) {
+			res.add(Utils.toServiceObject(sd));
 		}
 		return res;
 	}
 
+	
+	
+	
 	/**
 	 * read the resource that the client app may request permissions for
 	 * @param clientId
@@ -598,5 +747,46 @@ public class ResourceManager {
 			return list;
 		}
 		return Collections.emptyList();
+	}
+
+	private static class ServiceKey {
+		String id;
+		String service;
+		
+		public ServiceKey(String id, String service) {
+			super();
+			this.id = id;
+			this.service = service;
+		}
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((id == null) ? 0 : id.hashCode());
+			result = prime * result
+					+ ((service == null) ? 0 : service.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ServiceKey other = (ServiceKey) obj;
+			if (id == null) {
+				if (other.id != null)
+					return false;
+			} else if (!id.equals(other.id))
+				return false;
+			if (service == null) {
+				if (other.service != null)
+					return false;
+			} else if (!service.equals(other.service))
+				return false;
+			return true;
+		}
 	}
 }
