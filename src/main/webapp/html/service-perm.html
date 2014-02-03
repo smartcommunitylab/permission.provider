@@ -7,53 +7,58 @@
         <h4 class="modal-title" id="serviceperm">Permissions: {{service.name}}</h4>
       </div>
       <div class="modal-body">
-					  <div class="table table-bordered">
+					  <div class="panel panel-default">
+					    <div class="panel-body"> 
 						    <h4>{{service.name}}</h4>
 						    <p>{{service.description}}</p>
 						    <div>
 					        <ul class="nav nav-tabs">
-					               <li class="{{activePermView('avail')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('avail')">Available Resources</a></li>
+					            <li class="{{activePermView('avail')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('avail')">Available Resources</a></li>
 					            <li class="{{activePermView('own')}}" ><a data-toggle="tab" href="#" ng-click="switchPermView('own')">Own Resources</a></li>
 					        </ul>
 					        <div ng-switch on="permView">
 					            <div  ng-switch-when="own">
 					             <div ng-repeat="rd in service.resource">
-					                 <div class="row-fluid">
-					                        <div class="span11 "><strong>{{rd.name}}</strong> ({{rd.description}})</div>
-					                        <div class="span1"><a class="btn btn-mini btn-primary" href="#" ng-click="saveResourceParam(rd.id,service.id,clientId)"><i class="icon-plus icon-white"></i></a></div>
+					                 <div class="col-md-12">
+					                   <div class="row">
+					                        <div class="col-md-11 "><strong>{{rd.name}}</strong> ({{rd.description}})</div>
+					                        <div class="col-md-1 pull-right"><a class="btn btn-xs btn-primary" href="#" ng-click="saveResourceParam(rd.id,service.id,clientId)"><span class="glyphicon glyphicon-plus"></span></a></div>
+					                   </div>     
 					                 </div>
+					                 <div class="col-md-12">
 					                 <hr class="hr-min">
-					                 <div ng-repeat="r in permissions.ownResources[rd.id]">
-					                       <div class="row-fluid" >
-					                           <div class="span8">{{r.value}}</div>
-					                           <div class="span3">
-					                             <select class="input-medium" ng-model="r.visibility" ng-change="changeResourceParamVis(r)">
+					                 </div>
+					                 <div ng-repeat="r in permissions.ownResources[rd.id]"  class="col-md-12">
+					                       <div class="row" >
+					                           <div class="col-md-8">{{r.value}}</div>
+					                           <div class="col-md-3">
+					                             <select class="form-control" ng-model="r.visibility" ng-change="changeResourceParamVis(r)">
 					                               <option value="CLIENT_APP">Current app</option>
 					                                  <option value="DEVELOPER">Owned apps</option>
 					                                  <option value="PUBLIC">Any app</option>
 					                             </select>
 					                           </div>
-					                           <div class="span1"><a class="btn btn-mini" href="#" ng-click="removeResourceParam(r)"><i class="icon-minus"></i></a></div>
+					                           <div class="col-md-1"><a class="btn btn-xs btn-default" href="#" ng-click="removeResourceParam(r)"><span class="glyphicon glyphicon-minus"></span></a></div>
 					                       </div>
-					                       <hr class="hr-min shift">
 					                 </div>
 					             </div>
 					                   <hr class="hr-min">
 					            </div>
 					            <div ng-switch-default>
 					             <div ng-repeat="(key,arr) in permissions.availableResources">
-					                <div ng-repeat="r in arr" class="row-fluid">
-					                    <div class="span1">{{r.resourceParameter.value}}</div>
-					                  <div class="span5"><strong>{{r.resourceUri}}</strong></div>
-					                  <div class="span4">{{r.name}}</div>
-					                    <div class="span1">{{toAuthority(r.authority)}}</div>
-					                    <div class="span1 pull-right"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"> <i class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></i></div>
+					                <div ng-repeat="r in arr" class="row">
+					                    <div class="col-md-1">{{r.resourceParameter.value}}</div>
+					                  <div class="col-md-5"><strong>{{r.resourceUri}}</strong></div>
+					                  <div class="col-md-4">{{r.name}}</div>
+					                    <div class="col-md-1">{{toAuthority(r.authority)}}</div>
+					                    <div class="col-md-1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"> <span class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></span></div>
 					                </div>
 					             </div>
 					            </div>
 					        </div>
 					     </div>
 						  </div>
+						</div>  
       </div>
       <div class="modal-footer">
          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

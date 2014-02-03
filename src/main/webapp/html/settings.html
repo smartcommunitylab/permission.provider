@@ -1,8 +1,9 @@
-<form ng-submit="saveSettings()">
+<form ng-submit="saveSettings()" role="form">
     <table class="table table-bordered">
         <tr>
             <th>name</th>
-            <td><input type="text" class="input-large"
+            <td>
+            <input type="text" class="form-control"
                 placeholder="app_name" ng-model="app.name" required></td>
         </tr>
         <tr>
@@ -19,7 +20,7 @@
         </tr>
         <tr>
             <th>redirect Web server URLs</th>
-            <td><input type="text" class="input-xxlarge"
+            <td><input type="text" class="form-control"
                 placeholder="specify your (comma-separated) web app addresses"
                 ng-model="app.redirectUris"></td>
         </tr>
@@ -37,14 +38,14 @@
         </tr>
         <tr  ng-show="app.nativeAppsAccess">
             <th>Native app signatures</th>
-            <td><input type="text" class="input-xxlarge" placeholder="specify your (comma-separated) app signatures" ng-model="app.nativeAppSignatures"></td>
+            <td><input type="text" class="form-control" placeholder="specify your (comma-separated) app signatures" ng-model="app.nativeAppSignatures"></td>
         </tr>
         <tr>
 	        <th>Enabled identity providers</th>
 	        <td>
 	           <table class="idps">
 	             <tr ng-repeat="(k,v) in app.identityProviders">
-	             <td>{{k}}</td><td><input type="checkbox" ng-model="app.identityProviders[k]"></td><td><i class="{{idpIcon(v,app.identityProviderApproval[k])}}"></i></td>
+	             <td>{{k}} </td><td> <input type="checkbox" ng-model="app.identityProviders[k]"></td><td><span class="{{idpIcon(v,app.identityProviderApproval[k])}}"></span></td>
 	             </tr>
 	           </table>
 	        </td>

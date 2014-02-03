@@ -108,9 +108,9 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	
 	$scope.idpIcon = function(req,app) {
 		if (!req) return null;
-		if (app == null) return 'icon-time';
-		if (app) return 'icon-ok';
-		return 'icon-remove';
+		if (app == null) return 'glyphicon glyphicon-time';
+		if (app) return 'glyphicon glyphicon-ok';
+		return 'glyphicon glyphicon-remove';
 	};
 	
 	/**
@@ -373,9 +373,9 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	 */
 	$scope.permissionIcon = function(val) {
 		switch (val){
-		case 1: return 'icon-ok';
-		case 2: return 'icon-remove';
-		case 3: return 'icon-time';
+		case 1: return 'glyphicon glyphicon-ok';
+		case 2: return 'glyphicon glyphicon-remove';
+		case 3: return 'glyphicon glyphicon-time';
 		default: return null;
 		}
 		
