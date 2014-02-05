@@ -23,9 +23,8 @@
     </style>
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-resource.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-cookies.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular-resource.min.js"></script>
     <script src="lib/jquery.js"></script>
     <script src="lib/bootstrap.min.js"></script>
     <script src="js/services.js"></script>
@@ -45,6 +44,7 @@
         <div class="collapse navbar-collapse">	        
           <ul class="nav navbar-nav">
 	          <li class="{{activeView('apps')}}"><a href="#" ng-click="currentView='apps'">API Clients</a></li>
+            <li class="{{activeView('services')}}"><a href="#" ng-click="currentView='services'">My Services</a></li>
 	          <li class="{{activeView('profile')}}"><a href="#" ng-click="currentView='profile'">Profile</a></li>
 	        </ul>
 	        <ul class="nav navbar-nav pull-right">

@@ -480,3 +480,143 @@ function processAuthParams(input) {
 	}
 	return params.access_token;
 }
+
+/**
+ * Service management controller.
+ * @param $scope
+ * @param $resource
+ * @param $http
+ * @param $timeout
+ */
+function ServiceController($scope, $resource, $http, $timeout, $location) {
+	// current service
+	$scope.currService = null;
+	// error message
+	$scope.error = '';
+	// info message
+	$scope.info = '';
+	// list of services
+	$scope.services = null;
+	// edited data
+	$scope.editService = null;
+
+	// resource reference for the app API
+	var Services = $resource('dev/services/my/:serviceId', {}, {
+		query : { method : 'GET' },
+		save : {method : 'POST'},
+		remove : {method : 'DELETE'}
+	});
+	
+	/**
+	 * reload service view from server
+	 */
+	$scope.reload = function(service) {
+		$scope.editService = null;
+		Services.query({},function(data) {
+			$scope.services = data.data;
+			if ($scope.services && $scope.services.length > 0) {
+				if (service) {
+					$scope.currService = angular.copy(service);
+				} else {
+					$scope.currService = angular.copy($scope.services[0]);
+				}
+			}
+		});
+	};
+	$scope.reload();
+	
+	
+	/**
+	 * return 'active' if the specified service is selected
+	 */
+	$scope.activeService = function(service) {
+		var cls = service.id == $scope.currService.id ? 'active' : '';
+		return cls;
+	};
+
+	/**
+	 * switch to different service
+	 */
+	$scope.switchService = function(service) {
+		$scope.error = '';
+		$scope.info = '';
+		$scope.editService = null;
+		if (service != null && service.id != null) {
+			for (var i = 0; i < $scope.services.length; i++) {
+				if ($scope.services[i].id == service.id) {
+					$scope.currService = angular.copy($scope.services[i]);
+					return;
+				}
+			}
+		} else if ($scope.services != null && $scope.services.length > 0) {
+			$scope.currService = angular.copy($scope.services[0]);
+		}
+	};
+
+	/** 
+	 * initiate creation of new service
+	 */
+	$scope.newService = function() {
+		$scope.editService = {};
+	}; 
+	/**
+	 * initiate editing  of the current service
+	 */
+	$scope.startEdit = function() {
+		$scope.editService = angular.copy($scope.currService);
+	};
+	
+	/**
+	 * close edit form
+	 */
+	$scope.closeEdit = function() {
+		$scope.editService = null;
+	}
+	/**
+	 * save service data (without params and mappings)
+	 */
+	$scope.saveService = function() {
+		Services.save({},$scope.editService, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service created!';
+			} else {
+				$scope.error = 'Failed to save service descriptor: '+response.errorMessage;
+			}	
+			$scope.editService = null;
+		});
+	};
+	
+	/**
+	 * delete service
+	 */
+	$scope.removeService = function() {
+		if (confirm('Are you sure you want to delete?')) {
+			Services.remove({serviceId:$scope.currService.id}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service descriptor: '+response.errorMessage;
+				}	
+			});
+		}
+	};
+	
+	/**
+	 * Add new parameter
+	 */
+	$scope.addParameter = function() {
+		
+	};
+	/**
+	 * Add new mapping
+	 */
+	$scope.addParameter = function() {
+		
+	};
+
+}

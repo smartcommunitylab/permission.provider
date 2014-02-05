@@ -39,6 +39,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -709,7 +710,38 @@ public class ResourceManager {
 		return res;
 	}
 
+	/**
+	 * @return all the services of the specified user
+	 */
+	public List<Service> getServiceObjects(String ownerId) {
+		List<ServiceDescriptor> services = serviceRepository.findByOwnerId(ownerId);
+		List<Service> res = new ArrayList<Service>();
+		for (ServiceDescriptor sd : services) {
+			res.add(Utils.toServiceObject(sd));
+		}
+		return res;
+	}
 	
+	/**
+	 * Save the specified {@link ServiceDescriptor} object, only the id/name/description fields
+	 * @param service
+	 * @param userId
+	 * @return
+	 */
+	public Service saveServiceObject(Service service, Long userId) {
+		ServiceDescriptor sdOld = serviceRepository.findOne(service.getId()); 
+		if (sdOld != null && ! sdOld.getOwnerId().equals(userId.toString())) {
+			throw new SecurityException("Service ID is in use by another user");
+		}
+		ServiceDescriptor sd = sdOld == null ? Utils.toServiceEntity(service) : sdOld;
+		sd.setDescription(service.getDescription());
+		sd.setServiceName(service.getName());
+		sd.setServiceId(service.getId());
+		sd.setOwnerId(userId.toString());
+		sd = serviceRepository.save(sd);
+		return Utils.toServiceObject(sd);
+	}
+
 	
 	
 	/**
@@ -789,4 +821,5 @@ public class ResourceManager {
 			return true;
 		}
 	}
+
 }

@@ -49,6 +49,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
@@ -176,7 +177,55 @@ public class PermissionController extends AbstractController {
 		
 		return response;
 	} 
-	
+
+	/**
+	 * Read services defined by the current user
+	 * @return {@link Response} entity containing the service {@link Service} descriptors
+	 */
+	@RequestMapping(value="/dev/services/my",method=RequestMethod.GET)
+	public @ResponseBody Response myServices() {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			response.setData(resourceManager.getServiceObjects(""+getUserId()));
+		} catch (Exception e) {
+			logger.error("Failure reading permissions model: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	} 
+
+	@RequestMapping(value="/dev/services/my",method=RequestMethod.POST)
+	public @ResponseBody Response saveService(@RequestBody Service sd) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			response.setData(resourceManager.saveServiceObject(sd, getUserId()));
+		} catch (Exception e) {
+			logger.error("Failure saving service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	@RequestMapping(value="/dev/services/my/{serviceId:.*}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteService(@PathVariable String serviceId) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.deleteService(serviceId, getUserId().toString());
+		} catch (Exception e) {
+			logger.error("Failure delteting service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
 
 	/**
 	 * Create {@link Permissions} descriptors from the client app data.

@@ -1,0 +1,71 @@
+<div ng-if="editService == null">
+	<table class="table table-bordered">
+	    <tr>
+	        <th>ID</th>
+	        <td>{{currService.id}}</td>
+	    </tr>
+	    <tr>
+	        <th>name</th>
+	        <td>{{currService.name}}</td>
+	    </tr>
+	    <tr>
+	        <th>description</th>
+	        <td>{{currService.description}}</td>
+	    </tr>
+	</table>
+  <button class="btn btn-primary" type="button" ng-click="startEdit()">Edit</button>
+  <button class="btn btn-default" type="button" ng-click="removeService()">Delete</button>
+
+  <div class="row"><p/></div>
+  <div class="row">
+    <div class="col-md-11"><strong>Service permission parameters</strong></div>
+    <div class="col-md-1 pull-right"><a class="btn btn-xs btn-primary" href="#" ng-click="addParameter()"><span class="glyphicon glyphicon-plus"></span></a></div>
+    <hr class="hr-min"/>
+  </div>
+
+  <div ng-repeat="resource in currService.resource" class="row">
+      <div class="col-md-1">{{resource.id}}</div>
+      <div class="col-md-5">{{resource.name}}</div>
+      <div class="col-md-4">{{resource.description}}</div>
+      <div class="col-md-1 pull-right"><a class="btn btn-xs btn-primary" href="#"><span class="glyphicon glyphicon-minus"></span></a></div>
+  </div>
+  
+  <div class="row"><p/></div>
+  <div class="row">
+    <div class="col-md-11"><strong>Service permission mappings</strong></div>
+    <div class="col-md-1 pull-right"><a class="btn btn-xs btn-primary" href="#" ng-click="addMapping()"><span class="glyphicon glyphicon-plus"></span></a></div>
+    <hr class="hr-min"/>
+  </div>
+
+  <div ng-repeat="resource in currService.resourceMapping" class="row">
+      <div class="col-md-1">{{resource.id}}</div>
+      <div class="col-md-5">{{resource.name}}</div>
+      <div class="col-md-4">{{resource.description}}</div>
+      <div class="col-md-1 pull-right"><a class="btn btn-xs btn-primary" href="#"><span class="glyphicon glyphicon-minus"></span></a></div>
+  </div>
+  
+</div>
+<form ng-submit="saveService()" role="form" ng-if="editService != null">
+		    <table class="table table-bordered">
+		        <tr>
+		            <th>ID</th>
+		            <td>
+		            <input type="text" class="form-control"
+		                placeholder="my.service.id" ng-model="editService.id" required></td>
+		        </tr>
+		        <tr>
+		            <th>name</th>
+		            <td>
+		            <input type="text" class="form-control"
+		                placeholder="service name" ng-model="editService.name" required></td>
+		        </tr>
+		        <tr>
+		            <th>description</th>
+		            <td>
+		            <input type="text" class="form-control"
+		                placeholder="description" ng-model="editService.description" required></td>
+		        </tr>
+		    </table>
+         <button type="button" class="btn btn-default" ng-click="closeEdit()">Close</button>
+         <button type="submit" class="btn btn-primary">Save</button>
+</form>
