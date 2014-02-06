@@ -499,11 +499,20 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 	$scope.services = null;
 	// edited data
 	$scope.editService = null;
+	// edited parameter
+	$scope.param = null;
+	// edited mapping
+	$scope.mapping = null;
 
 	// resource reference for the app API
 	var Services = $resource('dev/services/my/:serviceId', {}, {
 		query : { method : 'GET' },
 		save : {method : 'POST'},
+		remove : {method : 'DELETE'}
+	});
+	// resource reference for the app API
+	var ServiceProps = $resource('dev/services/my/:serviceId/:prop/:id', {}, {
+		add : {method : 'PUT'},
 		remove : {method : 'DELETE'}
 	});
 	
@@ -605,18 +614,77 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 			});
 		}
 	};
+
+	/**
+	 * edit/create parameter declaration
+	 */
+	$scope.editParameter = function(param) {
+		if (param) {
+			$scope.param = param;
+		} else {
+			$scope.param = {};
+		}
+		$('#paramModal').modal({keyboard:false});
+	};
 	
 	/**
 	 * Add new parameter
 	 */
 	$scope.addParameter = function() {
-		
+		ServiceProps.add({serviceId:$scope.currService.id,prop:'parameter'},$scope.param, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service updated!';
+			} else {
+				$scope.error = 'Failed to add service parameter declaration: '+response.errorMessage;
+			}	
+			$('#paramModal').modal('hide');
+		});
+	};
+	/**
+	 * delete service
+	 */
+	$scope.removeParameter = function(param) {
+		if (confirm('Are you sure you want to delete?')) {
+			ServiceProps.remove({serviceId:$scope.currService.id,prop:'parameter',id:param.id},{}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service parameter deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service parameter declaration: '+response.errorMessage;
+				}	
+			});
+		}
+	};
+	/**
+	 * edit/create mapping declaration
+	 */
+	$scope.editMapping = function(mapping) {
+		if (mapping) {
+			$scope.mapping = mapping;
+		} else {
+			$scope.mapping = {};
+		}
+		$('#mappingModal').modal({keyboard:false});
 	};
 	/**
 	 * Add new mapping
 	 */
-	$scope.addParameter = function() {
-		
+	$scope.addMapping = function() {
+		// TODO dialog
+		ServiceProps.add({serviceId:$scope.currService.id,prop:'mapping'},$scope.mapping, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service updated!';
+			} else {
+				$scope.error = 'Failed to add service mapping: '+response.errorMessage;
+			}	
+		});
+		$('#mappingModal').modal('hide');
 	};
 
 }

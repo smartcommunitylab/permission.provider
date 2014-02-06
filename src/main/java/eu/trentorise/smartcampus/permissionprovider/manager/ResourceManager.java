@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityNotFoundException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -820,6 +820,131 @@ public class ResourceManager {
 				return false;
 			return true;
 		}
+	}
+
+	/**
+	 * Add parameter declaration to service
+	 * @param serviceId
+	 * @param decl
+	 * @param ownerId
+	 * @throws ResourceException 
+	 */
+	public Service addResourceDeclaration(String serviceId, ResourceDeclaration decl, String ownerId) throws ResourceException {
+		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
+		Service s = Utils.toServiceObject(sd);
+		if (s.getResource() == null) {
+			s.setResource(new ArrayList<ResourceDeclaration>());
+		}
+		boolean found = false;
+		for (ResourceDeclaration rd : s.getResource()) {
+			if (rd.getId().equals(decl.getId())) {
+				rd.setDescription(decl.getDescription());
+				rd.setName(decl.getName());
+				found  = true;
+				break;
+			}
+		}
+		if (!found) {
+			s.getResource().add(decl);
+		}
+		updateService(s, ownerId);
+		return s;
+	}
+
+	/**
+	 * Add parameter declaration to service
+	 * @param serviceId
+	 * @param mapping
+	 * @param ownerId
+	 * @throws ResourceException 
+	 */
+	public Service addMapping(String serviceId, ResourceMapping mapping, String ownerId) throws ResourceException {
+		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
+		Service s = Utils.toServiceObject(sd);
+		if (s.getResourceMapping() == null) {
+			s.setResourceMapping(new ArrayList<ResourceMapping>());
+		}
+		boolean found = false;
+		for (ResourceMapping rm : s.getResourceMapping()) {
+			if (rm.getId().equals(mapping.getId())) {
+				rm.setAccessibleByOthers(mapping.isAccessibleByOthers());
+				rm.setApprovalRequired(mapping.isAccessibleByOthers());
+				rm.setAuthority(mapping.getAuthority());
+				rm.setDescription(mapping.getDescription());
+				rm.setName(mapping.getName());
+				rm.setUri(mapping.getUri());
+				found  = true;
+				break;
+			}
+		}
+		if (!found) {
+			s.getResourceMapping().add(mapping);
+		}
+		updateService(s, ownerId);
+		return s;
+	}
+
+	/**
+	 * @param serviceId
+	 * @param ownerId
+	 */
+	public void checkServiceOwnership(String serviceId, String ownerId) {
+		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+		if (sd == null || !sd.getOwnerId().equals(ownerId)) {
+			throw new IllegalArgumentException("Incorrect owner for service");
+		}
+	}
+
+	/**
+	 * Remove specified resource declaration
+	 * @param serviceId
+	 * @param id
+	 * @param ownerId
+	 * @return
+	 * @throws ResourceException 
+	 */
+	public Object removeResourceDeclaration(String serviceId, String id, String ownerId) throws ResourceException {
+		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
+		Service s = Utils.toServiceObject(sd);
+		if (s.getResource() == null) {
+			s.setResource(new ArrayList<ResourceDeclaration>());
+		}
+		for (Iterator<ResourceDeclaration> iterator = s.getResource().iterator(); iterator.hasNext();) {
+			ResourceDeclaration rd = iterator.next();
+			if (rd.getId().equals(id)) {
+				iterator.remove();
+			}
+		}
+		updateService(s, ownerId);
+		return s;
+	}
+
+	/**
+	 * Remove specified resource mapping
+	 * @param serviceId
+	 * @param id
+	 * @param ownerId
+	 * @return
+	 * @throws ResourceException 
+	 */
+	public Object removeMapping(String serviceId, String id, String ownerId) throws ResourceException {
+		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
+		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
+		Service s = Utils.toServiceObject(sd);
+		if (s.getResourceMapping() == null) {
+			s.setResourceMapping(new ArrayList<ResourceMapping>());
+		}
+		for (Iterator<ResourceMapping> iterator = s.getResourceMapping().iterator(); iterator.hasNext();) {
+			ResourceMapping rm = iterator.next();
+			if (rm.getId().equals(id)) {
+				iterator.remove();
+			}
+		}
+		updateService(s, ownerId);
+		return s;
 	}
 
 }

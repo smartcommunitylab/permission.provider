@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
@@ -49,7 +50,6 @@ import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
-import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
@@ -197,6 +197,11 @@ public class PermissionController extends AbstractController {
 		return response;
 	} 
 
+	/**
+	 * save service data (name, id, description)
+	 * @param sd
+	 * @return stored {@link Service} object
+	 */
 	@RequestMapping(value="/dev/services/my",method=RequestMethod.POST)
 	public @ResponseBody Response saveService(@RequestBody Service sd) {
 		Response response = new Response();
@@ -212,14 +217,106 @@ public class PermissionController extends AbstractController {
 		return response;
 	}
 
+	/**
+	 * Delete service object if possible
+	 * @param serviceId
+	 * @return
+	 */
 	@RequestMapping(value="/dev/services/my/{serviceId:.*}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteService(@PathVariable String serviceId) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
 			resourceManager.deleteService(serviceId, getUserId().toString());
 		} catch (Exception e) {
-			logger.error("Failure delteting service: "+e.getMessage(),e);
+			logger.error("Failure deleting service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * Add resource parameter declaration to the service object if possible
+	 * @param serviceId
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/parameter",method=RequestMethod.PUT)
+	public @ResponseBody Response addParameter(@PathVariable String serviceId, @RequestBody ResourceDeclaration decl) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.addResourceDeclaration(serviceId, decl, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure adding parameter to service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+	/**
+	 * Delete resource parameter declaration from the service object if possible
+	 * @param serviceId
+	 * @param id 
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/parameter/{id}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteParameter(@PathVariable String serviceId, @PathVariable String id) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.removeResourceDeclaration(serviceId, id, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure deleting parameter from service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	
+	/**
+	 * Add resource parameter to the service object if possible
+	 * @param serviceId
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/mapping",method=RequestMethod.PUT)
+	public @ResponseBody Response addMapping(@PathVariable String serviceId, @RequestBody ResourceMapping mapping) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.addMapping(serviceId, mapping, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure adding parameter to service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * Delete resource parameter declaration from the service object if possible
+	 * @param serviceId
+	 * @param id 
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/mapping/{id}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteMapping(@PathVariable String serviceId, @PathVariable String id) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.removeMapping(serviceId, id, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure deleting mapping from service: "+e.getMessage(),e);
 			response.setErrorMessage(e.getMessage());
 			response.setResponseCode(RESPONSE.ERROR);
 		}
@@ -384,5 +481,4 @@ public class PermissionController extends AbstractController {
 		}
 		return response;
 	}
-
 }
