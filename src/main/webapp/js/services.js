@@ -687,4 +687,10 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 		$('#mappingModal').modal('hide');
 	};
 
+	$scope.toAuthority = function(val) {
+		if ('ROLE_USER' == val) return 'U';
+		if ('ROLE_CLIENT'==val) return 'C';
+		if ('ROLE_CLIENT_TRUSTED'==val) return 'C';
+		return '*';
+	};
 }
