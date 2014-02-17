@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
-import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 
 
@@ -66,7 +66,7 @@ public class AuthController {
 	@Value("${mode.testing}")
 	private boolean testMode;
 	@Autowired
-	private ClientDetailsAdapter clientDetailsAdapter;
+	private ClientDetailsManager clientDetailsAdapter;
 	
 
 	@Autowired

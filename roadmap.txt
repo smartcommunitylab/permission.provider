@@ -1,3 +1,2 @@
-- field validation
 - service proxy 
 - mobile authentication methods

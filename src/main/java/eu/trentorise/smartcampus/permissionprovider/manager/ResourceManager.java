@@ -99,6 +99,7 @@ public class ResourceManager {
 	 * @param rp
 	 */
 	public void storeResourceParameter(ResourceParameter rp, String serviceId) {
+		validateResourceParameterData(rp);
 		ResourceParameter rpold = rp.getId() == null ? null : resourceParameterRepository.findOne(rp.getId());
 		// check uniqueness
 		String clientId = rp.getClientId();
@@ -151,6 +152,16 @@ public class ResourceManager {
 			}
 		} else {
 			throw new IllegalArgumentException("A parameter already exists");
+		}
+	}
+
+	/**
+	 * Validate parameter data
+	 * @param rp
+	 */
+	private void validateResourceParameterData(ResourceParameter rp) {
+		if (!StringUtils.hasText(rp.getValue())) {
+			throw new IllegalArgumentException("empty parameter value");
 		}
 	}
 
@@ -437,7 +448,7 @@ public class ResourceManager {
 			// check if the same uri is already used by the same 
 			if (dbUriServiceMap.containsKey(inUri)) {
 				if (!dbUriServiceMap.get(inUri).equals(uriServiceMap.get(inUri))) {
-					throw new ResourceException("Reseouce URI mapping '"+inUri+"' is in use by another service: "+dbUriServiceMap.get(inUri));
+					throw new ResourceException("Resource URI mapping '"+inUri+"' is in use by another service: "+dbUriServiceMap.get(inUri));
 				}
 				dbUriServiceMap.remove(inUri);
 				continue;
@@ -445,7 +456,7 @@ public class ResourceManager {
 			for (String dbUri : dbUriServiceMap.keySet()) {
 				if (new PatternMatcher(inUri, dbUri).compute()) {
 					if (!dbUriServiceMap.get(dbUri).equals(uriServiceMap.get(inUri))) {
-						throw new ResourceException("Reseouce URI mapping '"+inUri+"' matches another pattern '"+dbUri+"' of service: "+dbUriServiceMap.get(dbUri));
+						throw new ResourceException("Resource URI mapping '"+inUri+"' matches another pattern '"+dbUri+"' of service: "+dbUriServiceMap.get(dbUri));
 					}
 				}
 			}
@@ -586,41 +597,18 @@ public class ResourceManager {
 	}
 
 	/**
-	 * Store a new Service object
-	 * @param service
-	 * @param ownerId
-	 * @return
-	 * @throws ResourceException
-	 */
-	public Service registerService(Service service, String ownerId) throws ResourceException {
-		checkServiceListConsistency(Collections.singletonList(service));
-		return createService(service, ownerId);
-	}
-	
-	/**
 	 * Update the specified service object
 	 * @param s
 	 * @param ownerId
 	 * @return updated {@link Service} object
 	 * @throws ResourceException 
 	 */
-	public Service updateService(Service s, String ownerId) throws ResourceException {
+	private Service updateService(Service s, String ownerId) throws ResourceException {
 		checkServiceListConsistency(Collections.singletonList(s));
 		ServiceDescriptor old = serviceRepository.findOne(s.getId());
 		return updateService(s, old, ownerId);
 	} 
 	
-	/**
-	 * Delete the specified service
-	 * @param serviceId
-	 * @param ownerId
-	 * @throws ResourceException 
-	 */
-	public void deleteService(String serviceId, String ownerId) throws ResourceException {
-		ServiceDescriptor old = serviceRepository.findOne(serviceId);
-		deleteService(old, ownerId);
-	}
-
 	private List<Resource> extractResources(Service s) {
 		List<Resource> resources = new ArrayList<Resource>();
 		// process resource mappings
@@ -729,6 +717,7 @@ public class ResourceManager {
 	 * @return
 	 */
 	public Service saveServiceObject(Service service, Long userId) {
+		validateServiceData(service);
 		ServiceDescriptor sdOld = serviceRepository.findOne(service.getId()); 
 		if (sdOld != null && ! sdOld.getOwnerId().equals(userId.toString())) {
 			throw new SecurityException("Service ID is in use by another user");
@@ -744,6 +733,30 @@ public class ResourceManager {
 
 	
 	
+	/**
+	 * Validate service fields
+	 * @param service
+	 */
+	private void validateServiceData(Service service) {
+		if (!StringUtils.hasText(service.getName())) {
+			throw new IllegalArgumentException("empty service name");
+		}
+		if (!StringUtils.hasText(service.getDescription())) {
+			throw new IllegalArgumentException("empty service description");
+		}
+	}
+
+	/**
+	 * Delete the specified service
+	 * @param serviceId
+	 * @param ownerId
+	 * @throws ResourceException 
+	 */
+	public void deleteService(String serviceId, String ownerId) throws ResourceException {
+		ServiceDescriptor old = serviceRepository.findOne(serviceId);
+		deleteService(old, ownerId);
+	}
+
 	/**
 	 * read the resource that the client app may request permissions for
 	 * @param clientId
@@ -830,6 +843,7 @@ public class ResourceManager {
 	 * @throws ResourceException 
 	 */
 	public Service addResourceDeclaration(String serviceId, ResourceDeclaration decl, String ownerId) throws ResourceException {
+		validateResourceDeclarationData(decl);
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);
@@ -853,6 +867,33 @@ public class ResourceManager {
 	}
 
 	/**
+	 * @param decl
+	 */
+	private void validateResourceDeclarationData(ResourceDeclaration decl) {
+		if (!StringUtils.hasText(decl.getName())) {
+			throw new IllegalArgumentException("empty resource parameter name");
+		}
+		if (!StringUtils.hasText(decl.getDescription())) {
+			throw new IllegalArgumentException("empty resource parameter description");
+		}
+	}
+
+	/**
+	 * @param mapping
+	 */
+	private void validateResourceMappingData(ResourceMapping mapping) {
+		if (!StringUtils.hasText(mapping.getUri())) {
+			throw new IllegalArgumentException("empty resource mapping uri");
+		}
+		if (!StringUtils.hasText(mapping.getName())) {
+			throw new IllegalArgumentException("empty resource mapping name");
+		}
+		if (!StringUtils.hasText(mapping.getDescription())) {
+			throw new IllegalArgumentException("empty resource mapping description");
+		}
+	}
+
+	/**
 	 * Add parameter declaration to service
 	 * @param serviceId
 	 * @param mapping
@@ -860,6 +901,7 @@ public class ResourceManager {
 	 * @throws ResourceException 
 	 */
 	public Service addMapping(String serviceId, ResourceMapping mapping, String ownerId) throws ResourceException {
+		validateResourceMappingData(mapping);
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);

@@ -17,7 +17,10 @@
 package eu.trentorise.smartcampus.permissionprovider.common;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+
+import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
@@ -48,6 +51,16 @@ public class Utils {
 		}
 		return res;
 	}
+	
+	/**
+	 * Correct values of the specified comma-separated string: remove redundant spaces
+	 * @param in
+	 * @return
+	 */
+	public static String normalizeValues(String in) {
+		return StringUtils.trimAllWhitespace(in);
+	}
+	
 	/**
 	 * Convert {@link eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service} object
 	 * to {@link ServiceDescriptor} persisted entity

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
@@ -46,7 +49,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
  */
 @Component
 @Transactional
-public class ClientDetailsAdapter {
+public class ClientDetailsManager {
 
 	/** GRANT TYPE: CLIENT CRIDENTIALS FLOW */
 	private static final String GT_CLIENT_CREDENTIALS = "client_credentials";
@@ -85,7 +88,7 @@ public class ClientDetailsAdapter {
 	 * @param entities
 	 * @return
 	 */
-	public List<ClientAppBasic> convertToClientApps(List<ClientDetailsEntity> entities){
+	private List<ClientAppBasic> convertToClientApps(List<ClientDetailsEntity> entities){
 		if (entities == null) {
 			return Collections.emptyList();
 		}
@@ -101,7 +104,7 @@ public class ClientDetailsAdapter {
 	 * @param e
 	 * @return
 	 */
-	public ClientAppBasic convertToClientApp(ClientDetailsEntity e) {
+	private ClientAppBasic convertToClientApp(ClientDetailsEntity e) {
 		ClientAppBasic res = new ClientAppBasic();
 		res.setClientId(e.getClientId());
 		res.setClientSecret(e.getClientSecret());
@@ -181,7 +184,7 @@ public class ClientDetailsAdapter {
 			}
 			info.setName(data.getName());
 			info.setNativeAppsAccess(data.isNativeAppsAccess());
-			info.setNativeAppSignatures(data.getNativeAppSignatures());
+			info.setNativeAppSignatures(Utils.normalizeValues(data.getNativeAppSignatures()));
 			Set<String> types = new HashSet<String>(client.getAuthorizedGrantTypes());
 			if (data.isBrowserAccess()) {
 				types.add(GT_IMPLICIT);
@@ -213,7 +216,7 @@ public class ClientDetailsAdapter {
 			}
 			
 			client.setAdditionalInformation(info.toJson());
-			client.setRedirectUri(data.getRedirectUris());
+			client.setRedirectUri(Utils.normalizeValues(data.getRedirectUris()));
 		} catch (Exception e) {
 			log .error("failed to convert an object: "+e.getMessage(), e);
 			return null;
@@ -245,16 +248,16 @@ public class ClientDetailsAdapter {
 	 * @param clientId
 	 * @return updated {@link ClientDetailsEntity} instance
 	 */
-	public ClientDetailsEntity resetClientSecretMobile(String clientId) {
-		return resetClientData(clientId, true);
+	public ClientAppBasic resetClientSecretMobile(String clientId) {
+		return convertToClientApp(resetClientData(clientId, true));
 	}
 	/**
 	 * Reset client secret
 	 * @param clientId
 	 * @return updated {@link ClientDetailsEntity} instance
 	 */
-	public ClientDetailsEntity resetClientSecret(String clientId) {
-		return resetClientData(clientId, false);
+	public ClientAppBasic resetClientSecret(String clientId) {
+		return convertToClientApp(resetClientData(clientId, false));
 	}
 	
 	public ClientDetailsEntity resetClientData(String clientId, boolean resetClientSecretMobile) {
@@ -288,5 +291,78 @@ public class ClientDetailsAdapter {
 			}
 		}
 		return res;
+	}
+	/**
+	 * @param userId
+	 * @return {@link List} of {@link ClientAppBasic} objects representing client apps
+	 */
+	public List<ClientAppBasic> getByDeveloperId(Long userId) {
+		return convertToClientApps(clientDetailsRepository.findByDeveloperId(userId));
+	}
+	/**
+	 * Create new Client from {@link ClientAppBasic} descriptor
+	 * @param appData
+	 * @param userId
+	 * @return {@link ClientAppBasic} descriptor of the created Client
+	 * @throws Exception 
+	 */
+	public ClientAppBasic create(ClientAppBasic appData, Long userId) throws Exception {
+		ClientDetailsEntity entity = new ClientDetailsEntity();
+		ClientAppInfo info = new ClientAppInfo();
+		if (!StringUtils.hasText(appData.getName())) {
+			throw new IllegalArgumentException("An app name cannot be empty");
+		}
+		info.setName(appData.getName());
+		for (ClientDetailsEntity cde : clientDetailsRepository.findAll()) {
+			if (ClientAppInfo.convert(cde.getAdditionalInformation()).getName().equals(appData.getName())) {
+				throw new IllegalArgumentException("An app with the same name already exists");
+			}
+		}
+		entity.setAdditionalInformation(info.toJson());
+		entity.setClientId(generateClientId());
+		entity.setAuthorities(defaultAuthorities());
+		entity.setAuthorizedGrantTypes(defaultGrantTypes());
+		entity.setDeveloperId(userId);
+		entity.setClientSecret(generateClientSecret());
+		entity.setClientSecretMobile(generateClientSecret());
+
+		entity = clientDetailsRepository.save(entity);
+		return convertToClientApp(entity);
+		
+	}
+	/**
+	 * delete the specified client
+	 * @param clientId
+	 * @return {@link ClientAppBasic} descriptor of the deleted client
+	 */
+	public ClientAppBasic delete(String clientId) {
+		ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+		if (client == null) {
+			throw new EntityNotFoundException("client app not found");
+		}
+		clientDetailsRepository.delete(client);
+		return convertToClientApp(client); 
+	}
+	/**
+	 * Update client info
+	 * @param clientId
+	 * @param data
+	 * @return 
+	 */
+	public ClientAppBasic update(String clientId, ClientAppBasic data) {
+		ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+		String error = null;
+		if  ((error = validate(client,data)) != null) {
+			throw new IllegalArgumentException(error);
+		}
+		client = convertFromClientApp(client,data);
+		if (client != null) {
+			clientDetailsRepository.save(client);
+			return convertToClientApp(client);
+		} else {
+			log.error("Problem converting the client");
+			throw new IllegalArgumentException("internal error");
+		}
+		
 	}
 }
