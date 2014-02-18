@@ -738,6 +738,9 @@ public class ResourceManager {
 	 * @param service
 	 */
 	private void validateServiceData(Service service) {
+		if (!StringUtils.hasText(service.getId())) {
+			throw new IllegalArgumentException("empty service ID");
+		}
 		if (!StringUtils.hasText(service.getName())) {
 			throw new IllegalArgumentException("empty service name");
 		}
@@ -870,6 +873,9 @@ public class ResourceManager {
 	 * @param decl
 	 */
 	private void validateResourceDeclarationData(ResourceDeclaration decl) {
+		if (!StringUtils.hasText(decl.getId())) {
+			throw new IllegalArgumentException("empty resource parameter ID");
+		}
 		if (!StringUtils.hasText(decl.getName())) {
 			throw new IllegalArgumentException("empty resource parameter name");
 		}
@@ -882,6 +888,9 @@ public class ResourceManager {
 	 * @param mapping
 	 */
 	private void validateResourceMappingData(ResourceMapping mapping) {
+		if (!StringUtils.hasText(mapping.getId())) {
+			throw new IllegalArgumentException("empty resource mapping ID");
+		}
 		if (!StringUtils.hasText(mapping.getUri())) {
 			throw new IllegalArgumentException("empty resource mapping uri");
 		}
