@@ -264,7 +264,7 @@ public class PermissionController extends AbstractController {
 	 * @param id 
 	 * @return
 	 */
-	@RequestMapping(value="/dev/services/my/{serviceId}/parameter/{id}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/dev/services/my/{serviceId}/parameter/{id:.*}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteParameter(@PathVariable String serviceId, @PathVariable String id) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
@@ -308,7 +308,7 @@ public class PermissionController extends AbstractController {
 	 * @param id 
 	 * @return
 	 */
-	@RequestMapping(value="/dev/services/my/{serviceId}/mapping/{id}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/dev/services/my/{serviceId}/mapping/{id:.*}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteMapping(@PathVariable String serviceId, @PathVariable String id) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
@@ -441,7 +441,7 @@ public class PermissionController extends AbstractController {
 	 * @param vis visibility
 	 * @return {@link Response} entity containing the processed {@link ResourceParameter} descriptor
 	 */
-	@RequestMapping(value="/dev/resourceparams/{id}",method=RequestMethod.PUT)
+	@RequestMapping(value="/dev/resourceparams/{id:.*}",method=RequestMethod.PUT)
 	public @ResponseBody Response updatePropertyVisibility(@PathVariable Long id, @RequestParam RESOURCE_VISIBILITY vis) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
@@ -466,7 +466,7 @@ public class PermissionController extends AbstractController {
 	 * @param value parameter value
 	 * @return
 	 */
-	@RequestMapping(value="/dev/resourceparams/{id}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/dev/resourceparams/{id:.*}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteProperty(@PathVariable Long id) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);

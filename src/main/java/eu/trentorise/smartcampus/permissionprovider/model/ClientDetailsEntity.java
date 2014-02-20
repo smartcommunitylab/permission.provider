@@ -58,7 +58,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Column(name = "client_secret_mobile",nullable = false)
 	private String clientSecretMobile;
 
-	@Column(name = "resource_ids")
+	@Column(name = "resource_ids",columnDefinition="LONGTEXT")
 	private String resourceIds;
 	
 	@Column(name = "scope",columnDefinition="LONGTEXT")

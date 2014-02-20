@@ -620,8 +620,10 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 	 */
 	$scope.editParameter = function(param) {
 		if (param) {
+			$scope.updating = true;
 			$scope.param = param;
 		} else {
+			$scope.updating = false;
 			$scope.param = {};
 		}
 		$('#paramModal').modal({keyboard:false});
@@ -643,7 +645,7 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 		});
 	};
 	/**
-	 * delete service
+	 * delete parameter
 	 */
 	$scope.removeParameter = function(param) {
 		if (confirm('Are you sure you want to delete?')) {
@@ -664,8 +666,10 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 	 */
 	$scope.editMapping = function(mapping) {
 		if (mapping) {
+			$scope.updating = true;
 			$scope.mapping = mapping;
 		} else {
+			$scope.updating = false;
 			$scope.mapping = {};
 		}
 		$('#mappingModal').modal({keyboard:false});
@@ -686,7 +690,23 @@ function ServiceController($scope, $resource, $http, $timeout, $location) {
 		});
 		$('#mappingModal').modal('hide');
 	};
-
+	/**
+	 * delete mapping
+	 */
+	$scope.removeMapping = function(mapping) {
+		if (confirm('Are you sure you want to delete?')) {
+			ServiceProps.remove({serviceId:$scope.currService.id,prop:'mapping',id:mapping.id},{}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service mapping deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service mapping declaration: '+response.errorMessage;
+				}	
+			});
+		}
+	};
 	$scope.toAuthority = function(val) {
 		if ('ROLE_USER' == val) return 'U';
 		if ('ROLE_CLIENT'==val) return 'C';
