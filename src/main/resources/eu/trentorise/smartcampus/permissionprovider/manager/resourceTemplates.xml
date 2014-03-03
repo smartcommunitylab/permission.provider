@@ -436,7 +436,13 @@
 	      name="Timetable" uri="smartcampus.unidataservice.timetable.app"
 	      authority="ROLE_ANY" approvalRequired="false">
 	      <description>Get Timetable</description>
-	    </resourceMapping> 		    
+	    </resourceMapping> 	
+	    
+	    <resourceMapping id="smartcampus.unidataservice.calendarcds.app"
+	      name="Cds Calendar" uri="smartcampus.unidataservice.calendarcds.app"
+	      authority="ROLE_ANY" approvalRequired="false">
+	      <description>Get Cds Calendar</description>
+	    </resourceMapping> 		    	    
 	    
 	    <resourceMapping id="smartcampus.unidataservice.data.app"
 	      name="Timetable" uri="smartcampus.unidataservice.data.app"
