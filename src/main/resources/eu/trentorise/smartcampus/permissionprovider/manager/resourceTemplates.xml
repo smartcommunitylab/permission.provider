@@ -414,54 +414,17 @@
 	    </resourceMapping>   	    
 	    
 	    
-	    <resourceMapping id="smartcampus.unidataservice.facolta.app"
-	      name="Facolta list" uri="smartcampus.unidataservice.facolta.app"
-	      authority="ROLE_ANY" approvalRequired="true">
-	      <description>Get Facolta list</description>
-	    </resourceMapping>  	    
-	    
-	    <resourceMapping id="smartcampus.unidataservice.cds.app"
-	      name="Cds List" uri="smartcampus.unidataservice.cds.app"
+	    <resourceMapping id="smartcampus.unidataservice.courses"
+	      name="University Courses Data" uri="smartcampus.unidataservice.courses"
 	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Cds list</description>
-	    </resourceMapping> 	    
-	    
-	    <resourceMapping id="smartcampus.unidataservice.ad.app"
-	      name="Ad List" uri="smartcampus.unidataservice.ad.app"
-	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Ad list</description>
-	    </resourceMapping> 		    
-	    
-	    <resourceMapping id="smartcampus.unidataservice.timetable.app"
-	      name="Timetable" uri="smartcampus.unidataservice.timetable.app"
-	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Timetable</description>
-	    </resourceMapping> 	
-	    
-	    <resourceMapping id="smartcampus.unidataservice.calendarcds.app"
-	      name="Cds Calendar" uri="smartcampus.unidataservice.calendarcds.app"
-	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Cds Calendar</description>
-	    </resourceMapping> 		    	    
-	    
-	    <resourceMapping id="smartcampus.unidataservice.data.app"
-	      name="Timetable" uri="smartcampus.unidataservice.data.app"
-	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>University Data</description>
+	      <description>University data for courses and timetables</description>
 	    </resourceMapping> 	    
 	    	    
-	    <resourceMapping id="smartcampus.unidataservice.menu.app"
-	      name="Timetable" uri="smartcampus.unidataservice.menu.app"
+	    <resourceMapping id="smartcampus.unidataservice.canteen"
+	      name="University Canteen Data" uri="smartcampus.unidataservice.canteen"
 	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Canteen Menu</description>
+	      <description>Data for University canteens and opening hours</description>
 	    </resourceMapping> 		    
-	    
-	    <resourceMapping id="smartcampus.unidataservice.opening.app"
-	      name="Timetable" uri="smartcampus.unidataservice.opening.app"
-	      authority="ROLE_ANY" approvalRequired="false">
-	      <description>Get Canteen Opening</description>
-	    </resourceMapping> 	  
-	    
 	 </service>
 
 	<service name="Moderation service" id="smartcampus.moderation">
