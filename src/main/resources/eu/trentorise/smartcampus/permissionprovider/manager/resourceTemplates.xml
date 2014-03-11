@@ -223,9 +223,9 @@
 
 
 	<service name="Social networking service" id="smartcampus.socialservice">
-		<description>Service manage notification</description>
-		<resource name="Community" id="cid">
-			<description>Identificator of the community managed by the app</description>
+		<description>Service manage smart campus social network</description>
+		<resource name="Socialspace" id="appId">
+		    <description>Identificator for application social space</description>
 		</resource>
 
 		<resourceMapping id="socialservice.user.group.read"
@@ -256,11 +256,17 @@
 			<description>Read communities.</description>
 		</resourceMapping>
 		<resourceMapping id="socialservice.community.write"
-			name="Manage community '{cid}'" uri="socialservice.community.{cid}.write"
+			name="Manage community in '{appId}' social space" uri="socialservice.community.{appId}.write"
 			authority="ROLE_CLIENT" accessibleByOthers="false">
-			<description>Manage community '{cid}'.</description>
+			<description>Manage community in '{appId}' social space.</description>
 		</resourceMapping>
 
+		<resourceMapping id="socialservice.user.appid.entities.read"
+			name="Read user entities in '{appId}' social space" uri="socialservice.user.{appId}.entities.read"
+			authority="ROLE_USER" approvalRequired="false">
+			<description>Read user entities created in {appId} social space.</description>
+		</resourceMapping>
+		
 		<resourceMapping id="socialservice.user.entities.read"
 			name="Read user entities" uri="socialservice.user.entities.read"
 			authority="ROLE_USER" approvalRequired="false">
@@ -284,26 +290,26 @@
 		</resourceMapping>
 
 		<resourceMapping id="socialservice.community.entities.read"
-			name="Read community '{cid}' entities" uri="socialservice.community.{cid}.entities.read"
+			name="Read community entities in '{appId}' social space" uri="socialservice.community.{appId}.entities.read"
 			authority="ROLE_CLIENT" approvalRequired="true">
-			<description>Read community '{cid}' entities.</description>
+			<description>Read community entities in '{appId}' social space.</description>
 		</resourceMapping>
 		<resourceMapping id="socialservice.community.entities.write"
-			name="Manage community '{cid}' entities" uri="socialservice.community.{cid}.entities.write"
+			name="Manage community '{appId}' entities" uri="socialservice.community.{appId}.entities.write"
 			authority="ROLE_CLIENT" approvalRequired="true">
-			<description>Manage community '{cid}' entities.</description>
+			<description>Manage community '{appId}' entities.</description>
 		</resourceMapping>
 
 
 		<resourceMapping id="socialservice.community.shared.read"
-			name="Read entities shared with the community '{cid}'" uri="socialservice.community.{cid}.shared.read"
+			name="Read entities shared with the community in '{appId}' social space" uri="socialservice.community.{appId}.shared.read"
 			authority="ROLE_CLIENT" approvalRequired="true">
-			<description>Read entities shared with the community '{cid}'.</description>
+			<description>Read entities shared with the community in '{appId}' social space.</description>
 		</resourceMapping>
 		<resourceMapping id="socialservice.community.shared.write"
-			name="Share/unshare community '{cid}' entities" uri="socialservice.community.{cid}.shared.write"
+			name="Share/unshare community entities in '{appId}' social space" uri="socialservice.community.{appId}.shared.write"
 			authority="ROLE_CLIENT" approvalRequired="true">
-			<description>Share/unshare community '{cid}' entities.</description>
+			<description>Share/unshare community entities in '{appId}' social space.</description>
 		</resourceMapping>
 
 		<resourceMapping id="socialservice.type.all" name="Manage entity types"
