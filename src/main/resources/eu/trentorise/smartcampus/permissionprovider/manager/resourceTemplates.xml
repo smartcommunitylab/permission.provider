@@ -321,6 +321,11 @@
 			uri="socialservice.type.all" authority="ROLE_ANY" approvalRequired="false">
 			<description>Manage entity types</description>
 		</resourceMapping>
+		
+		<resourceMapping id="socialservice.user.rating" name="Manage rating on shared entities"
+			uri="socialservice.user.rating" authority="ROLE_USER" approvalRequired="false">
+			<description>Manage rating on shared entities</description>
+		</resourceMapping>
 	</service>
 
 	<service name="Mobility service" id="smartcampus.mobilityservice">
