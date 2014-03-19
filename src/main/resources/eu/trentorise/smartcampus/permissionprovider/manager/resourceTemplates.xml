@@ -326,6 +326,11 @@
 			uri="socialservice.user.rating" authority="ROLE_USER" approvalRequired="false">
 			<description>Manage rating on shared entities</description>
 		</resourceMapping>
+		
+		<resourceMapping id="socialservice.user.comment" name="Permission to comment a shared entity"
+			uri="socialservice.user.comment" authority="ROLE_USER" approvalRequired="false">
+			<description>Permission to comment a shared entity</description>
+		</resourceMapping>
 	</service>
 
 	<service name="Mobility service" id="smartcampus.mobilityservice">
