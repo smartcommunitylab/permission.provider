@@ -272,12 +272,19 @@
 			authority="ROLE_USER" approvalRequired="false">
 			<description>Read user entities.</description>
 		</resourceMapping>
+		
 		<resourceMapping id="socialservice.user.entities.write"
-			name="Manage user entities" uri="socialservice.user.entities.write"
-			authority="ROLE_USER" approvalRequired="false">
+			name="Create user entities in '{appId}' social space" uri="socialservice.user.{appId}.entities.write"
+			authority="ROLE_CLIENT" approvalRequired="false">
+			<description>Create user entities in '{appId}' social space.</description>
+		</resourceMapping>
+		
+		<resourceMapping id="socialservice.user.entities.manage"
+			name="Manage user entities in '{appId}' social space" uri="socialservice.user.{appId}.entities.manage"
+			authority="ROLE_ANY" approvalRequired="false">
 			<description>Manage user entities.</description>
 		</resourceMapping>
-
+		
 		<resourceMapping id="socialservice.user.appid.shared.read"
 			name="Read entities shared with the user in '{appId}' social space" uri="socialservice.user.{appId}.shared.read"
 			authority="ROLE_USER" approvalRequired="false">
@@ -288,6 +295,7 @@
 			authority="ROLE_USER" approvalRequired="false">
 			<description>Read entities shared with the user.</description>
 		</resourceMapping>
+		
 		<resourceMapping id="socialservice.user.shared.write"
 			name="Share/unshare user entities" uri="socialservice.user.shared.write"
 			authority="ROLE_USER" approvalRequired="false">
@@ -299,6 +307,7 @@
 			authority="ROLE_CLIENT" approvalRequired="true">
 			<description>Read community entities in '{appId}' social space.</description>
 		</resourceMapping>
+		
 		<resourceMapping id="socialservice.community.entities.write"
 			name="Manage community '{appId}' entities" uri="socialservice.community.{appId}.entities.write"
 			authority="ROLE_CLIENT" approvalRequired="true">
@@ -316,6 +325,14 @@
 			authority="ROLE_CLIENT" approvalRequired="true">
 			<description>Share/unshare community entities in '{appId}' social space.</description>
 		</resourceMapping>
+		
+		
+			<resourceMapping id="socialservice.app.entity.info"
+			name="Get information about an entity" uri="socialservice.app.entity.info"
+			authority="ROLE_CLIENT" approvalRequired="true">
+			<description>Get information about an entity.</description>
+		</resourceMapping>
+		
 
 		<resourceMapping id="socialservice.type.all" name="Manage entity types"
 			uri="socialservice.type.all" authority="ROLE_ANY" approvalRequired="false">
