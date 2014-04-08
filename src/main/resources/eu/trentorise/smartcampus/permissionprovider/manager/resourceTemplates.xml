@@ -273,15 +273,21 @@
 			<description>Read user entities.</description>
 		</resourceMapping>
 		
-		<resourceMapping id="socialservice.user.entities.write"
-			name="Create user entities in '{appId}' social space" uri="socialservice.user.{appId}.entities.write"
+		<resourceMapping id="socialservice.app.entities.write"
+			name="Create user entities in '{appId}' social space" uri="socialservice.app.{appId}.entities.write"
 			authority="ROLE_CLIENT" approvalRequired="false">
 			<description>Create user entities in '{appId}' social space.</description>
 		</resourceMapping>
 		
 		<resourceMapping id="socialservice.user.entities.manage"
 			name="Manage user entities in '{appId}' social space" uri="socialservice.user.{appId}.entities.manage"
-			authority="ROLE_ANY" approvalRequired="false">
+			authority="ROLE_USER" approvalRequired="false">
+			<description>Manage user entities.</description>
+		</resourceMapping>
+		
+		<resourceMapping id="socialservice.app.entities.manage"
+			name="Manage user entities in '{appId}' social space" uri="socialservice.app.{appId}.entities.manage"
+			authority="ROLE_CLIENT" approvalRequired="false">
 			<description>Manage user entities.</description>
 		</resourceMapping>
 		
