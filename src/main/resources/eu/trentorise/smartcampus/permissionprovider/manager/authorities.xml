@@ -43,4 +43,7 @@
       <attributes>link</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="anonymous" url="anonymous" public="true" web="false">
+      <identifyingAttributes>externalId</identifyingAttributes>
+  </authorityMapping>
 </authorities>
