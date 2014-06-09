@@ -293,7 +293,7 @@
 		
 		<resourceMapping id="socialservice.user.appid.shared.read"
 			name="Read entities shared with the user in '{appId}' social space" uri="socialservice.user.{appId}.shared.read"
-			authority="ROLE_USER" approvalRequired="false">
+			authority="ROLE_ANY" approvalRequired="false">
 			<description>Read entities shared with the user in '{appId}' social space.</description>
 		</resourceMapping>
 		<resourceMapping id="socialservice.user.shared.read"
