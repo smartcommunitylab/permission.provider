@@ -44,7 +44,7 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 	private static final Logger traceUserLogger = Logger.getLogger("traceUserToken");
 
 	/** threshold for access token */
-	protected int tokenThreshold = 60*60;
+	protected int tokenThreshold = 10*60;
 	
 	/**
 	 * Do not remove access token if expired
@@ -75,9 +75,7 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 			throw new InvalidGrantException("Invalid refresh token: " + refreshTokenValue);
 		}
 
-		int validity = getAccessTokenValiditySeconds(request);
-		long created = accessToken.getExpiration().getTime() - validity*1000L;
-		if (System.currentTimeMillis()-created < tokenThreshold*1000L ) {
+		if (accessToken.getExpiration().getTime() -System.currentTimeMillis() > tokenThreshold*1000L ) {
 			return accessToken;
 		}
 
