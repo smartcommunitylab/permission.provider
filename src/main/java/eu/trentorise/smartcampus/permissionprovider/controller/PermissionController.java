@@ -271,7 +271,7 @@ public class PermissionController extends AbstractController {
 	 * @param vis visibility
 	 * @return {@link Response} entity containing the processed {@link ResourceParameter} descriptor
 	 */
-	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.PUT)
+	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value:.*}",method=RequestMethod.PUT)
 	public @ResponseBody Response updatePropertyVisibility(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value, @RequestParam RESOURCE_VISIBILITY vis) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
@@ -295,7 +295,7 @@ public class PermissionController extends AbstractController {
 	 * @param value parameter value
 	 * @return
 	 */
-	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value}",method=RequestMethod.DELETE)
+	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value:.*}",method=RequestMethod.DELETE)
 	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
