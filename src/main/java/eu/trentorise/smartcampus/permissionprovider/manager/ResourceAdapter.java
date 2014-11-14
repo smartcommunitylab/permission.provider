@@ -441,7 +441,7 @@ public class ResourceAdapter {
 		Resource r = new Resource();
 		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
-		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority()));
+		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority().value()));
 		r.setClientId(clientId);
 		r.setResourceParameter(rp);
 		UriTemplate template = new UriTemplate(rm.getUri());

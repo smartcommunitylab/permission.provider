@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.permissionprovider.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import eu.trentorise.smartcampus.permissionprovider.model.User;
@@ -31,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 
 	List<User> findByFullNameLike(String text);
 	User findBySocialId(String socialId);
+	
+	@Query("select u from User u left join u.attributeEntities a where a.authority.name=?1 and a.key=?2 and a.value=?3")
+	List<User> findByAttribute(String authority, String attribute, String value);
 }

@@ -20,6 +20,7 @@
  */
 package eu.trentorise.smartcampus.permissionprovider.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,8 @@ import eu.trentorise.smartcampus.permissionprovider.authority.AuthorityHandler;
 import eu.trentorise.smartcampus.permissionprovider.authority.AuthorityHandlerContainer;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Authorities;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMatching;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Match;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.Authority;
 import eu.trentorise.smartcampus.permissionprovider.repository.AuthorityRepository;
@@ -55,6 +58,7 @@ public class AttributesAdapter {
 	private AuthorityRepository authorityRepository;
 	private Map<String, AuthorityMapping> authorities;
 	private Map<String, Set<String>> identityAttributes;
+	private Map<String,AuthorityMatching> authorityMatches;
 
 	@Autowired
 	private AuthorityHandlerContainer authorityHandlerManager;
@@ -73,6 +77,7 @@ public class AttributesAdapter {
 								"authorities.xml")), Authorities.class);
 		Authorities auths = element.getValue();
 		authorities = new HashMap<String, AuthorityMapping>();
+		authorityMatches = new HashMap<String, AuthorityMatching>();
 		identityAttributes = new HashMap<String, Set<String>>();
 		for (AuthorityMapping mapping : auths.getAuthorityMapping()) {
 			Authority auth = authorityRepository.findOne(mapping.getName());
@@ -88,6 +93,13 @@ public class AttributesAdapter {
 				identities.addAll(mapping.getIdentifyingAttributes());
 			}
 			identityAttributes.put(auth.getName(), identities);
+		}
+		if (auths.getAuthorityMatching() != null) {
+			for (AuthorityMatching am : auths.getAuthorityMatching()) {
+				for (Match match : am.getAuthority()) {
+					authorityMatches.put(match.getName(), am);
+				}
+			}
 		}
 	}
 
@@ -124,7 +136,7 @@ public class AttributesAdapter {
 	 *            the authority
 	 * @return the list of identifying attributes for the given authority
 	 */
-	public List<String> getIdentifyingAttributes(String authority) {
+	private List<String> getIdentifyingAttributes(String authority) {
 		AuthorityMapping mapping = authorities.get(authority);
 		if (mapping == null) {
 			throw new IllegalArgumentException("Unsupported authority: "
@@ -176,6 +188,51 @@ public class AttributesAdapter {
 	 */
 	public AuthorityMapping getAuthority(String key) {
 		return authorities.get(key);
+	}
+
+	/**
+	 * Return the list that contains an attribute for each authority matching the specified one.
+	 * @param auth
+	 * @param attributes
+	 * @return
+	 */
+	public List<Attribute> findAllIdentityAttributes(Authority auth, Map<String, String> attributes) {
+		AuthorityMatching matching = authorityMatches.get(auth.getName());
+		List<Attribute> list = new ArrayList<Attribute>();
+		if (matching == null) {
+			List<String> ids = getIdentifyingAttributes(auth.getName());
+			for (String key : ids) {
+				if (!attributes.containsKey(key)) {
+					throw new IllegalArgumentException("The required attribute is missing: " + key);
+				}
+				Attribute a = new Attribute();
+				a.setAuthority(auth);
+				a.setKey(key);
+				a.setValue(attributes.get(key));
+				list.add(a);
+			}
+		} else {
+			String value = null;
+			for (Match match : matching.getAuthority()) {
+				if (auth.getName().equals(match.getName())) {
+					if (!attributes.containsKey(match.getAttribute())) {
+						throw new IllegalArgumentException("The required match attribute is missing: " + match.getAttribute());
+					}
+					value = attributes.get(match.getAttribute());
+				}
+			}
+			if (value == null) {
+				throw new IllegalArgumentException("The required match attribute value is null (authority "+auth.getName()+")");
+			}
+			for (Match match : matching.getAuthority()) {
+				Attribute a = new Attribute();
+				a.setAuthority(authorityRepository.findOne(match.getName()));
+				a.setKey(match.getAttribute());
+				a.setValue(value);
+				list.add(a);
+			}
+		}
+		return list;
 	}
 
 }
