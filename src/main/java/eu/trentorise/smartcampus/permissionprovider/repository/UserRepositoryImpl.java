@@ -42,7 +42,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	@Override
 	public List<User> getUsersByAttributes(List<Attribute> list) {
 		Map<Long,User> userMap = new HashMap<Long, User>();
-		List<User> result = new ArrayList<User>();
 		for (Attribute a : list) {
 			List<User> attrUsers = userRepository.findByAttribute(a.getAuthority().getName(), a.getKey(), a.getValue());
 			if (attrUsers != null) {
@@ -51,7 +50,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 				}
 			}
 		}
-		return result;
+		return new ArrayList<User>(userMap.values());
 	}
 
 }
