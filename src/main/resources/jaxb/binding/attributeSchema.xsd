@@ -7,17 +7,18 @@
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
 <xsd:schema version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified">
-	<xsd:element name="authorities" type="authorities" />
+  targetNamespace="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"
+  xmlns:tns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel" elementFormDefault="qualified">
+    <xsd:include schemaLocation=""></xsd:include>
+    <xsd:element name="authorities" type="tns:authorities" />
 	<xsd:complexType name="authorities">
 		<xsd:annotation>
 			<xsd:documentation>List of identity provider authorities.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="authorityMapping" type="authorityMapping" />
-			</xsd:choice>
+			<xsd:element name="authorityMapping" type="tns:authorityMapping" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="authorityMatching" type="tns:authorityMatching" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="authorityMapping">
@@ -30,7 +31,7 @@
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:choice minOccurs="0" maxOccurs="unbounded">
-				<xsd:element name="attributes" type="attributes" />
+				<xsd:element name="attributes" type="tns:attributes" />
 			</xsd:choice>
 			<xsd:choice minOccurs="1" maxOccurs="unbounded">
 				<xsd:element name="identifyingAttributes" type="xsd:string" />
@@ -38,7 +39,7 @@
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string" use="required" />
 		<xsd:attribute name="url" type="xsd:string" use="required" />
-		<xsd:attribute name="useParams" type="xsd:boolean" use="optional" />
+		<xsd:attribute name="useParams" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="public" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="web" type="xsd:boolean" use="optional" default="true"/>
 	</xsd:complexType>
@@ -53,4 +54,19 @@
 			</xsd:extension>
 		</xsd:simpleContent>
 	</xsd:complexType>
+	<xsd:complexType name="authorityMatching">
+    <xsd:annotation>
+      <xsd:documentation>Matching authorities for duplicate accounts</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="authority" type="tns:match" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="match">
+    <xsd:annotation>
+      <xsd:documentation>Matching authority definition</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="attribute" type="xsd:string" use="required" />
+  </xsd:complexType>
 </xsd:schema>

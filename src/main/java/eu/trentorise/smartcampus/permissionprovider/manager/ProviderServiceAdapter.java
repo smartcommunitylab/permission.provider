@@ -160,20 +160,6 @@ public class ProviderServiceAdapter {
 	 * @return
 	 */
 	private List<Attribute> extractIdentityAttributes(Authority auth, Map<String, String> attributes) {
-		List<String> ids = attrAdapter.getIdentifyingAttributes(auth.getName());
-
-		// Try to find an already existing user
-		List<Attribute> list = new ArrayList<Attribute>();
-		for (String key : ids) {
-			if (!attributes.containsKey(key)) {
-				throw new IllegalArgumentException("The required attribute is missing: " + key);
-			}
-			Attribute a = new Attribute();
-			a.setAuthority(auth);
-			a.setKey(key);
-			a.setValue(attributes.get(key));
-			list.add(a);
-		}
-		return list;
+		return attrAdapter.findAllIdentityAttributes(auth, attributes);
 	}
 }

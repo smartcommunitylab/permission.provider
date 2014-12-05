@@ -19,8 +19,6 @@ package eu.trentorise.smartcampus.permissionprovider.common;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
@@ -87,8 +85,10 @@ public class Utils {
 		res.setDescription(s.getDescription());
 		res.setId(s.getServiceId());
 		res.setName(s.getServiceName());
-		res.setResource(JsonUtils.toObjectList(s.getResourceDefinitions(), ResourceDeclaration.class));
-		res.setResourceMapping(JsonUtils.toObjectList(s.getResourceMappings(), ResourceMapping.class));
+		res.getResource().clear();
+		res.getResource().addAll(JsonUtils.toObjectList(s.getResourceDefinitions(), ResourceDeclaration.class));
+		res.getResourceMapping().clear();
+		res.getResourceMapping().addAll(JsonUtils.toObjectList(s.getResourceMappings(), ResourceMapping.class));
 		return res;
 	} 
 }

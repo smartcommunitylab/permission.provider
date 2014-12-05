@@ -7,7 +7,8 @@
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
 	the specific language governing permissions and limitations under the License. -->
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../../../../jaxb/binding/resourceTemplateSchema.xsd">
+  xmlns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"  
+	xsi:schemaLocation="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel ../../../../../jaxb/binding/resourceTemplateSchema.xsd">
 	<service name="Basic profile service" id="smartcampus.profile.basicprofie">
 		<description>Core service for managing basic user profiles.</description>
 
@@ -373,7 +374,7 @@
 
 	</service>
 	
-	<service name="Unidata service" id="smartcampus.unidataservice">
+		<service name="Unidata service" id="smartcampus.unidataservice">
 		<description>Information about students.</description>
 		
 	    <resourceMapping id="smartcampus.unidataservice.studentdata.me"

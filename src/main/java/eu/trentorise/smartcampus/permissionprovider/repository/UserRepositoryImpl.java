@@ -17,7 +17,9 @@
 package eu.trentorise.smartcampus.permissionprovider.repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,14 +41,16 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
 	@Override
 	public List<User> getUsersByAttributes(List<Attribute> list) {
-		List<User> result = new ArrayList<User>();
-		List<User> users = userRepository.findAll();
-		for (User u : users) {
-			if (u.getAttributeEntities().containsAll(list)) {
-				result.add(u);
+		Map<Long,User> userMap = new HashMap<Long, User>();
+		for (Attribute a : list) {
+			List<User> attrUsers = userRepository.findByAttribute(a.getAuthority().getName(), a.getKey(), a.getValue());
+			if (attrUsers != null) {
+				for (User u : attrUsers) {
+					userMap.put(u.getId(), u);
+				}
 			}
 		}
-		return result;
+		return new ArrayList<User>(userMap.values());
 	}
 
 }

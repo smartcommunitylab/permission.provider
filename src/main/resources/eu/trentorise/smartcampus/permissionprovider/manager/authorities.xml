@@ -18,7 +18,8 @@
 -->
 
 <authorities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="XMLSchema4.xsd">
+  xmlns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"  
+  xsi:schemaLocation="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel ../../../../../jaxb/binding/attributeSchema.xsd">
 	<authorityMapping name="unitn" url="unitn">
 		<attributes alias="eu.trentorise.smartcampus.givenname">givenName</attributes>
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
@@ -43,4 +44,39 @@
       <attributes>link</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="anonymous" url="anonymous" public="true" web="false">
+      <identifyingAttributes>externalId</identifyingAttributes>
+  </authorityMapping>
+  <authorityMapping name="adc" url="adc" public="false" web="true" >
+      <attributes alias="eu.trentorise.smartcampus.givenname">pat_attribute_nome</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">pat_attribute_cognome</attributes>
+      <attributes>pat_attribute_email</attributes>
+      <attributes>pat_attribute_capdomicilio</attributes>
+      <attributes>pat_attribute_capresidenza</attributes>
+      <attributes>pat_attribute_cellulare</attributes>
+      <attributes>pat_attribute_cittadomicilio</attributes>
+      <attributes>pat_attribute_cittaresidenza</attributes>
+      <attributes>pat_attribute_datanascita</attributes>
+      <attributes>pat_attribute_emailaddresspersonale</attributes>
+      <attributes>pat_attribute_indirizzodomicilio</attributes>
+      <attributes>pat_attribute_indirizzoresidenza</attributes>
+      <attributes>pat_attribute_luogonascita</attributes>
+      <attributes>pat_attribute_provinciadomicilio</attributes>
+      <attributes>pat_attribute_provincianascita</attributes>
+      <attributes>pat_attribute_provinciaresidenza</attributes>
+      <attributes>pat_attribute_sesso</attributes>
+      <attributes>pat_attribute_statodomicilio</attributes>
+      <attributes>pat_attribute_statonascita</attributes>
+      <attributes>pat_attribute_statoresidenza</attributes>
+      <attributes>pat_attribute_telefono</attributes>
+      <attributes>pat_attribute_titolo</attributes>
+      <attributes>pat_attribute_subjectdn</attributes>
+      <attributes>pat_attribute_issuerdn</attributes>
+      <attributes>pat_attribute_base64</attributes>
+      <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
+  </authorityMapping>
+  <authorityMatching>
+      <authority name="google" attribute="openid.ext1.value.email"/>
+      <authority name="googlelocal" attribute="email"/>
+  </authorityMatching>
 </authorities>

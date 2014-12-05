@@ -186,7 +186,10 @@
 	                    <constructor-arg value="${google.clientIds}"/>
 	                </bean>    
 	            </entry>
-	        </map>
+              <entry key="anonymous">
+                  <bean id="anonymousAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AnonymousAuthorityHandler"/>
+              </entry>
+	            	        </map>
 	    </constructor-arg>
 	</bean>
 

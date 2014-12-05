@@ -52,7 +52,7 @@ public class Attribute implements Serializable {
 	@Column(name = "name")
 	private String key;
 
-	@Column(name = "value")
+	@Column(name = "value",columnDefinition="LONGTEXT")
 	private String value;
 
 	public Authority getAuthority() {

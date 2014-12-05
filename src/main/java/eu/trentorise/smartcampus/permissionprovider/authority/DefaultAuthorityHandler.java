@@ -61,8 +61,11 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 	 * @return
 	 */
 	private Object readAttribute(HttpServletRequest request, String key, boolean useParams) {
+		if (request == null) return null;
 		if (useParams) return request.getParameter(key);
-		return request.getAttribute(key);
+		Object param = request.getAttribute(key);
+		if (param == null || param.toString().isEmpty()) param = request.getHeader(key);
+		return param;
 	}
 
 }

@@ -655,7 +655,7 @@ public class ResourceManager {
 		Resource r = new Resource();
 		r.setAccessibleByOthers(rm.isAccessibleByOthers());
 		r.setApprovalRequired(rm.isApprovalRequired());
-		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority()));
+		r.setAuthority(AUTHORITY.valueOf(rm.getAuthority().value()));
 		r.setClientId(clientId);
 		r.setResourceParameter(rp);
 		UriTemplate template = new UriTemplate(rm.getUri());
@@ -850,9 +850,6 @@ public class ResourceManager {
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);
-		if (s.getResource() == null) {
-			s.setResource(new ArrayList<ResourceDeclaration>());
-		}
 		boolean found = false;
 		for (ResourceDeclaration rd : s.getResource()) {
 			if (rd.getId().equals(decl.getId())) {
@@ -914,9 +911,6 @@ public class ResourceManager {
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);
-		if (s.getResourceMapping() == null) {
-			s.setResourceMapping(new ArrayList<ResourceMapping>());
-		}
 		boolean found = false;
 		for (ResourceMapping rm : s.getResourceMapping()) {
 			if (rm.getId().equals(mapping.getId())) {
@@ -960,9 +954,6 @@ public class ResourceManager {
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);
-		if (s.getResource() == null) {
-			s.setResource(new ArrayList<ResourceDeclaration>());
-		}
 		for (Iterator<ResourceDeclaration> iterator = s.getResource().iterator(); iterator.hasNext();) {
 			ResourceDeclaration rd = iterator.next();
 			if (rd.getId().equals(id)) {
@@ -985,9 +976,6 @@ public class ResourceManager {
 		ServiceDescriptor sd = serviceRepository.findOne(serviceId);
 		if (sd == null) throw new EntityNotFoundException("Not found: "+ serviceId);
 		Service s = Utils.toServiceObject(sd);
-		if (s.getResourceMapping() == null) {
-			s.setResourceMapping(new ArrayList<ResourceMapping>());
-		}
 		for (Iterator<ResourceMapping> iterator = s.getResourceMapping().iterator(); iterator.hasNext();) {
 			ResourceMapping rm = iterator.next();
 			if (rm.getId().equals(id)) {
