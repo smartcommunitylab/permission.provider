@@ -31,10 +31,15 @@
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
 		<identifyingAttributes>eppn</identifyingAttributes>
 	</authorityMapping>
-  <authorityMapping name="google" url="google" useParams="true" public="true">
-      <attributes alias="eu.trentorise.smartcampus.givenname">openid.ext1.value.name</attributes>
-      <attributes alias="eu.trentorise.smartcampus.surname">openid.ext1.value.surname</attributes>
-      <identifyingAttributes>openid.ext1.value.email</identifyingAttributes>
+<!--   <authorityMapping name="google" url="google" useParams="true" public="true"> -->
+<!--       <attributes alias="eu.trentorise.smartcampus.givenname">openid.ext1.value.name</attributes> -->
+<!--       <attributes alias="eu.trentorise.smartcampus.surname">openid.ext1.value.surname</attributes> -->
+<!--       <identifyingAttributes>openid.ext1.value.email</identifyingAttributes> -->
+<!--   </authorityMapping> -->
+  <authorityMapping name="google" url="google" public="true">
+      <attributes alias="eu.trentorise.smartcampus.givenname">OIDC_CLAIM_given_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">OIDC_CLAIM_family_name</attributes>
+      <identifyingAttributes>OIDC_CLAIM_email</identifyingAttributes>
   </authorityMapping>
   <authorityMapping name="googlelocal" url="googlelocal" public="true" web="false">
       <attributes alias="eu.trentorise.smartcampus.givenname">given_name</attributes>
@@ -76,7 +81,7 @@
       <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
   </authorityMapping>
   <authorityMatching>
-      <authority name="google" attribute="openid.ext1.value.email"/>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
       <authority name="googlelocal" attribute="email"/>
   </authorityMatching>
 </authorities>
