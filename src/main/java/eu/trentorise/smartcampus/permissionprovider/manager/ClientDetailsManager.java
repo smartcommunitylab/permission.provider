@@ -123,8 +123,8 @@ public class ClientDetailsManager {
 		ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
 		if (info != null) {
 			res.setName(info.getName());
-			res.setNativeAppsAccess(info.isNativeAppsAccess());
-			res.setNativeAppSignatures(info.getNativeAppSignatures());
+//			res.setNativeAppsAccess(info.isNativeAppsAccess());
+//			res.setNativeAppSignatures(info.getNativeAppSignatures());
 			if (info.getIdentityProviders() != null) {
 				for (String key : info.getIdentityProviders().keySet()) {
 					switch (info.getIdentityProviders().get(key)) {
@@ -183,8 +183,8 @@ public class ClientDetailsManager {
 				info = ClientAppInfo.convert(client.getAdditionalInformation());
 			}
 			info.setName(data.getName());
-			info.setNativeAppsAccess(data.isNativeAppsAccess());
-			info.setNativeAppSignatures(Utils.normalizeValues(data.getNativeAppSignatures()));
+//			info.setNativeAppsAccess(data.isNativeAppsAccess());
+//			info.setNativeAppSignatures(Utils.normalizeValues(data.getNativeAppSignatures()));
 			Set<String> types = new HashSet<String>(client.getAuthorizedGrantTypes());
 			if (data.isBrowserAccess()) {
 				types.add(GT_IMPLICIT);
@@ -238,9 +238,9 @@ public class ClientDetailsManager {
 		if ((data.isServerSideAccess() || data.isNativeAppsAccess()) && (data.getRedirectUris() == null || data.getRedirectUris().trim().isEmpty())) {
 			return "redirect URL is required for Server-side or native access";
 		}
-		if (data.isNativeAppsAccess() && (data.getNativeAppSignatures() == null || data.getNativeAppSignatures().isEmpty())) {
-			return "app signature is required for native access";
-		}
+//		if (data.isNativeAppsAccess() && (data.getNativeAppSignatures() == null || data.getNativeAppSignatures().isEmpty())) {
+//			return "app signature is required for native access";
+//		}
 		return null;
 	}
 	/**

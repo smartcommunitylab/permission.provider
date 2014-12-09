@@ -392,8 +392,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	 * return icon for the app access type
 	 */
 	$scope.statusIcon = function(val) {
-		if (val) return 'icon-ok';
-		else return 'icon-remove';
+		if (val) return 'glyphicon-ok';
+		else return 'glyphicon-remove';
 	};
 	/**
 	 * reset value for client id or secret
