@@ -2,7 +2,7 @@
 <html lang="en" ng-app="dev">
   <head>
     <meta charset="utf-8">
-    <title>SmartCampus Developers</title>
+    <title>AAC Developers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -62,7 +62,7 @@
 	    <div ng-include="'./html/'+currentView+'.html'"></div>
 	    <hr>
 	    <footer>
-	      <p>&copy; SmartCampus 2013</p>
+	      <p>&copy; Smart Community Lab 2015</p>
 	    </footer>
     </div>
   </body>
