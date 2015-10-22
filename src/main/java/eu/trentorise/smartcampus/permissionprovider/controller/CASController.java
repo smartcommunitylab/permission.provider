@@ -132,8 +132,9 @@ public class CASController extends AbstractController {
 	 */
 	private void checkService(HttpServletRequest req, HttpServletResponse res, String service) throws CASException {
 		try {
-			URI url = URI.create(service);
-			if (!"https".equals(url.getScheme())) throw new CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Non HTTPS callback");
+//			URI url = 
+			URI.create(service);
+//			if (!"https".equals(url.getScheme())) throw new CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Non HTTPS callback");
 		} catch (Exception e) {
 			logger.error("Incorrect service URL : "+service);
 			throw new CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Invalid callback address");
@@ -185,10 +186,4 @@ public class CASController extends AbstractController {
 		JAXB.marshal(createServiceResponse, os);
 		return os.toString();	
 	}
-
-	public static void main(String[] args) {
-		JAXB.marshal(new JAXBElement(new QName("http://www.yale.edu/tp/cas","userDN"),
-                String.class,"test"), System.out);
-	} 
-
 }
