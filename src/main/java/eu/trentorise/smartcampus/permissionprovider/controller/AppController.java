@@ -37,10 +37,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager.ROLE;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
+import eu.trentorise.smartcampus.permissionprovider.model.Identity;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
@@ -80,16 +82,17 @@ public class AppController extends AbstractController {
 
 		if (accessMode) {
 			String authority = getUserAuthority();
-			Set<String> identityAttrs = new HashSet<String>();
+			Set<Identity> identityAttrs = new HashSet<Identity>();
 			for (Attribute a : user.getAttributeEntities()) {
 				if (a.getAuthority().getName().equals(authority) && 
-					attributesAdapter.isIdentityAttr(a)) {
-					identityAttrs.add(authority+";"+a.getKey()+";"+a.getValue());
+					attributesAdapter.isIdentityAttr(a)) 
+				{
+					identityAttrs.add(new Identity(authority, a.getKey(), a.getValue()));
 				}
 			}
 			
 			try {
-				if (!adminManager.checkAccount(identityAttrs)) {
+				if (!adminManager.checkAccount(identityAttrs, ROLE.developer)) {
 					model.put("error", "Not authorized");
 					return new ModelAndView("redirect:/logout");
 				}

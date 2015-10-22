@@ -80,6 +80,12 @@
       <attributes>pat_attribute_base64</attributes>
       <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="welive" url="welive" public="true">
+    <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
+    <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
+    <attributes>email</attributes>
+    <identifyingAttributes>username</identifyingAttributes>
+  </authorityMapping>
   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
       <authority name="googlelocal" attribute="email"/>

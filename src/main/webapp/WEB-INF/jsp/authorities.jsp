@@ -24,7 +24,7 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="../css/style.css" rel="stylesheet" type="text/css">
-<title>Smart Campus Authentication</title>
+<title>Smart Community Authentication</title>
 </head>
 <body>
 	<img class="logo" src="../img/ls_logo.png" alt="SmartCampus" />

@@ -103,7 +103,38 @@ public class AuthController {
 		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
 	}
-	
+
+	/**
+	 * Redirect to the login type selection page. 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/eauth/sso")
+	public ModelAndView sso(HttpServletRequest req) throws Exception {
+		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
+		model.put("authorities", authorities);
+		String target = prepareRedirect(req,"/sso");
+		req.getSession().setAttribute("redirect", target);
+		return new ModelAndView("authorities", model);
+	}
+
+	/**
+	 * Redirect to the login type selection page. 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/eauth/cas")
+	public ModelAndView cas(HttpServletRequest req) throws Exception {
+		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
+		model.put("authorities", authorities);
+		String target = prepareRedirect(req,"/cas/loginsuccess");
+		req.getSession().setAttribute("redirect", target);
+		return new ModelAndView("authorities", model);
+	}
 	/**
 	 * Entry point for resource access authorization request. Redirects to the login page.
 	 * In addition to standard OAuth parameters, it is possible to specify a comma-separated

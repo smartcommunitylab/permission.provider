@@ -13,6 +13,18 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+		  <groupId>org.jasig.cas</groupId>
+		  <artifactId>cas-client-core</artifactId>
+		  <version>3.1.10</version>
+		</dependency>
+<dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-cas-client</artifactId>
+  <version>3.0.8.RELEASE</version>
+</dependency>
+
+	
     <dependency>
       <groupId>eu.trentorise.smartcampus</groupId>
       <artifactId>smartcampus.client.commons</artifactId>
@@ -240,7 +252,7 @@
 				<version>1.6</version>
 				<executions>
 					<execution>
-						<id>SayService</id>
+						<id>SmartCommunity</id>
 						<configuration>
 							<schemaDirectory>src/main/resources/jaxb/binding</schemaDirectory>
 							<outputDirectory>src/main/generated-sources</outputDirectory>
@@ -283,7 +295,7 @@
 
 	<repositories>
 		<repository>
-			<id>SmartCampus</id>
+			<id>SmartCommunity</id>
 			<url>http://repository.smartcommunitylab.it/content/groups/public</url>
 		</repository>
 		<repository>
@@ -296,6 +308,6 @@
 			<name>Spring Maven SNAPSHOT Repository</name>
 			<url>http://maven.springframework.org/snapshot</url>
 		</repository>
-	</repositories>
+  </repositories>
 
 </project>

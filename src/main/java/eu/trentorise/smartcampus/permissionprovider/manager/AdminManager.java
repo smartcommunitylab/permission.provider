@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import eu.trentorise.smartcampus.permissionprovider.model.Identity;
+
 /**
  * Used to check whether the user has the administrator rights.
  * @author raman
@@ -37,14 +39,20 @@ public class AdminManager {
 	@Value("${ac.admin.file}")
 	private Resource adminFile;
 	
-	public boolean checkAccount(Set<String> identityStrings) throws Exception {
+	public enum ROLE {admin, user, developer, manager};
+	
+	
+	public boolean checkAccount(Set<Identity> identityStrings, ROLE role) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(adminFile.getInputStream()));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (line.startsWith("#")) continue;
-			if (identityStrings.contains(line.trim())) {
-				return true;
-			}
+
+			String[] arr = line.split(";");
+			if (arr.length != 4) continue;
+				
+			Identity test = new Identity(arr[0].trim(), arr[1].trim(), arr[2].trim());
+			if (role.name().equals(arr[3].trim()) && identityStrings.contains(test)) return true;
 		}
 		return false;
 	}
