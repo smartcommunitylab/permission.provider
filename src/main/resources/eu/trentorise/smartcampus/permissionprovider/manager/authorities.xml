@@ -20,13 +20,14 @@
 <authorities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"  
   xsi:schemaLocation="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel ../../../../../jaxb/binding/attributeSchema.xsd">
-	<authorityMapping name="unitn" url="unitn">
+<!-- 	<authorityMapping name="unitn" url="unitn">
 		<attributes alias="eu.trentorise.smartcampus.givenname">givenName</attributes>
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
 		<attributes>mailAll</attributes>
 		<identifyingAttributes>idada</identifyingAttributes>
 	</authorityMapping>
-	<authorityMapping name="fbk" url="fbk">
+ -->	
+ <authorityMapping name="fbk" url="fbk">
 		<attributes alias="eu.trentorise.smartcampus.givenname">givenName</attributes>
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
 		<identifyingAttributes>eppn</identifyingAttributes>

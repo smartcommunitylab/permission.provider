@@ -64,9 +64,5 @@
     </property>
     <property name="key" value="welive"/>
   </bean>
-	
-	<sec:user-service id="casUserService">
-    <sec:user name="casuser" password="Mellon" authorities="ROLE_USER" />
-  </sec:user-service>
-  
+
 </beans>
