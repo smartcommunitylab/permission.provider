@@ -9,7 +9,7 @@
 
 <body>
 
-  <h1>Autherization Error</h1>
+  <h1>Authorization Error</h1>
 
   <div id="content">
 	<p><c:out value="${error}"/></p>

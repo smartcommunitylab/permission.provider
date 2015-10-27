@@ -9,7 +9,7 @@
 
 <body>
 
-  <h1>AAC OAuth2 Error</h1>
+  <h1>AAC CAS Error</h1>
 
   <div id="content">
 	<p><c:out value="${message}"/> (<c:out value="${error.summary}"/>)</p>

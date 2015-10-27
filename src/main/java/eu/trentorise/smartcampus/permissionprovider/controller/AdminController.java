@@ -96,14 +96,14 @@ public class AdminController extends AbstractController{
 		try {
 			if (!adminManager.checkAccount(identityAttrs, ROLE.admin)) {
 				model.put("error", "Not authorized");
-//				return new ModelAndView("adminerror",model);
-				return new ModelAndView("redirect:/admin/logout");
+				return new ModelAndView("accesserror",model);
+//				return new ModelAndView("redirect:/admin/logout");
 			}
 		} catch (Exception e) {
 			model.put("error", e.getMessage());
 			logger.error("Problem checking admin account: "+e.getMessage());
-//			return new ModelAndView("adminerror");
-			return new ModelAndView("redirect:/admin/logout");
+			return new ModelAndView("accesserror");
+//			return new ModelAndView("redirect:/admin/logout");
 		}
 		
 		String username = getUserName(user);

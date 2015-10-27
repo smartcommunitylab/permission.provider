@@ -94,12 +94,14 @@ public class AppController extends AbstractController {
 			try {
 				if (!adminManager.checkAccount(identityAttrs, ROLE.developer)) {
 					model.put("error", "Not authorized");
-					return new ModelAndView("redirect:/logout");
+//					return new ModelAndView("redirect:/logout");
+					return new ModelAndView("accesserror",model);
 				}
 			} catch (Exception e) {
 				model.put("error", e.getMessage());
 				logger.error("Problem checking user account: "+e.getMessage());
-				return new ModelAndView("redirect:/logout");
+//				return new ModelAndView("redirect:/logout");
+				return new ModelAndView("accesserror",model);
 			}
 		}
 		

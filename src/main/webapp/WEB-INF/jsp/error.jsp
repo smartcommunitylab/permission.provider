@@ -17,28 +17,29 @@
 --%>
 <%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="../css/style.css" rel="stylesheet" type="text/css">
-<title>Smart Community Authentication</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<title>Error</title>
 </head>
 <body>
-	<img class="logo" src="../img/ls_logo.png" alt="SmartCommunity" />
+	<img class="logo" src="img/ls_logo.png" alt="SmartCommunity" />
 	<div class="clear"></div>
 	<div class="authorities">
-		<p>Please choose the provider for your login</p>
-		<ul>
-<% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
-   for (String s : authorities.keySet()) {%>		
-            <li>
-		      <a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a>
-            </li>
-<%  } %>            
-		</ul>
+		<p>An error has occurred while processing you request. Please contact the administrator.</p>
 	</div>
+	
+	<!--
+    Failed URL: ${url}
+    Exception:  ${exception.message}
+        <c:forEach items="${exception.stackTrace}" var="ste">    
+        ${ste} 
+    </c:forEach>
+    -->
 </body>
 </html>

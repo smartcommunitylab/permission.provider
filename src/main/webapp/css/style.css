@@ -21,8 +21,9 @@ body {
 	height: 100%;*/
 	font-family: "lucida grande", tahoma, arial, sans-serif;
 	/* verdana */
-	color: #ffffff;
-	background-repeat: repeat-y;
+/* 	color: #ffffff;
+ */	
+ background-repeat: repeat-y;
 	background-size: 100% auto;
 	background-color: silver;
 	margin: 0 auto;
