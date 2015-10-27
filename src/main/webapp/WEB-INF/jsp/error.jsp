@@ -24,11 +24,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="/aac/css/style.css" rel="stylesheet" type="text/css">
 <title>Error</title>
 </head>
 <body>
-	<img class="logo" src="img/ls_logo.png" alt="SmartCommunity" />
+	<img class="logo" src="/aac/img/ls_logo.png" alt="SmartCommunity" />
 	<div class="clear"></div>
 	<div class="authorities">
 		<p>An error has occurred while processing you request. Please contact the administrator.</p>
