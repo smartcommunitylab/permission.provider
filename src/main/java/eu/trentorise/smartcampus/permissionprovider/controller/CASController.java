@@ -22,8 +22,13 @@ import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +70,7 @@ public class CASController extends AbstractController {
 	@Autowired
 	private TicketManager ticketManager;
 
-	private ObjectFactory factory = new ObjectFactory();
+	private static ObjectFactory factory = new ObjectFactory();
 
 	
 	/**
@@ -120,7 +125,18 @@ public class CASController extends AbstractController {
 		} catch (CASException e) {
 			logger.error("CAS login error: "+e.getMessage());
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return generateFailure(e.getCode().toString(),e.getMessage());
+			try {
+				return generateFailure(e.getCode().toString(),e.getMessage());
+			} catch (Exception e1) {
+				logger.error("CAS login error: "+e.getMessage());
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("CAS login error: "+e.getMessage());
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return null;
 		}
 		
 	}
@@ -141,7 +157,7 @@ public class CASController extends AbstractController {
 		}
 	}
 	
-	private String generateSuccess(User user, boolean isNew) {
+	private static String generateSuccess(User user, boolean isNew) throws Exception {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ServiceResponseType value = factory.createServiceResponseType();
 		
@@ -160,21 +176,23 @@ public class CASController extends AbstractController {
 		value.setAuthenticationSuccess(success);
 		
 		JAXBElement<ServiceResponseType> createServiceResponse = factory.createServiceResponse(value);
+				
 		JAXB.marshal(createServiceResponse, os);
 		return os.toString();
 	}
 	
-	@SuppressWarnings("unchecked")
-	private JAXBElement<Object> createElement(String key, String value) {
-		return new JAXBElement(new QName("http://www.yale.edu/tp/cas",key), String.class,value == null ? "" : value);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static JAXBElement<Object> createElement(String key, String value) {
+		return new JAXBElement(new QName("http://www.yale.edu/tp/cas",key, "cas"), String.class,value == null ? "" : value);
 	}
 	
 
 	/**
 	 * @param string
 	 * @return
+	 * @throws JAXBException 
 	 */
-	private String generateFailure(String code, String codeValue) {
+	private static String generateFailure(String code, String codeValue) throws Exception {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ServiceResponseType value = factory.createServiceResponseType();
 		
@@ -183,7 +201,9 @@ public class CASController extends AbstractController {
 		failure.setCode(code);
 		value.setAuthenticationFailure(failure);
 		JAXBElement<ServiceResponseType> createServiceResponse = factory.createServiceResponse(value);
+		
 		JAXB.marshal(createServiceResponse, os);
+
 		return os.toString();	
 	}
 }

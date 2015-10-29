@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cas="http://www.yale.edu/tp/cas" targetNamespace="http://www.yale.edu/tp/cas" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+xmlns:cas="http://www.yale.edu/tp/cas" 
+targetNamespace="http://www.yale.edu/tp/cas" 
+elementFormDefault="qualified" 
+attributeFormDefault="unqualified">
     <xs:annotation>
         <xs:documentation>The following is the schema for the Central Authentication Service (CAS) version 3.0 protocol response. This covers the responses for the following servlets: /serviceValidate, /proxyValidate, /p3/serviceValidate, /p3/proxyValidate, /proxy This specification is subject to change.</xs:documentation>
     </xs:annotation>
