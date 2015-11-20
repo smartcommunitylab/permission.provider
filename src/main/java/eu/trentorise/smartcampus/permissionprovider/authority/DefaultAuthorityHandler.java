@@ -26,17 +26,25 @@ import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 
 /**
  * Default handler. Extract the attributes as specified by the authority mapping
+ * 
  * @author raman
- *
+ * 
  */
 public class DefaultAuthorityHandler implements AuthorityHandler {
 
-	
+	private boolean testMode;
+
+	public DefaultAuthorityHandler(boolean testMode) {
+		this.testMode = testMode;
+	}
+
 	@Override
-	public Map<String, String> extractAttributes(HttpServletRequest request, Map<String,String> map, AuthorityMapping mapping) {
-		Map<String, String> attrs = new HashMap<String, String>(); 
+	public Map<String, String> extractAttributes(HttpServletRequest request,
+			Map<String, String> map, AuthorityMapping mapping) {
+		Map<String, String> attrs = new HashMap<String, String>();
 		for (String key : mapping.getIdentifyingAttributes()) {
-			Object value = readAttribute(request, key, mapping.isUseParams());
+			Object value = readAttribute(request, key, testMode ? true
+					: mapping.isUseParams());
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -45,7 +53,8 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 			// used alias if present to set attribute in map
 			String key = (attribute.getAlias() != null && !attribute.getAlias()
 					.isEmpty()) ? attribute.getAlias() : attribute.getValue();
-			Object value = readAttribute(request,attribute.getValue(), mapping.isUseParams());
+			Object value = readAttribute(request, attribute.getValue(),
+					testMode ? true : mapping.isUseParams());
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -55,16 +64,25 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 
 	/**
 	 * Read either request attribute or a request parameter from HTTP request
+	 * 
 	 * @param request
 	 * @param key
-	 * @param useParams whether to extract parameter instead of attribute 
+	 * @param useParams
+	 *            whether to extract parameter instead of attribute
 	 * @return
 	 */
-	private Object readAttribute(HttpServletRequest request, String key, boolean useParams) {
-		if (request == null) return null;
-		if (useParams) return request.getParameter(key);
+	private Object readAttribute(HttpServletRequest request, String key,
+			boolean useParams) {
+		if (request == null) {
+			return null;
+		}
+		if (useParams) {
+			return request.getParameter(key);
+		}
 		Object param = request.getAttribute(key);
-		if (param == null || param.toString().isEmpty()) param = request.getHeader(key);
+		if (param == null || param.toString().isEmpty()) {
+			param = request.getHeader(key);
+		}
 		return param;
 	}
 

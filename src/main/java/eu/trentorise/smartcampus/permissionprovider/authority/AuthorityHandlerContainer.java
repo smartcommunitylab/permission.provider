@@ -18,30 +18,37 @@ package eu.trentorise.smartcampus.permissionprovider.authority;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * Container of custom authority handlers.
  * 
  * @author raman
- *
+ * 
  */
 public class AuthorityHandlerContainer {
 
-	private Map<String,AuthorityHandler> handlerMap = null;
-	
+	private Map<String, AuthorityHandler> handlerMap = null;
+
+	@Autowired
+	DefaultAuthorityHandler defaultHandler;
+
 	public AuthorityHandlerContainer(Map<String, AuthorityHandler> handlerMap) {
 		super();
 		this.handlerMap = handlerMap;
 	}
 
-
 	/**
 	 * 
 	 * @param authority
-	 * @return handler for the specific authority. If not present, the default {@link DefaultAuthorityHandler} is returned.
+	 * @return handler for the specific authority. If not present, the default
+	 *         {@link DefaultAuthorityHandler} is returned.
 	 */
 	public AuthorityHandler getAuthorityHandler(String authority) {
-		if (handlerMap.containsKey(authority)) return handlerMap.get(authority);
-		return new DefaultAuthorityHandler();
+		if (handlerMap.containsKey(authority)) {
+			return handlerMap.get(authority);
+		}
+		return defaultHandler;
 	}
-	
+
 }
