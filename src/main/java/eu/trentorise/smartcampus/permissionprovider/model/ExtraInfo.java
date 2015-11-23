@@ -1,6 +1,7 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.springframework.beans.BeanUtils;
+
+import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 
 @Entity
 @Table(name = "extra_info")
@@ -17,6 +22,11 @@ public class ExtraInfo implements Serializable {
 
 	public ExtraInfo() {
 		super();
+	}
+
+	public ExtraInfo(ExtraInfoBean bean) {
+		super();
+		BeanUtils.copyProperties(bean, this);
 	}
 
 	@Id
@@ -31,6 +41,13 @@ public class ExtraInfo implements Serializable {
 
 	@Column
 	private String surname;
+
+	@Column
+	private String email;
+	@Column
+	private Date birthdate;
+	@Column
+	private String keywords;
 
 	public User getUser() {
 		return user;
@@ -62,6 +79,30 @@ public class ExtraInfo implements Serializable {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Date getBirthdate() {
+		return birthdate;
+	}
+
+	public void setBirthdate(Date birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
 	}
 
 }

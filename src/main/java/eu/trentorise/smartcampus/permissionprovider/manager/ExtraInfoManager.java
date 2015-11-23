@@ -1,6 +1,5 @@
 package eu.trentorise.smartcampus.permissionprovider.manager;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +31,7 @@ public class ExtraInfoManager {
 		if (info != null) {
 			User load = userRepo.findOne(userId);
 			if (load != null) {
-				ExtraInfo entity = new ExtraInfo();
-				BeanUtils.copyProperties(info, entity);
+				ExtraInfo entity = new ExtraInfo(info);
 				entity.setUser(load);
 				infoRepo.save(entity);
 			}
