@@ -48,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
@@ -321,8 +320,7 @@ public class AuthController extends AbstractController {
 			if (collectInfoMode) {
 				if (!infoManager.infoAlreadyCollected(getUserId())) {
 					req.getSession().setAttribute("redirect", target);
-					return new ModelAndView("collect_info", "info",
-							new ExtraInfoBean());
+					return new ModelAndView("redirect:/collect-info");
 				}
 			}
 		}

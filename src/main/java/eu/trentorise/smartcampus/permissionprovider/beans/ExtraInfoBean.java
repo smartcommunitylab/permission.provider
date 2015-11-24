@@ -2,14 +2,32 @@ package eu.trentorise.smartcampus.permissionprovider.beans;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class ExtraInfoBean {
+
+	@NotNull
+	@Size(min = 1, message = "Required field")
 	private String name;
+
+	@NotNull
+	@Size(min = 1, message = "Required field")
 	private String surname;
+
+	@Size(min = 1, message = "Required field")
+	@Email(message = "Not valid email")
 	private String email;
+
+	@NotNull
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date birthdate;
+
+	@NotNull
+	@Size(min = 1, message = "Required field")
 	private String keywords;
 
 	public String getName() {
