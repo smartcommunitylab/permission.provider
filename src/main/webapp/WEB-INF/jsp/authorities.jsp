@@ -31,7 +31,7 @@
 	<div class="clear"></div>
 	<div class="authorities">
 		<p>Please choose the provider for your login</p>
-		<ul>
+		<ul class="pprovider">
 <% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
    for (String s : authorities.keySet()) {%>		
             <li>

@@ -6,10 +6,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="css/style.css" rel="stylesheet" type="text/css">
 <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
 	type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
 <title>Smart Community Authentication</title>
 </head>
 <body>

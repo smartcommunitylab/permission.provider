@@ -29,7 +29,7 @@
       <h2>Please Confirm</h2>
 
       <p>You hereby authorize "<c:out value="${clientName}"/>" to access the following resources:</p>
-      <ul>
+      <ul class="pprovider">
       <c:forEach items="${resources}" var="r">
         <li><c:out value="${r.name}"/></li>
       </c:forEach>        
