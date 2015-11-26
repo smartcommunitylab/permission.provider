@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
+import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
+import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 @Controller
 @RequestMapping(value = "/collect-info")
@@ -26,9 +28,18 @@ public class ExtraInfoController extends AbstractController {
 	@Autowired
 	private ExtraInfoManager infoManager;
 
+	@Autowired
+	private BasicProfileManager profileManager;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public String load(Model model) {
-		model.addAttribute("info", new ExtraInfoBean());
+		BasicProfile profile = profileManager.getBasicProfileById(Long
+				.toString(getUserId()));
+		ExtraInfoBean info = new ExtraInfoBean();
+		info.setName(profile.getName() != null ? profile.getName() : "");
+		info.setSurname(profile.getSurname() != null ? profile.getSurname()
+				: "");
+		model.addAttribute("info", info);
 		return "collect_info";
 	}
 
