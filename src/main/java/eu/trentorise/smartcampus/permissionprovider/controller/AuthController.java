@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,6 +53,7 @@ import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
  * Controller for developer console entry points
@@ -59,6 +61,8 @@ import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapt
 @Controller
 public class AuthController extends AbstractController {
 
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private ProviderServiceAdapter providerServiceAdapter;
 	@Autowired
@@ -306,8 +310,14 @@ public class AuthController extends AbstractController {
 			List<NameValuePair> pairs = URLEncodedUtils.parse(
 					URI.create(nTarget), "UTF-8");
 
-			eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter
-					.updateUser(authorityUrl, toMap(pairs), req);
+			eu.trentorise.smartcampus.permissionprovider.model.User userEntity = null;
+			Authentication old = SecurityContextHolder.getContext().getAuthentication();
+			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
+				String userId = old.getName();
+				userEntity = userRepository.findOne(Long.parseLong(userId));
+			} else {
+				userEntity = providerServiceAdapter.updateUser(authorityUrl, toMap(pairs), req);
+			}
 
 			UserDetails user = new User(userEntity.getId().toString(), "", list);
 
