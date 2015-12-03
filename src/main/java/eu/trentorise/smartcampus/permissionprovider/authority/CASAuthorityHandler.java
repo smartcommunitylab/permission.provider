@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -41,13 +42,23 @@ public class CASAuthorityHandler implements AuthorityHandler {
 	public Map<String, String> extractAttributes(HttpServletRequest request, Map<String,String> map, AuthorityMapping mapping) {
 		Map<String, String> attrs = new HashMap<String, String>(); 
 		
-		CasAuthenticationToken token = (CasAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
-		String username = token.getName();
-		Map<String,Object> tokenAttrs = token.getAssertion().getAttributes();
+		Object tokenObj = SecurityContextHolder.getContext().getAuthentication();
+		
+		Map<String,Object> tokenAttrs = null;
+		if (tokenObj instanceof CasAuthenticationToken) {
+			CasAuthenticationToken token = (CasAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
+			tokenAttrs = token.getAssertion().getAttributes();
+			String username = token.getName();
+			tokenAttrs.put(USERNAME, username);
+		} else if (tokenObj instanceof UsernamePasswordAuthenticationToken) {
+			UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
+			String username = token.getName();
+			tokenAttrs = new HashMap<String, Object>();
+			tokenAttrs.put(USERNAME, username);
+		}
 		if (tokenAttrs == null) {
 			tokenAttrs = new HashMap<String, Object>();
 		}
-		tokenAttrs.put(USERNAME, username);
 		
 		for (String key : mapping.getIdentifyingAttributes()) {
 			Object value = readAttribute(key, tokenAttrs);
