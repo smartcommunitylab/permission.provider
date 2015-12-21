@@ -33,6 +33,15 @@
 						<form:input path="surname" cssClass="form-control" />
 					</div>
 					<div class="form-group">
+						<label for="gender" class="pull-left">Gender:</label>
+						<form:errors path="gender" cssClass="error pull-left"></form:errors>
+						<form:select path="gender" cssClass="form-control">
+							<form:option value=""></form:option>
+							<form:option value="M">Male</form:option>
+							<form:option value="F">Female</form:option>
+						</form:select>
+					</div>
+					<div class="form-group">
 						<label for="email" class="pull-left">Email:</label>
 						<form:errors path="email" cssClass="error pull-left"></form:errors>
 						<form:input path="email" cssClass="form-control" />
@@ -46,6 +55,11 @@
 								class="glyphicon glyphicon-calendar"></span>
 							</span>
 						</div>
+					</div>
+					<div class="form-group">
+						<label for="address" class="pull-left">address:</label>
+						<form:errors path="address" cssClass="error pull-left"></form:errors>
+						<form:input path="address" cssClass="form-control" />
 					</div>
 					<div class="form-group">
 						<label for="keywords" class="pull-left">Keywords:</label>

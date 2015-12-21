@@ -49,6 +49,12 @@ public class ExtraInfo implements Serializable {
 	@Column
 	private String keywords;
 
+	@Column(length = 1)
+	private String gender;
+
+	@Column
+	private String address;
+
 	public User getUser() {
 		return user;
 	}
@@ -103,6 +109,22 @@ public class ExtraInfo implements Serializable {
 
 	public void setKeywords(String keywords) {
 		this.keywords = keywords;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 }
