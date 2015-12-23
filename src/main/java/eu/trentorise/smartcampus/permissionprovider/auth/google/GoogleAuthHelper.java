@@ -24,7 +24,6 @@ import javax.annotation.PostConstruct;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.NopAnnotationIntrospector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -115,17 +114,14 @@ public final class GoogleAuthHelper {
 		final GenericUrl url = new GenericUrl(USER_INFO_URL);
 		final HttpRequest request = requestFactory.buildGetRequest(url);
 		request.getHeaders().setContentType("application/json");
+
 		final String jsonIdentity = request.execute().parseAsString();
 
 		ObjectMapper obMapper = new ObjectMapper();
-		obMapper.setAnnotationIntrospector(NopAnnotationIntrospector
-				.nopInstance());
 		obMapper.disable(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES);
-
 		GoogleUser user = obMapper.readValue(jsonIdentity, GoogleUser.class);
 
 		return user;
 
 	}
-
 }

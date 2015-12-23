@@ -15,30 +15,35 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.permissionprovider.auth.google;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
  * Model for user's info logged by Google.
  * 
  * @author Giulia Canobbio
- *
+ * 
  */
-public class GoogleUser{
-	
+public class GoogleUser {
+
 	private String id;
-	
+
 	private String email;
-	
-	private boolean verified_email;
-	
+
+	@JsonProperty(value = "verified_email")
+	private boolean verifiedEmail;
+
 	private String name;
 
-	private String given_name;
-	
-	private String family_name;
-	
+	@JsonProperty("given_name")
+	private String givenName;
+
+	@JsonProperty(value = "family_name")
+	private String familyName;
+
 	private String picture;
-	
+
 	private String locale;
-	
+
 	/**
 	 * Get google user id.
 	 * 
@@ -47,15 +52,17 @@ public class GoogleUser{
 	public String getId() {
 		return id;
 	}
+
 	/**
 	 * Set google user id.
 	 * 
-	 * @param id 
-	 * 			: String
+	 * @param id
+	 *            : String
 	 */
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	/**
 	 * Get email address.
 	 * 
@@ -64,32 +71,36 @@ public class GoogleUser{
 	public String getEmail() {
 		return email;
 	}
+
 	/**
 	 * Set email address.
 	 * 
-	 * @param email 
-	 * 			: String
+	 * @param email
+	 *            : String
 	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 	/**
 	 * Check if email is verified.
 	 * 
 	 * @return boolean true if email is verified in Google o.w. false
 	 */
-	public boolean isVerified_email() {
-		return verified_email;
+	public boolean isVerifiedEmail() {
+		return verifiedEmail;
 	}
+
 	/**
 	 * Set email verified value.
 	 * 
-	 * @param verified_email 
-	 * 			: boolean
+	 * @param verified_email
+	 *            : boolean
 	 */
-	public void setVerified_email(boolean verified_email) {
-		this.verified_email = verified_email;
+	public void setVerifiedEmail(boolean verifiedEmail) {
+		this.verifiedEmail = verifiedEmail;
 	}
+
 	/**
 	 * Get username.
 	 * 
@@ -98,49 +109,56 @@ public class GoogleUser{
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * Set username.
 	 * 
-	 * @param name 
-	 * 			: String username
+	 * @param name
+	 *            : String username
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	/**
 	 * Get first name.
 	 * 
 	 * @return String first name
 	 */
-	public String getGiven_name() {
-		return given_name;
+	public String getGivenName() {
+		return givenName;
 	}
+
 	/**
 	 * Set first name.
 	 * 
-	 * @param given_name 
-	 * 			: String first name
+	 * @param givenName
+	 *            : String first name
 	 */
-	public void setGiven_name(String given_name) {
-		this.given_name = given_name;
+
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
 	}
+
 	/**
 	 * Get surname.
 	 * 
 	 * @return String family name
 	 */
-	public String getFamily_name() {
-		return family_name;
+	public String getFamilyName() {
+		return familyName;
 	}
+
 	/**
 	 * Set surname.
 	 * 
-	 * @param family_name 
-	 * 			: String
+	 * @param familyName
+	 *            : String
 	 */
-	public void setFamily_name(String family_name) {
-		this.family_name = family_name;
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
+
 	/**
 	 * Get image.
 	 * 
@@ -149,15 +167,17 @@ public class GoogleUser{
 	public String getPicture() {
 		return picture;
 	}
+
 	/**
 	 * Set image.
 	 * 
-	 * @param picture 
-	 * 			: String link to picture
+	 * @param picture
+	 *            : String link to picture
 	 */
 	public void setPicture(String picture) {
 		this.picture = picture;
 	}
+
 	/**
 	 * Get locale.
 	 * 
@@ -166,14 +186,15 @@ public class GoogleUser{
 	public String getLocale() {
 		return locale;
 	}
+
 	/**
 	 * Set locale.
 	 * 
-	 * @param locale 
-	 * 			: String
+	 * @param locale
+	 *            : String
 	 */
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	
+
 }

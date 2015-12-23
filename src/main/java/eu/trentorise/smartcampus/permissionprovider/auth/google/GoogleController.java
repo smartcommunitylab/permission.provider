@@ -113,16 +113,14 @@ public class GoogleController {
 		} else {
 			try {
 				GoogleUser userInfo = auth.getUserInfoJson(code);
-				logger.debug("User Info: " + userInfo);
 				response.setStatus(HttpServletResponse.SC_OK);
-				logger.debug("Check user data");
 				request.getSession().setAttribute("google-login", "true");
 				return String
 						.format("redirect:/eauth/google?target=%s&OIDC_CLAIM_email=%s&OIDC_CLAIM_given_name=%s&OIDC_CLAIM_family_name=%s",
 								URLEncoder.encode((String) request.getSession()
 										.getAttribute("redirect"), "UTF8"),
-								userInfo.getEmail(), userInfo.getGiven_name(),
-								userInfo.getFamily_name());
+								userInfo.getEmail(), userInfo.getGivenName(),
+								userInfo.getFamilyName());
 
 			} catch (IOException e) {
 				logger.error("IOException .. Problem in reading user data.", e);
