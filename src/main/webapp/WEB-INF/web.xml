@@ -32,7 +32,17 @@
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>    
+    </filter-mapping> 
+    
+    
+     <filter>
+        <filter-name>GoogleProviderFilter</filter-name>
+        <filter-class>eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>GoogleProviderFilter</filter-name>
+        <url-pattern>/eauth/google</url-pattern>
+    </filter-mapping> 
 
     <servlet>
         <servlet-name>spring</servlet-name>
@@ -56,5 +66,5 @@
         <servlet-name>spring</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-
+    
 </web-app>
