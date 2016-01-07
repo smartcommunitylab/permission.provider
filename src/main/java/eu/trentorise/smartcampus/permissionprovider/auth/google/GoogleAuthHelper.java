@@ -56,7 +56,7 @@ public final class GoogleAuthHelper {
 	private String clientSecret;
 
 	@Value("${google.callbackURI}")
-	private String CALLBACK_URI;
+	private String callbackURI;
 
 	// google authentication constants
 	private static final Iterable<String> SCOPE = Arrays
@@ -82,7 +82,7 @@ public final class GoogleAuthHelper {
 	public GoogleAuthorizationCodeRequestUrl buildLoginUrl() {
 		final GoogleAuthorizationCodeRequestUrl url = flow
 				.newAuthorizationUrl();
-		return url.setRedirectUri(CALLBACK_URI).setState(generateStateToken());
+		return url.setRedirectUri(callbackURI).setState(generateStateToken());
 	}
 
 	/**
@@ -105,7 +105,7 @@ public final class GoogleAuthHelper {
 	public GoogleUser getUserInfoJson(final String authCode) throws IOException {
 
 		final GoogleTokenResponse response = flow.newTokenRequest(authCode)
-				.setRedirectUri(CALLBACK_URI).execute();
+				.setRedirectUri(callbackURI).execute();
 		final Credential credential = flow.createAndStoreCredential(response,
 				null);
 		final HttpRequestFactory requestFactory = HTTP_TRANSPORT
