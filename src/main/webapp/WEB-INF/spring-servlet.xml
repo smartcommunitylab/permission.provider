@@ -237,5 +237,8 @@
     <bean id="authServices" class="eu.trentorise.smartcampus.resourceprovider.jdbc.JdbcServices">
         <constructor-arg ref="dataSource"/>
     </bean>
+    
+    <bean id="googleProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter">
+    </bean>
 	
 </beans>

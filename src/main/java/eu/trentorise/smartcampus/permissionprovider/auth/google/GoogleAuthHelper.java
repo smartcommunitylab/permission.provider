@@ -55,7 +55,8 @@ public final class GoogleAuthHelper {
 	@Value("${google.clientSecret}")
 	private String clientSecret;
 
-	private final String CALLBACK_URI = "http://localhost:8080/aac/auth/google-oauth/callback";
+	@Value("${google.callbackURI}")
+	private String CALLBACK_URI;
 
 	// google authentication constants
 	private static final Iterable<String> SCOPE = Arrays
