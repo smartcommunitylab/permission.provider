@@ -12,8 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 public class GoogleProviderFilter extends OncePerRequestFilter {
 
-	private static final String ATTR_EMAIL = "OIDC_CLAIM_email";
-
 	@Value("${application.url}")
 	private String applicationURL;
 
@@ -26,12 +24,14 @@ public class GoogleProviderFilter extends OncePerRequestFilter {
 			HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		String googleEmail = request.getParameter(ATTR_EMAIL);
-		if (googleEmail == null) {
+		String loggedWithGoogle = (String) request.getSession().getAttribute(
+				GoogleAuthHelper.SESSION_GOOGLE_CHECK);
+		if (loggedWithGoogle == null) {
 			response.sendRedirect(applicationURL + "/auth/google-oauth");
 		} else {
 			filterChain.doFilter(request, response);
 		}
+
 	}
 
 }

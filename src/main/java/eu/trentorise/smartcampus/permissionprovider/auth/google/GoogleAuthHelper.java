@@ -68,6 +68,8 @@ public final class GoogleAuthHelper {
 
 	private GoogleAuthorizationCodeFlow flow;
 
+	public static final String SESSION_GOOGLE_CHECK = "google-login";
+
 	@SuppressWarnings("unused")
 	@PostConstruct
 	private void init() {
