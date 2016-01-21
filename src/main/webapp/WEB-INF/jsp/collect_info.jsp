@@ -105,7 +105,8 @@
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
 					<div>
-						<input type="submit" value="Salva" class="btn btn-default" />
+						<input type="submit" name="save" value="Save" class="btn btn-default" />
+						<input type="submit" name="skip" value="Skip" class="btn btn-default" />
 					</div>
 				</form:form>
 			</div>

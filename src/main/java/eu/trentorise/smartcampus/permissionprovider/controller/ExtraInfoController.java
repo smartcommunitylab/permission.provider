@@ -45,7 +45,7 @@ public class ExtraInfoController extends AbstractController {
 
 	// bind name of bean in ModelAttribute annotation should be defined. If not
 	// error are not shown in view
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST, params = "save")
 	public String collectInfo(
 			@ModelAttribute("info") @Valid ExtraInfoBean info,
 			BindingResult result, Model model, HttpServletRequest req,
@@ -60,6 +60,16 @@ public class ExtraInfoController extends AbstractController {
 			logger.info(String.format("Redirected to url %s", redirectURL));
 			return "redirect:" + redirectURL;
 		}
+	}
+
+	@RequestMapping(params = "skip", method = RequestMethod.POST)
+	public String skipCollectInfo(HttpServletRequest request) {
+		String redirectURL = (String) request.getSession().getAttribute(
+				"redirect");
+		ExtraInfoBean info = new ExtraInfoBean();
+		infoManager.collectInfoForUser(info, getUserId());
+		logger.info("Skipped collection info for user " + getUserId());
+		return "redirect:" + redirectURL;
 	}
 
 }
