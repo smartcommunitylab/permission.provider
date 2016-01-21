@@ -27,7 +27,7 @@
 <title>Smart Community Authentication</title>
 </head>
 <body>
-	<img class="logo" src="../img/ls_logo.png" alt="SmartCommunity" />
+	<img class="logo" src="../img/welive-logo.png" alt="WeLive" />
 	<div class="clear"></div>
 	<div class="authorities">
 		<p>Please choose the provider for your login</p>
