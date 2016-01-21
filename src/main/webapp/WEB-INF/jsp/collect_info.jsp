@@ -11,6 +11,21 @@
 	type="text/css">
 <link href="css/style.css" rel="stylesheet" type="text/css">
 <title>Smart Community Authentication</title>
+
+<style type="text/css">
+ 
+ .note {
+ 	vertical-align: super;
+ }
+ 
+ .highlight {
+ 	border: 1px solid #FF0900;
+	padding: 2em;
+	border-radius: 1em;
+	margin: 1em;
+	text-align: left;
+ }
+</style>
 </head>
 <body>
 	<div class="container">
@@ -18,22 +33,22 @@
 			<img class="logo" src="img/welive-logo.png" alt="Welive" />
 		</div>
 		<div class="row">
-			<p>Please fill the form</p>
+			<div class="highlight"><p><span class="note">* </span>Please fill the form</p></div>
 			<div role="form">
 				<form:form method="POST" modelAttribute="info"
 					action="/aac/collect-info">
 					<div class="form-group">
-						<label for="name" class="pull-left">Name:</label>
+						<label for="name" class="pull-left">Name<span class="note">*</span>:</label>
 						<form:errors path="name" cssClass="error pull-left"></form:errors>
 						<form:input path="name" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="surname" class="pull-left">Surname:</label>
+						<label for="surname" class="pull-left">Surname<span class="note">*</span>:</label>
 						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="gender" class="pull-left">Gender:</label>
+						<label for="gender" class="pull-left">Gender<span class="note">*</span>:</label>
 						<form:errors path="gender" cssClass="error pull-left"></form:errors>
 						<form:select path="gender" cssClass="form-control">
 							<form:option value=""></form:option>
@@ -42,11 +57,11 @@
 						</form:select>
 					</div>
 					<div class="form-group">
-						<label for="email" class="pull-left">Email:</label>
+						<label for="email" class="pull-left">Email<span class="note">*</span>:</label>
 						<form:errors path="email" cssClass="error pull-left"></form:errors>
 						<form:input path="email" cssClass="form-control" />
 					</div>
-					<label for="birthdate" class="pull-left">Birthdate:</label>
+					<label for="birthdate" class="pull-left">Birthdate<span class="note">*</span>:</label>
 					<form:errors path="birthdate" cssClass="error pull-left"></form:errors>
 					<div class="form-group" style="clear: both;">
 						<div class="input-group" id="datetimepicker1">
@@ -58,12 +73,12 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="address" class="pull-left">address:</label>
+						<label for="address" class="pull-left">Address<span class="note">*</span>:</label>
 						<form:errors path="address" cssClass="error pull-left"></form:errors>
 						<form:input path="address" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="keywords" class="pull-left">Keywords:</label>
+						<label for="keywords" class="pull-left">Keywords<span class="note">*</span>:</label>
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
@@ -74,7 +89,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<script src="lib/jquery.js"></script>
 	<script src="lib/bootstrap.min.js"></script>

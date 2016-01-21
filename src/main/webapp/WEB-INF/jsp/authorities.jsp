@@ -25,6 +25,23 @@
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="../css/style.css" rel="stylesheet" type="text/css">
 <title>Smart Community Authentication</title>
+<style type="text/css">
+a.link {
+	color: #555;
+	display: inline-block;
+	font-family: "Roboto", sans-serif;
+	font-size: 1.1em;
+	padding: 0px 3px;
+	text-decoration: none;
+	width: auto
+}
+
+.footer {
+	border-top: 1px solid #EEE;
+	margin-top: 2em;
+	padding: 1em;
+}
+</style>
 </head>
 <body>
 	<img class="logo" src="../img/welive-logo.png" alt="WeLive" />
@@ -32,13 +49,27 @@
 	<div class="authorities">
 		<p>Please choose the provider for your login</p>
 		<ul class="pprovider">
-<% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
-   for (String s : authorities.keySet()) {%>		
-            <li>
-		      <a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a>
-            </li>
-<%  } %>            
+			<%
+				Map<String, String> authorities = (Map<String, String>) request
+						.getAttribute("authorities");
+				for (String s : authorities.keySet()) {
+			%>
+			<li><a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
+			</li>
+			<%
+				}
+			%>
 		</ul>
 	</div>
+
+	<footer class="footer">
+		<div class="container">
+			<p>
+				<a class="link"
+					href="https://dev.welive.eu/?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"
+					target="_blank">WeLive sign up</a>
+			</p>
+		</div>
+	</footer>
 </body>
 </html>
