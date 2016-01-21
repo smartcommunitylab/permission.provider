@@ -15,7 +15,7 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<img class="logo" src="img/ls_logo.png" alt="SmartCommunity" />
+			<img class="logo" src="img/welive-logo.png" alt="Welive" />
 		</div>
 		<div class="row">
 			<p>Please fill the form</p>
@@ -46,11 +46,12 @@
 						<form:errors path="email" cssClass="error pull-left"></form:errors>
 						<form:input path="email" cssClass="form-control" />
 					</div>
-					<label for="birthdate" class="pull-left" >Birthdate:</label>
+					<label for="birthdate" class="pull-left">Birthdate:</label>
 					<form:errors path="birthdate" cssClass="error pull-left"></form:errors>
-					<div class="form-group" style="clear:both;">
+					<div class="form-group" style="clear: both;">
 						<div class="input-group" id="datetimepicker1">
-							<input type='text' class="form-control" id="birthdate" name="birthdate" placeholder="30/01/1970"/> <span
+							<input type='text' class="form-control" id="birthdate"
+								name="birthdate" placeholder="30/01/1970" /> <span
 								class="input-group-addon"> <span
 								class="glyphicon glyphicon-calendar"></span>
 							</span>
@@ -73,6 +74,7 @@
 			</div>
 		</div>
 	</div>
+
 
 	<script src="lib/jquery.js"></script>
 	<script src="lib/bootstrap.min.js"></script>
