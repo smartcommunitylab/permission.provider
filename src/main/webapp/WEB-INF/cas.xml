@@ -47,7 +47,7 @@
 
 	<bean id="casEntryPoint"
 		class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
-		<property name="loginUrl" value="https://opsi.eng.it/cas-web/login" />
+		<property name="loginUrl" value="https://dev.welive.eu/cas-web/login" />
 		<property name="serviceProperties" ref="serviceProperties" />
 	</bean>
 	
@@ -59,7 +59,7 @@
     <property name="serviceProperties" ref="serviceProperties" />
     <property name="ticketValidator">
       <bean class="eu.trentorise.smartcampus.permissionprovider.cas.NoSSLCas20ServiceTicketValidator">
-        <constructor-arg index="0" value="https://opsi.eng.it/cas-web" />
+        <constructor-arg index="0" value="https://dev.welive.eu/cas-web" />
       </bean>
     </property>
     <property name="key" value="welive"/>
