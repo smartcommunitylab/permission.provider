@@ -9,8 +9,8 @@
 <services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"  
 	xsi:schemaLocation="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel ../../../../../jaxb/binding/resourceTemplateSchema.xsd">
-	<service name="Basic profile service" id="smartcampus.profile.basicprofie">
-		<description>Core service for managing basic user profiles.</description>
+	<service name="Basic profile service" id="aac.profile.basicprofile">
+		<description>Core AAC service for managing basic user profiles.</description>
 
 		<resourceMapping id="profile.basicprofile.me"
 			name="Read user's basic profile" uri="profile.basicprofile.me"
@@ -32,8 +32,22 @@
       authority="ROLE_CLIENT" approvalRequired="true">
       <description>Account profile of the platform users. Read access only.</description>
     </resourceMapping>
-			</service>
+	</service>
 
+	<service name="CDV Basic profile service" id="cdv.profile">
+		<description>CDV service for managing user profiles.</description>
+		<resourceMapping id="cdv.profile.me"
+			name="Read user's basic profile" uri="cdv.profile.me"
+			authority="ROLE_USER">
+			<description>Profile of the current platform user. Read access only.</description>
+		</resourceMapping>
+	</service>
+	
+	
+	
+	
+	
+	
 	<!-- <service name="Extended profile service" id="profile.extprofie">
 		<description>Core service for managing сustom user profiles defined by different applications.</description>
 		<resource name="Profile" id="profile">
@@ -162,7 +176,7 @@
 
 	</service> -->
 
-	<service name="Communicator service" id="communicator">
+	<!-- <service name="Communicator service" id="communicator">
 		<description>Service manage notification</description>
 		<resource name="App" id="capp">
 			<description>Symbolic name of the application managing the notifications</description>
@@ -220,7 +234,7 @@
 			<description>Manage user push notification configuration for the app '{capp}'.</description>
 		</resourceMapping>
 
-	</service>
+	</service> -->
 
 <!-- 
 	<service name="Social networking service" id="socialservice">
@@ -313,7 +327,7 @@
 		</resourceMapping>
 	</service>
  -->
-	<service name="Mobility service" id="mobilityservice">
+	<!-- <service name="Mobility service" id="mobilityservice">
 		<description>Transportation information and route planning.</description>
 
 		<resourceMapping id="mobilityservice.data" name="Read mobility data"
@@ -349,9 +363,9 @@
 			authority="ROLE_CLIENT" approvalRequired="true">
 			<description>Send different transport alerts.</description>
 		</resourceMapping>
-	</service>
+	</service> -->
 
-	<service name="Territory service" id="territoryservice">
+<!-- 	<service name="Territory service" id="territoryservice">
 		<description>Territory information about events, places, and itineraries.</description>
 
 		<resourceMapping id="territoryservice.data.read" name="Read territory data"
@@ -372,7 +386,7 @@
 			<description>Add personal information to the territory data, such as ratings, participation, etc.</description>
 		</resourceMapping>
 
-	</service>
+	</service> -->
 	
 <!-- 		<service name="Unidata service" id="smartcampus.unidataservice">
 		<description>Information about students.</description>
