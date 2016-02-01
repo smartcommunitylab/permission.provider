@@ -317,7 +317,7 @@ public class AuthController extends AbstractController {
 
 			SecurityContextHolder.getContext().setAuthentication(a);
 
-			if (collectInfoMode) {
+			if (collectInfoMode && !authorityUrl.equals("welive")) {
 				if (!infoManager.infoAlreadyCollected(getUserId())) {
 					req.getSession().setAttribute("redirect", target);
 					return new ModelAndView("redirect:/collect-info");

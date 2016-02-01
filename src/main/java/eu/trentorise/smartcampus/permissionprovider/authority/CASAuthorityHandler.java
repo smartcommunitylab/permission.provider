@@ -41,13 +41,15 @@ public class CASAuthorityHandler implements AuthorityHandler {
 	public Map<String, String> extractAttributes(HttpServletRequest request, Map<String,String> map, AuthorityMapping mapping) {
 		Map<String, String> attrs = new HashMap<String, String>(); 
 		
-		CasAuthenticationToken token = (CasAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
-		String username = token.getName();
-		Map<String,Object> tokenAttrs = token.getAssertion().getAttributes();
-		if (tokenAttrs == null) {
-			tokenAttrs = new HashMap<String, Object>();
+		Map<String,Object> tokenAttrs = new HashMap<String, Object>();
+		if (map != null) tokenAttrs.putAll(map);;
+		
+		if (SecurityContextHolder.getContext().getAuthentication() instanceof CasAuthenticationToken) {
+			 CasAuthenticationToken token = (CasAuthenticationToken)SecurityContextHolder.getContext().getAuthentication();
+			 tokenAttrs = token.getAssertion().getAttributes();
+			 String username = token.getName();
+			 tokenAttrs.put(USERNAME, username);
 		}
-		tokenAttrs.put(USERNAME, username);
 		
 		for (String key : mapping.getIdentifyingAttributes()) {
 			Object value = readAttribute(key, tokenAttrs);
@@ -67,6 +69,7 @@ public class CASAuthorityHandler implements AuthorityHandler {
 		return attrs;
 	}
 
+	
 	/**
 	 * Read attribute from the map
 	 * @param request
