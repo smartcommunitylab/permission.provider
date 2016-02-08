@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
+import eu.trentorise.smartcampus.profile.model.AccountProfile;
 import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 @Controller
@@ -36,11 +37,25 @@ public class ExtraInfoController extends AbstractController {
 		BasicProfile profile = profileManager.getBasicProfileById(Long
 				.toString(getUserId()));
 		ExtraInfoBean info = new ExtraInfoBean();
+		
+		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
+		info.setEmail(getEmail(accProfile));
+		
 		info.setName(profile.getName() != null ? profile.getName() : "");
 		info.setSurname(profile.getSurname() != null ? profile.getSurname()
 				: "");
 		model.addAttribute("info", info);
 		return "collect_info";
+	}
+
+	/**
+	 * @param accProfile
+	 * @return
+	 */
+	private String getEmail(AccountProfile accProfile) {
+		String email = accProfile.getAttribute("google", "OIDC_CLAIM_email");
+		if (email != null) return email;
+		return null;
 	}
 
 	// bind name of bean in ModelAttribute annotation should be defined. If not

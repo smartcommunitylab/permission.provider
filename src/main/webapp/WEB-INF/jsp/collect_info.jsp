@@ -51,13 +51,32 @@
 			<div role="form">
 				<form:form method="POST" modelAttribute="info"
 					action="/aac/collect-info">
-					<div class="form-group">
-						<label for="name" class="pull-left">Name:</label>
+          <div>
+            <input type="submit" name="save" value="Save" class="btn btn-default" />
+            <input type="submit" name="skip" value="Skip" class="btn btn-default" />
+          </div>
+          <div class="form-group">
+            <label for="pilot" class="pull-left">Pilot<span
+              class="note">*</span>:
+            </label>
+            <form:errors path="pilot" cssClass="error pull-left"></form:errors>
+            <form:select path="pilot" cssClass="form-control">
+              <form:option value=""></form:option>
+              <form:option value="M">Trento</form:option>
+              <form:option value="F">Bilbao</form:option>
+              <form:option value="F">Novi Sad</form:option>
+              <form:option value="F">Region on Uusimaa-Helsinki</form:option>
+            </form:select>
+          </div>
+  				<div class="form-group">
+						<label for="name" class="pull-left">Name<span
+            class="note">*</span>:</label>
 						<form:errors path="name" cssClass="error pull-left"></form:errors>
 						<form:input path="name" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="surname" class="pull-left">Surname:</label>
+						<label for="surname" class="pull-left">Surname<span
+            class="note">*</span>:</label>
 						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
@@ -73,7 +92,8 @@
 						</form:select>
 					</div>
 					<div class="form-group">
-						<label for="email" class="pull-left">Email:</label>
+						<label for="email" class="pull-left">Email<span
+            class="note">*</span>:</label>
 						<form:errors path="email" cssClass="error pull-left"></form:errors>
 						<form:input path="email" cssClass="form-control" />
 					</div>
@@ -91,19 +111,41 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="address" class="pull-left">Address<span
-							class="note">*</span>:
-						</label>
+						<label for="address" class="pull-left">Address: </label>
 						<form:errors path="address" cssClass="error pull-left"></form:errors>
 						<form:input path="address" cssClass="form-control" />
 					</div>
+          <div class="form-group">
+            <label for="city" class="pull-left">City: </label>
+            <form:errors path="city" cssClass="error pull-left"></form:errors>
+            <form:input path="city" cssClass="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="zip" class="pull-left">Zip: </label>
+            <form:errors path="zip" cssClass="error pull-left"></form:errors>
+            <form:input path="zip" cssClass="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="country" class="pull-left">Country: </label>
+            <form:errors path="country" cssClass="error pull-left"></form:errors>
+            <form:select path="country" cssClass="form-control">
+              <form:option value=""></form:option>
+              <form:option value="IT">Italy</form:option>
+              <form:option value="ES">Spain</form:option>
+              <form:option value="RS">Serbia</form:option>
+              <form:option value="FI">Finland</form:option>
+            </form:select>
+          </div>
 					<div class="form-group">
-						<label for="keywords" class="pull-left">Keywords<span
-							class="note">*</span>:
-						</label>
+						<label for="keywords" class="pull-left">Keywords:</label>
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
+          <div class="form-group">
+            <label for="developer" class="pull-left">Developer:</label>
+            <form:errors path="developer" cssClass="error pull-left"></form:errors>
+            <form:checkbox  path="developer" cssClass="form-control" />
+          </div>
 					<div>
 						<input type="submit" name="save" value="Save" class="btn btn-default" />
 						<input type="submit" name="skip" value="Skip" class="btn btn-default" />
@@ -122,7 +164,7 @@
 	<script type="text/javascript">
             $(function () {
                 $('#datetimepicker1').datetimepicker({
-                	format: 'DD/MM/YYYY'
+                	format: 'DD/MM/YYYY', viewMode: 'years'
                 });
             });
         </script>
