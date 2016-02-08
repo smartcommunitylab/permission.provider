@@ -144,7 +144,17 @@
           <div class="form-group">
             <label for="developer" class="pull-left">Developer:</label>
             <form:errors path="developer" cssClass="error pull-left"></form:errors>
-            <form:checkbox  path="developer" cssClass="form-control" />
+            <form:checkbox  path="developer"/>
+          </div>
+          <div class="form-group">
+            <label for="language" class="pull-left">Languages:</label>
+            <form:errors path="language" cssClass="error pull-left"></form:errors>
+            <form:checkbox  path="language" value="Italian"/>Italian
+            <form:checkbox  path="language" value="Spanish"/>Spanish
+            <form:checkbox  path="language" value="Finnish"/>Finnish
+            <form:checkbox  path="language" value="Serbian"/>Serbian
+            <form:checkbox  path="language" value="SerbianLatin"/>Serbian (Latin)
+            <form:checkbox  path="language" value="English"/>English
           </div>
 					<div>
 						<input type="submit" name="save" value="Save" class="btn btn-default" />

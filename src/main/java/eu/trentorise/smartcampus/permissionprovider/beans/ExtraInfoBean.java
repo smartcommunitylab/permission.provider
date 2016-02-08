@@ -37,7 +37,7 @@ public class ExtraInfoBean {
 	@NotEmpty
 	private String pilot;
 	
-	private String language;
+	private String[] language;
 	private String zip, city, country;
 	private boolean developer;
 	
@@ -115,14 +115,14 @@ public class ExtraInfoBean {
 	/**
 	 * @return the language
 	 */
-	public String getLanguage() {
+	public String[] getLanguage() {
 		return language;
 	}
 
 	/**
 	 * @param language the language to set
 	 */
-	public void setLanguage(String language) {
+	public void setLanguage(String[] language) {
 		this.language = language;
 	}
 

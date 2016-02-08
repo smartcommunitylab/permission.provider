@@ -18,6 +18,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.network.RemoteException;
@@ -85,7 +86,7 @@ public class ExtraInfoManager {
 		map.put("country", info.getCountry());
 		map.put("city", info.getCity());
 		map.put("address", info.getAddress());
-		map.put("languages", info.getLanguage());
+		if (info.getLanguage() != null) map.put("languages", StringUtils.arrayToCommaDelimitedString(info.getLanguage()));
 		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 		
 		String authString = "welive@welive.eu:w3l1v3t00ls";
