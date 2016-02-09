@@ -41,24 +41,13 @@
         <sec:custom-filter ref="resourceFilter" before="PRE_AUTH_FILTER" />
         <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
     </sec:http>
-    <sec:http pattern="/extuser/**" create-session="never" authentication-manager-ref="baAuthenticationManager">
-        <sec:anonymous enabled="false" />
-        <sec:intercept-url  pattern="/extuser/**" access="IS_AUTHENTICATED_FULLY" />
-        <sec:http-basic/>
-    </sec:http>
+
+    <sec:http pattern="/extuser/**" security="none"/>
     
     <sec:authentication-manager alias="authenticationManager">
 	    <sec:authentication-provider 
 	      user-service-ref="clientDetailsUserService" />
 	    <sec:authentication-provider ref="casAuthenticationProvider" />
-    </sec:authentication-manager>
-    
-    <sec:authentication-manager alias="baAuthenticationManager">
-      <sec:authentication-provider>
-         <sec:user-service>
-          <sec:user name="liferay" password="" authorities="ROLE_USER" />
-         </sec:user-service>
-     </sec:authentication-provider>
     </sec:authentication-manager>
     
     <!-- EXTERNAL CAS INTEGRATION -->

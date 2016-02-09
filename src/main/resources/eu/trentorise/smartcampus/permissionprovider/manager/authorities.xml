@@ -40,6 +40,6 @@
   </authorityMapping>
   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
-      <authority name="welive" attribute="email"/>
+      <authority name="welive" attribute="username"/>
   </authorityMatching>
 </authorities>

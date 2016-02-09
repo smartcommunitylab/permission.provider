@@ -9,10 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,8 +35,17 @@ public class ExtUserController extends AbstractController {
 	@Autowired
 	private ProviderServiceAdapter provider;
 
+	@Value("${api.token}")
+	private String token;
+
+	
 	@RequestMapping(value="/create", method = RequestMethod.POST)
-	public @ResponseBody String createuser(@RequestBody ExtUser user, HttpServletRequest req, HttpServletResponse res) {
+	public @ResponseBody String createuser(@RequestHeader("Authorization") String token,  @RequestBody ExtUser user, HttpServletRequest req, HttpServletResponse res) {
+		if (token == null || !token.matches(getAPICredentials())) {
+			res.setStatus(HttpStatus.UNAUTHORIZED.value());
+			return "";
+		} 
+		
 		if (
 				!StringUtils.hasText(user.getName()) ||
 				!StringUtils.hasText(user.getEmail()))
@@ -53,6 +64,13 @@ public class ExtUserController extends AbstractController {
 		}  
 		User updateUser = provider.updateUser("welive", map, req);
 		return ""+updateUser.getId();
+	}
+
+	/**
+	 * @return
+	 */
+	private String getAPICredentials() {
+		return "Basic "+ token;
 	}
 
 
