@@ -35,7 +35,7 @@ public class ExtUserController extends AbstractController {
 
 	@RequestMapping(value="/create", method = RequestMethod.POST)
 	public @ResponseBody String createuser(@RequestBody ExtUser user, HttpServletRequest req, HttpServletResponse res) {
-		if (!StringUtils.hasText(user.getUsername()) ||
+		if (
 				!StringUtils.hasText(user.getName()) ||
 				!StringUtils.hasText(user.getEmail()))
 		{
@@ -43,10 +43,14 @@ public class ExtUserController extends AbstractController {
 			return null;
 		}
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("username", user.getUsername());
 		map.put("name", user.getName());
 		map.put("surname", user.getSurname());
 		map.put("email", user.getEmail());
+		if (StringUtils.hasText(user.getUsername())) {
+			map.put("username", user.getUsername());
+		} else {
+			map.put("username", user.getEmail());
+		}  
 		User updateUser = provider.updateUser("welive", map, req);
 		return ""+updateUser.getId();
 	}
