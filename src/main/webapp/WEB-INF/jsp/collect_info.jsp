@@ -141,12 +141,13 @@
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
-          <div class="form-group">
+<%--           <div class="form-group">
             <label for="developer" class="pull-left">Developer:</label>
             <form:errors path="developer" cssClass="error pull-left"></form:errors>
             <form:checkbox  path="developer"/>
           </div>
-          <div class="form-group">
+ --%>
+           <div class="form-group">
             <label for="language" class="pull-left">Languages:</label>
             <form:errors path="language" cssClass="error pull-left"></form:errors>
             <form:checkbox  path="language" value="Italian"/>Italian

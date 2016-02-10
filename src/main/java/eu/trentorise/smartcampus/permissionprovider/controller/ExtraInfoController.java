@@ -68,6 +68,7 @@ public class ExtraInfoController extends AbstractController {
 		if (result.hasErrors()) {
 			return "collect_info";
 		} else {
+			info.setDeveloper(true);
 			infoManager.collectInfoForUser(info, getUserId());
 			logger.info(String.format("Collected info for user "));
 			String redirectURL = (String) req.getSession().getAttribute(
