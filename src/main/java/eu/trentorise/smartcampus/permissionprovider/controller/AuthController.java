@@ -51,7 +51,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
-import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
@@ -76,9 +75,6 @@ public class AuthController extends AbstractController {
 
 	@Autowired
 	private TokenStore tokenStore;
-
-	@Autowired
-	private ExtraInfoManager infoManager;
 
 	/**
 	 * Redirect to the login type selection page
@@ -327,12 +323,6 @@ public class AuthController extends AbstractController {
 
 			SecurityContextHolder.getContext().setAuthentication(a);
 
-			if (collectInfoMode) {
-				if (!infoManager.infoAlreadyCollected(getUserId())) {
-					req.getSession().setAttribute("redirect", target);
-					return new ModelAndView("redirect:/collect-info");
-				}
-			}
 		}
 		return new ModelAndView("redirect:" + target);
 	}

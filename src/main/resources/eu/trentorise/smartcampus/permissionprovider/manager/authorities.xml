@@ -37,7 +37,7 @@
 <!--       <attributes alias="eu.trentorise.smartcampus.surname">openid.ext1.value.surname</attributes> -->
 <!--       <identifyingAttributes>openid.ext1.value.email</identifyingAttributes> -->
 <!--   </authorityMapping> -->
-  <authorityMapping name="google" url="google" public="true">
+  <authorityMapping name="google" url="google" public="true" useParams="true">
       <attributes alias="eu.trentorise.smartcampus.givenname">OIDC_CLAIM_given_name</attributes>
       <attributes alias="eu.trentorise.smartcampus.surname">OIDC_CLAIM_family_name</attributes>
       <identifyingAttributes>OIDC_CLAIM_email</identifyingAttributes>
@@ -80,12 +80,6 @@
       <attributes>pat_attribute_issuerdn</attributes>
       <attributes>pat_attribute_base64</attributes>
       <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
-  </authorityMapping>
-  <authorityMapping name="welive" url="welive" public="true">
-    <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
-    <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
-    <attributes>email</attributes>
-    <identifyingAttributes>username</identifyingAttributes>
   </authorityMapping>
   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
