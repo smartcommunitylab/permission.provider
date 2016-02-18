@@ -82,8 +82,7 @@ public class ExtraInfoController extends AbstractController {
 	public String skipCollectInfo(HttpServletRequest request) {
 		String redirectURL = (String) request.getSession().getAttribute(
 				"redirect");
-		ExtraInfoBean info = new ExtraInfoBean();
-		infoManager.collectInfoForUser(info, getUserId());
+		infoManager.collectInfoForUser(null, getUserId());
 		logger.info("Skipped collection info for user " + getUserId());
 		return "redirect:" + redirectURL;
 	}

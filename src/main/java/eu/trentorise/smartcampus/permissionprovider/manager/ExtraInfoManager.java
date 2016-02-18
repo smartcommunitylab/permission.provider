@@ -3,7 +3,6 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.network.RemoteException;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.model.ExtraInfo;
@@ -47,13 +45,13 @@ public class ExtraInfoManager {
 	}
 
 	public void collectInfoForUser(ExtraInfoBean info, Long userId) {
-		if (info != null) {
-			User load = userRepo.findOne(userId);
-			if (load != null) {
-				ExtraInfo entity = new ExtraInfo(info);
-				entity.setUser(load);
-				infoRepo.save(entity);
-				
+		User load = userRepo.findOne(userId);
+		if (load != null) {
+			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
+			entity.setUser(load);
+			infoRepo.save(entity);
+			
+			if (info != null) {
 				try {
 					sendAddUser(info, userId);
 				} catch (Exception e) {
@@ -147,21 +145,5 @@ public class ExtraInfoManager {
 		} catch (Exception e) {
 			throw new RemoteException(e.getMessage(), e);
 		}
-	}
-
-	public static void main(String[] args) throws SecurityException, RemoteException {
-		ExtraInfoBean info = new ExtraInfoBean();
-		info.setPilot("trento");
-		info.setAddress("addresss");
-		info.setBirthdate(new Date());
-		info.setName("smart");
-		info.setSurname("community");
-		info.setCity("Trento");
-		info.setCountry("IT");
-		info.setDeveloper(true);
-		info.setEmail("smartcommunitylab@gmail.com");
-		info.setGender("M");
-		info.setZip("38123");
-		sendAddUser(info, (long) 1);
 	}
 }

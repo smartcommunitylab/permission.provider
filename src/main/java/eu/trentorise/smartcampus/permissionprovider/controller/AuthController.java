@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +43,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +55,7 @@ import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
  * Controller for developer console entry points
@@ -59,6 +63,8 @@ import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapt
 @Controller
 public class AuthController extends AbstractController {
 
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private ProviderServiceAdapter providerServiceAdapter;
 	@Autowired
@@ -270,7 +276,8 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/{authorityUrl}")
 	public ModelAndView forward(@PathVariable String authorityUrl,
 			@RequestParam(required = false) String target,
-			HttpServletRequest req) throws Exception {
+			HttpServletRequest req, HttpServletResponse res) throws Exception {
+		
 		List<GrantedAuthority> list = Collections
 				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority(
 						"ROLE_USER"));
@@ -303,11 +310,29 @@ public class AuthController extends AbstractController {
 				target = nTarget;
 			}
 
-			List<NameValuePair> pairs = URLEncodedUtils.parse(
-					URI.create(nTarget), "UTF-8");
+			Authentication old = SecurityContextHolder.getContext().getAuthentication();
+			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
+				if (!authorityUrl.equals(old.getDetails())) {
+		            new SecurityContextLogoutHandler().logout(req, res, old);
+			        SecurityContextHolder.getContext().setAuthentication(null);
 
-			eu.trentorise.smartcampus.permissionprovider.model.User userEntity = providerServiceAdapter
-					.updateUser(authorityUrl, toMap(pairs), req);
+					req.getSession().setAttribute("redirect", target);
+					req.getSession().setAttribute("client_id", clientId);
+			        
+					return new ModelAndView("redirect:/eauth/"+authorityUrl);
+//					return new ModelAndView("redirect:/logout");
+				}
+			}
+
+			List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(nTarget), "UTF-8");
+
+			eu.trentorise.smartcampus.permissionprovider.model.User userEntity = null;
+			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
+				String userId = old.getName();
+				userEntity = userRepository.findOne(Long.parseLong(userId));
+			} else {
+				userEntity = providerServiceAdapter.updateUser(authorityUrl, toMap(pairs), req);
+			}
 
 			UserDetails user = new User(userEntity.getId().toString(), "", list);
 
