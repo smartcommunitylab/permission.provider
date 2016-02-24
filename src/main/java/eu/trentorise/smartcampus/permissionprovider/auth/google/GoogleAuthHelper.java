@@ -101,7 +101,7 @@ public final class GoogleAuthHelper {
 	 * 
 	 * @param authCode
 	 *            : String, authentication code provided by google
-	 * @return {@link GoogleUser} formatted user profile information
+	 * @return {@link FBUser} formatted user profile information
 	 * @throws IOException
 	 */
 	public GoogleUser getUserInfoJson(final String authCode) throws IOException {
