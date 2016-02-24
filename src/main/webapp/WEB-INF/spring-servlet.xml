@@ -199,7 +199,11 @@
 	                    <constructor-arg value="${google.clientIds}"/>
 	                </bean>    
 	            </entry>
-              <entry key="anonymous">
+              <entry key="facebooklocal">
+                  <bean id="facebookLocalAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.FBAuthorityHandler">
+                  </bean>    
+              </entry>
+	            <entry key="anonymous">
                   <bean id="anonymousAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AnonymousAuthorityHandler"/>
               </entry>
          </map>

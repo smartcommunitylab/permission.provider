@@ -46,7 +46,7 @@
       <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
       <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
       <attributes>email</attributes>
-      <identifyingAttributes>fb_id</identifyingAttributes>
+      <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
   <authorityMapping name="googlelocal" url="googlelocal" public="true" web="false">
       <attributes alias="eu.trentorise.smartcampus.givenname">given_name</attributes>
@@ -54,6 +54,12 @@
       <attributes>email</attributes>
       <attributes>name</attributes>
       <attributes>link</attributes>
+      <identifyingAttributes>id</identifyingAttributes>
+  </authorityMapping>
+  <authorityMapping name="facebooklocal" url="facebooklocal" public="true" web="false">
+      <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
+      <attributes>email</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
   <authorityMapping name="anonymous" url="anonymous" public="true" web="false">
@@ -87,7 +93,19 @@
       <attributes>pat_attribute_base64</attributes>
       <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
   </authorityMapping>
+
   <authorityMatching>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
+      <authority name="googlelocal" attribute="email"/>
+      <authority name="facebook" attribute="email"/>
+      <authority name="facebooklocal" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebook" attribute="id"/>
+      <authority name="facebooklocal" attribute="id"/>
+  </authorityMatching>
+  
+<!--   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
       <authority name="googlelocal" attribute="email"/>
   </authorityMatching>
@@ -99,4 +117,16 @@
       <authority name="facebook" attribute="email"/>
       <authority name="googlelocal" attribute="email"/>
   </authorityMatching>
-</authorities>
+  <authorityMatching>
+      <authority name="facebook" attribute="fb_id"/>
+      <authority name="facebooklocal" attribute="fb_id"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebooklocal" attribute="email"/>
+      <authority name="googlelocal" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebooklocal" attribute="email"/>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
+  </authorityMatching>
+ --></authorities>

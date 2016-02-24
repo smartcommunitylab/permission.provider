@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -42,6 +43,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -270,7 +272,7 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/{authorityUrl}")
 	public ModelAndView forward(@PathVariable String authorityUrl,
 			@RequestParam(required = false) String target,
-			HttpServletRequest req) throws Exception {
+			HttpServletRequest req, HttpServletResponse res) throws Exception {
 		List<GrantedAuthority> list = Collections
 				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority(
 						"ROLE_USER"));
@@ -302,12 +304,25 @@ public class AuthController extends AbstractController {
 			if (!testMode && nTarget != null) {
 				target = nTarget;
 			}
+			
+			Authentication old = SecurityContextHolder.getContext().getAuthentication();
+			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
+				if (!authorityUrl.equals(old.getDetails())) {
+		            new SecurityContextLogoutHandler().logout(req, res, old);
+			        SecurityContextHolder.getContext().setAuthentication(null);
+
+					req.getSession().setAttribute("redirect", target);
+					req.getSession().setAttribute("client_id", clientId);
+			        
+					return new ModelAndView("redirect:/eauth/"+authorityUrl);
+//					return new ModelAndView("redirect:/logout");
+				}
+			}
 
 			List<NameValuePair> pairs = URLEncodedUtils.parse(
 					URI.create(nTarget), "UTF-8");
 
 			eu.trentorise.smartcampus.permissionprovider.model.User userEntity = null;
-			Authentication old = SecurityContextHolder.getContext().getAuthentication();
 			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
 				String userId = old.getName();
 				userEntity = userRepository.findOne(Long.parseLong(userId));

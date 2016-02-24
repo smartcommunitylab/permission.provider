@@ -103,7 +103,7 @@ public class FBController {
 				request.getSession().setAttribute(
 						FBAuthHelper.SESSION_FB_CHECK, "true");
 				return String
-						.format("redirect:/eauth/facebook?target=%s&fb_id=%s&email=%s&first_name=%s&last_name=%s",
+						.format("redirect:/eauth/facebook?target=%s&id=%s&email=%s&first_name=%s&last_name=%s",
 								URLEncoder.encode((String) request.getSession()
 										.getAttribute("redirect"), "UTF8"),
 								userInfo.getId(),
