@@ -365,4 +365,8 @@ public class ClientDetailsManager {
 		}
 		
 	}
+	
+	public ClientAppBasic get(String clientId) {
+		return convertToClientApp(clientDetailsRepository.findByClientId(clientId));
+	}
 }

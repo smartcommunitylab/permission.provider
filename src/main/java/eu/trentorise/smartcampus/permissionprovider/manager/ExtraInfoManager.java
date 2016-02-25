@@ -30,6 +30,9 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 public class ExtraInfoManager {
 
 	@Autowired
+	private WeLiveLogger logger;
+	
+	@Autowired
 	private ExtraInfoRepository infoRepo;
 
 	@Autowired
@@ -54,6 +57,12 @@ public class ExtraInfoManager {
 			if (info != null) {
 				try {
 					sendAddUser(info, userId);
+					
+					Map<String,Object> logMap = new HashMap<String, Object>();
+					logMap.put("UserID", ""+userId);
+					logMap.put("Pilot", info.getPilot());
+					logger.log(WeLiveLogger.USER_EXTRA_INFO, logMap);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

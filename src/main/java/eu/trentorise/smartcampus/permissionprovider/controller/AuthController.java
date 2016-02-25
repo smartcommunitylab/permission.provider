@@ -55,6 +55,8 @@ import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
@@ -82,6 +84,9 @@ public class AuthController extends AbstractController {
 	@Autowired
 	private ExtraInfoManager infoManager;
 
+	@Autowired
+	private WeLiveLogger logger;
+	
 	/**
 	 * Redirect to the login type selection page
 	 * 
@@ -334,6 +339,15 @@ public class AuthController extends AbstractController {
 				userEntity = providerServiceAdapter.updateUser(authorityUrl, toMap(pairs), req);
 			}
 
+			if (clientId != null) {
+				Map<String,Object> logMap = new HashMap<String, Object>();
+				ClientAppBasic clientAppBasic = clientDetailsAdapter.get(clientId);
+				logMap.put("UserID", ""+userEntity.getId());
+				logMap.put("ClientApp", ""+clientAppBasic.getName());
+				logger.log(WeLiveLogger.USER_CLIENT_AUTHORIZATION, logMap);
+
+			}
+			
 			UserDetails user = new User(userEntity.getId().toString(), "", list);
 
 			AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(

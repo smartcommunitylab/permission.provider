@@ -17,6 +17,7 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,9 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Component
 @Transactional
 public class ProviderServiceAdapter {
+	
+	@Autowired
+	private WeLiveLogger logger;
 
 	@Value("${mode.testing}")
 	private boolean testMode;
@@ -121,12 +125,22 @@ public class ProviderServiceAdapter {
 					throw new IllegalArgumentException(e.getMessage(),e);
 				}
 			}
+			
+			Map<String,Object> logMap = new HashMap<String, Object>();
+			logMap.put("UserID", ""+user.getId());
+			logMap.put("Authority", authorityUrl);
+			logger.log(WeLiveLogger.USER_CREATED, logMap);
 		} else {
 			user = users.get(0);
 			attributeRepository.deleteInBatch(user.getAttributeEntities());
 			user.setAttributeEntities(new HashSet<Attribute>(list));
 			user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 			userRepository.save(user);
+			
+			Map<String,Object> logMap = new HashMap<String, Object>();
+			logMap.put("UserID", ""+user.getId());
+			logMap.put("Authority", authorityUrl);
+			logger.log(WeLiveLogger.USER_UPDATED, logMap);
 		}
 		return user;
 	}

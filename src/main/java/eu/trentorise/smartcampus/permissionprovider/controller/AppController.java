@@ -40,6 +40,7 @@ import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager.ROLE;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.Identity;
@@ -58,6 +59,9 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Transactional
 public class AppController extends AbstractController {
 
+	@Autowired
+	private WeLiveLogger weliveLogger;
+	
 	private Log logger = LogFactory.getLog(getClass());
 	
 	@Autowired
@@ -105,6 +109,11 @@ public class AppController extends AbstractController {
 			}
 		}
 		
+		Map<String,Object> logMap = new HashMap<String, Object>();
+		logMap.put("UserID", ""+user.getId());
+		weliveLogger.log(WeLiveLogger.USER_DEVELOPER_ACCESS, logMap);
+
+		
 		String username = getUserName(user);
 		model.put("username",username);
 		return new ModelAndView("index", model);
@@ -142,11 +151,16 @@ public class AppController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			response.setData(clientDetailsAdapter.create(appData, getUserId()));
+			Map<String,Object> logMap = new HashMap<String, Object>();
+			logMap.put("UserID", ""+getUserId());
+			logMap.put("ClientApp", ""+appData.getName());
+			weliveLogger.log(WeLiveLogger.CLIENT_APP_CREATED, logMap);
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);
 			response.setErrorMessage(e.getMessage());
 		}
+
 		return response;
 	}
 
@@ -190,7 +204,13 @@ public class AppController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			response.setData(clientDetailsAdapter.delete(clientId));
+			ClientAppBasic appData = clientDetailsAdapter.delete(clientId);
+			response.setData(appData);
+			Map<String,Object> logMap = new HashMap<String, Object>();
+			logMap.put("UserID", ""+getUserId());
+			logMap.put("ClientApp", ""+appData.getName());
+			weliveLogger.log(WeLiveLogger.CLIENT_APP_DELETED, logMap);
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);
@@ -212,11 +232,17 @@ public class AppController extends AbstractController {
 		try {
 			checkClientIdOwnership(clientId);
 			response.setData(clientDetailsAdapter.update(clientId, data));
+			Map<String,Object> logMap = new HashMap<String, Object>();
+			logMap.put("UserID", ""+getUserId());
+			logMap.put("ClientApp", ""+data.getName());
+			weliveLogger.log(WeLiveLogger.CLIENT_APP_DELETED, logMap);
+
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);
 			response.setErrorMessage(e.getMessage());
 		}
+
 		return response;
 	}
 
