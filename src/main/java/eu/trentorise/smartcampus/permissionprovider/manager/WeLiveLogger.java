@@ -20,14 +20,14 @@ import it.smartcommunitylab.logging.model.LogMsg;
 
 import java.util.Map;
 
-import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @author raman
  *
  */
-@Service
+@Component
 public class WeLiveLogger {
 
 	private static final String APP_ID = "aac";

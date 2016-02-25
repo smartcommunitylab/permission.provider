@@ -22,13 +22,9 @@ import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +36,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.yale.tp.cas.AttributesType;
 import edu.yale.tp.cas.AuthenticationFailureType;
 import edu.yale.tp.cas.AuthenticationSuccessType;
 import edu.yale.tp.cas.ObjectFactory;
@@ -49,7 +44,6 @@ import eu.trentorise.smartcampus.permissionprovider.cas.CASException;
 import eu.trentorise.smartcampus.permissionprovider.cas.CASException.ERROR_CODE;
 import eu.trentorise.smartcampus.permissionprovider.cas.TicketManager;
 import eu.trentorise.smartcampus.permissionprovider.cas.TicketManager.Ticket;
-import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
@@ -162,17 +156,17 @@ public class CASController extends AbstractController {
 		ServiceResponseType value = factory.createServiceResponseType();
 		
 		AuthenticationSuccessType success = factory.createAuthenticationSuccessType();
-		success.setUser(""+user.getId());
-		AttributesType attrs = factory.createAttributesType();
-		attrs.setIsFromNewLogin(isNew);
-		attrs.getAny().add(createElement("name", user.getName()));
-		attrs.getAny().add(createElement("surname", user.getSurname()));
-		if (user.getAttributeEntities() != null) {
-			for(Attribute a : user.getAttributeEntities()) {
-				attrs.getAny().add(createElement(a.getKey(), a.getValue()));
-			} 
-		}
-		success.setAttributes(attrs);
+		success.setUser(""+user.email());
+//		AttributesType attrs = factory.createAttributesType();
+//		attrs.setIsFromNewLogin(isNew);
+//		attrs.getAny().add(createElement("name", user.getName()));
+//		attrs.getAny().add(createElement("surname", user.getSurname()));
+//		if (user.getAttributeEntities() != null) {
+//			for(Attribute a : user.getAttributeEntities()) {
+//				attrs.getAny().add(createElement(a.getKey(), a.getValue()));
+//			} 
+//		}
+//		success.setAttributes(attrs);
 		value.setAuthenticationSuccess(success);
 		
 		JAXBElement<ServiceResponseType> createServiceResponse = factory.createServiceResponse(value);

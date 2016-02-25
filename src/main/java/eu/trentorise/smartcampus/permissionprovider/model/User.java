@@ -144,4 +144,42 @@ public class User implements Serializable {
 		if (surname != null) setSurname(surname);
 		setFullName((getName()+" "+getSurname()).trim().toLowerCase());
 	}
+	
+	public String email() {
+		if (attributeEntities != null) {
+			for (Attribute a : attributeEntities) {
+				if ("google".equals(a.getAuthority().getName()) && 
+					"OIDC_CLAIM_email".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+				if ("welive".equals(a.getAuthority().getName()) && 
+						"email".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+				if ("welive".equals(a.getAuthority().getName()) && 
+						"username".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+				if ("googlelocal".equals(a.getAuthority().getName()) && 
+						"email".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+				if ("facebook".equals(a.getAuthority().getName()) && 
+						"email".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+				if ("facebooklocal".equals(a.getAuthority().getName()) && 
+						"email".equals(a.getKey())) 
+				{
+					return a.getValue();
+				}
+			}
+		}
+		return null;
+	}
 }
