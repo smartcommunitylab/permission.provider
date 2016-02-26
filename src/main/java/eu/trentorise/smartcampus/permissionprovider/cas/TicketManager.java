@@ -76,7 +76,7 @@ public class TicketManager {
 	public Ticket checkTicket(String service, String ticket) throws CASException{
 		Ticket ticketObj = ticketKeyStorage.get(ticket);
 		if (ticketObj == null || ticketObj.isExpired()) throw new CASException(ERROR_CODE.INVALID_TICKET, "Ticket does not exists or is expired."); 
-		if (!service.equals(ticketObj.service)) throw new CASException(ERROR_CODE.INVALID_SERVICE, "Service does not match ticket.");
+		if (!service.equals(ticketObj.service)) throw new CASException(ERROR_CODE.INVALID_SERVICE, "Service does not match ticket: service = "+service);
 		ticketStorage.remove(new TicketKey(ticketObj.id, service));
 		ticketKeyStorage.remove(ticket);
 		return ticketObj;
