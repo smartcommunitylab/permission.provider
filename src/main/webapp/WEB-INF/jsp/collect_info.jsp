@@ -46,21 +46,20 @@ input[type=checkbox] {
 			<img class="logo" src="img/welive-logo.png" alt="Welive" />
 		</div>
 		<div class="row">
-			<h3>WeLive users extended profile</h3>
+			<h3>WeLive users extended profile form</h3>
 		</div>
 
 		<div class="row">
 			<div class="highlight">
 				<p>
-					The compilation of this form by the users of the WeLive framework
-					is highly encourage, but is not compulsory and can be skipped with
-					the button below. Besides, each single field in it is optional.
-					Finally, please note that this is not a registration form.<br /> <span
-						class="note"><strong>*</strong> </span>The information provided in
-					the fields marked with an asterisk will be used to improve the
-					recommendation that the WeLive framework will deliver to users
-					about the services or other functionalities provided by the
-					framework itself.
+					The compilation of this form is highly encouraged to improve your experience in the usage of the WeLive framework.
+					It is not compulsory and can be skipped with the button below. 
+					Besides, each single field is optional. 
+					Finally, please note that this is not a registration form.<br /> 
+					<span class="note"><strong>*</strong> </span>
+					The information provided in the fields marked with an asterisk 
+					will be used to provide recommendations to users about services and other functionalities provided by 
+					the WeLive framework.
 				</p>
 			</div>
 			<div role="form">
