@@ -50,13 +50,16 @@ public class WeLiveLogger {
 	public void log(String type, Map<String, Object> data) {
 		try {
 			LogMsg payload = new LogMsg();
-			payload.setTimestamp(System.currentTimeMillis());
+			payload.setTimestamp((long)(System.currentTimeMillis()/1000));
 			payload.setAppId(APP_ID);
 			payload.setType(type);
 			if (data != null) {
 				payload.setCustomAttributes(data);
 			}
-			log.log(APP_ID, payload);
+			payload.setMsg(type);
+			if (!log.log(APP_ID, payload)) {
+				System.err.println("Logging problem!");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
