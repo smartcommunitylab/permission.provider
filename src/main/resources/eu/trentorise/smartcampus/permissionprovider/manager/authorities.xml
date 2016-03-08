@@ -38,8 +38,15 @@
     <attributes>email</attributes>
     <identifyingAttributes>username</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="facebook" url="facebook" public="true" useParams="true">
+      <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
+      <attributes>email</attributes>
+      <identifyingAttributes>id</identifyingAttributes>
+  </authorityMapping>
   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
       <authority name="welive" attribute="username"/>
+      <authority name="facebook" attribute="email"/>
   </authorityMatching>
 </authorities>

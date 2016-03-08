@@ -93,14 +93,19 @@ public class ProviderServiceAdapter {
 		}
 		// read received attribute values
 		Map<String, String> attributes = attrAdapter.getAttributes(auth.getName(), map, req);
-		List<Attribute> list = extractIdentityAttributes(auth, attributes);
+		List<Attribute> list = extractIdentityAttributes(auth, attributes, true);
 		
 		// find user by identity attributes
 		List<User> users = userRepository.getUsersByAttributes(list);
 		if (users == null)
 			users = new ArrayList<User>();
 		if (users.size() > 1) {
-			throw new IllegalArgumentException("The request attributes identify more than one user");
+			list = extractIdentityAttributes(auth, attributes, false);
+			users = userRepository.getUsersByAttributes(list);
+			if (users == null) users = new ArrayList<User>();
+			if (users.size() > 1) {
+				throw new IllegalArgumentException("The request attributes identify more than one user");
+			}
 		}
 		// fillin attribute list
 		list.clear();
@@ -167,13 +172,15 @@ public class ProviderServiceAdapter {
 		}
 	}
 
+
 	/**
 	 * Extract identity attribute values from all the attributes received for the specified authority.
 	 * @param auth
 	 * @param attributes
+	 * @param all search for all atrribute matches or only for own identity attributes
 	 * @return
 	 */
-	private List<Attribute> extractIdentityAttributes(Authority auth, Map<String, String> attributes) {
-		return attrAdapter.findAllIdentityAttributes(auth, attributes);
+	private List<Attribute> extractIdentityAttributes(Authority auth, Map<String, String> attributes, boolean all) {
+		return attrAdapter.findAllIdentityAttributes(auth, attributes, all);
 	}
 }

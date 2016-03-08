@@ -19,6 +19,7 @@ package eu.trentorise.smartcampus.permissionprovider.controller;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.trentorise.smartcampus.permissionprovider.model.BasicClientInfo;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -79,6 +82,37 @@ public class ResourceAccessController {
 		return false;
 	}
 	
+	/**
+	 * Get information about the client handling the specified token.
+	 * @param token
+	 * @param resourceUri
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/resources/clientinfo")
+	public @ResponseBody BasicClientInfo getCLientInfo(@RequestHeader("Authorization") String token, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
+			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
+			String clientId = auth.getAuthorizationRequest().getClientId();
+			if (clientId != null) {
+				ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+				if (client != null) {
+					BasicClientInfo info = new BasicClientInfo();
+					info.setClientId(clientId);
+					info.setClientName((String)client.getAdditionalInformation().get("name"));
+					return info;
+				}
+			}
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+			
+		} catch (AuthenticationException e) {
+			logger.error("Error getting information about client: "+e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+	}	
 	private static class ResourceFilterHelper extends OAuth2AuthenticationProcessingFilter {
 		public String parseTokenFromRequest(HttpServletRequest request) {
 			return parseToken(request);
