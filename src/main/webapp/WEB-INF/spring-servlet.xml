@@ -28,6 +28,11 @@
     <context:component-scan
         base-package="eu.trentorise.smartcampus.permissionprovider" />
     
+    <bean id="redirectHandler" class="eu.trentorise.smartcampus.permissionprovider.manager.CustomSuccessLogoutHandler">
+        <constructor-arg value="${default.redirect.url}"/>
+        <constructor-arg value="${welive.cas.server}"/>
+        </bean>    
+    
     <!-- REST SERVICES EXPOSED BY THE AAC -->
     <sec:http pattern="/basicprofile/**" create-session="never" entry-point-ref="clientAuthenticationEntryPoint" >
         <sec:anonymous enabled="false" />
@@ -90,14 +95,14 @@
     <sec:http disable-url-rewriting="true" pattern="/sso/**">
         <sec:intercept-url pattern="/sso/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/sso" />
-        <sec:logout invalidate-session="true" logout-url="/ssologout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/sso"/>
+        <sec:logout invalidate-session="true" logout-url="/ssologout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/sso" />
     </sec:http>
     
 	  <sec:http disable-url-rewriting="true">
         <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/dev" />
-        <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="${default.redirect.url}"/>
+        <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" success-handler-ref="redirectHandler"/>
     </sec:http>
 	
 	<bean id="clientAuthenticationEntryPoint"

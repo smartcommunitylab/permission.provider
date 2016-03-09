@@ -58,14 +58,6 @@ public class LogoutController {
 	public ModelAndView ssoLogout(HttpServletRequest req, HttpServletResponse res, @RequestParam(required=false) String redirect) {
 		return logoutCommon(req, redirect);
 	}
-	/**
-	 * Logout from site.
-	 * @return
-	 */
-	@RequestMapping("/logout")
-	public ModelAndView logout(HttpServletRequest req, HttpServletResponse res, @RequestParam(required=false) String service) {
-		return logoutCommon(req, service);
-	}
 
 	private ModelAndView logoutCommon(HttpServletRequest req, String service) {
 		String redirect = StringUtils.hasText(service) ? service : defaultRedirect;
