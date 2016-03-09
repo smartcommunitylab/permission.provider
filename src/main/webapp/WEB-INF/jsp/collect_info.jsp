@@ -1,4 +1,5 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html>
@@ -62,6 +63,7 @@ input[type=checkbox] {
 					the WeLive framework.
 				</p>
 			</div>
+			<div class="error"><c:out value="${genericError}"/></div>
 			<div role="form">
 				<form:form method="POST" modelAttribute="info"
 					action="/aac/collect-info">
