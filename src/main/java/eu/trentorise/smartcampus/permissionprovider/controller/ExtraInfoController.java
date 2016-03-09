@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import eu.trentorise.smartcampus.network.RemoteException;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
@@ -69,7 +70,13 @@ public class ExtraInfoController extends AbstractController {
 			return "collect_info";
 		} else {
 			info.setDeveloper(true);
-			infoManager.collectInfoForUser(info, getUserId());
+			try {
+				infoManager.collectInfoForUser(info, getUserId());
+			} catch (Exception e) {
+				e.printStackTrace();
+				model.addAttribute("genericError", "A generic error has occured.");
+				return "collect_info";
+			}
 			logger.info(String.format("Collected info for user "));
 			String redirectURL = (String) req.getSession().getAttribute(
 					"redirect");
@@ -79,10 +86,27 @@ public class ExtraInfoController extends AbstractController {
 	}
 
 	@RequestMapping(params = "skip", method = RequestMethod.POST)
-	public String skipCollectInfo(HttpServletRequest request) {
+	public String skipCollectInfo(HttpServletRequest request, Model model) {
 		String redirectURL = (String) request.getSession().getAttribute(
 				"redirect");
-		infoManager.collectInfoForUser(null, getUserId());
+		
+		BasicProfile profile = profileManager.getBasicProfileById(Long
+				.toString(getUserId()));
+		ExtraInfoBean info = new ExtraInfoBean();
+		
+		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
+		info.setEmail(getEmail(accProfile));
+		
+		info.setName(profile.getName() != null ? profile.getName() : "");
+		info.setSurname(profile.getSurname() != null ? profile.getSurname()
+				: "");
+
+		
+		try {
+			infoManager.collectInfoForUser(info, getUserId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		logger.info("Skipped collection info for user " + getUserId());
 		return "redirect:" + redirectURL;
 	}

@@ -47,7 +47,7 @@ public class ExtraInfoManager {
 		return infoRepo.findByUser(user) != null;
 	}
 
-	public void collectInfoForUser(ExtraInfoBean info, Long userId) {
+	public void collectInfoForUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
 		User load = userRepo.findOne(userId);
 		if (load != null) {
 			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
@@ -55,16 +55,13 @@ public class ExtraInfoManager {
 			infoRepo.save(entity);
 			
 			if (info != null) {
-				try {
-					sendAddUser(info, userId);
-					
+				sendAddUser(info, userId);
+			
+				if (info.getPilot() != null) {
 					Map<String,Object> logMap = new HashMap<String, Object>();
 					logMap.put("UserID", ""+userId);
 					logMap.put("Pilot", info.getPilot());
 					logger.log(WeLiveLogger.USER_EXTRA_INFO, logMap);
-
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
