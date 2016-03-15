@@ -207,6 +207,14 @@ public class AuthController extends AbstractController {
 		req.getSession().setAttribute("redirect", target);
 		req.getSession().setAttribute("client_id", clientId);
 
+		Authentication old = SecurityContextHolder.getContext().getAuthentication();
+		if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
+			String authorityUrl = (String)old.getDetails();
+			if (resultAuthorities.containsKey(authorityUrl)) {
+				return new ModelAndView("redirect:/eauth/"	+ authorityUrl);
+			}
+		}
+		
 		if (resultAuthorities.size() == 1) {
 			return new ModelAndView("redirect:/eauth/"
 					+ resultAuthorities.keySet().iterator().next());
