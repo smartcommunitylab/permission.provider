@@ -16,7 +16,6 @@
 
 package eu.trentorise.smartcampus.permissionprovider.model;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,6 +33,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
+import eu.trentorise.smartcampus.permissionprovider.common.Utils;
+
 /**
  * DB entity storing the client app information
  * @author raman
@@ -43,6 +44,8 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 @Table(name = "oauth_client_details")
 public class ClientDetailsEntity implements ClientDetails {
 	private static final long serialVersionUID = -286007838648327741L;
+
+	private static final String KEY_APP_SIGNATURES = "app_signature";
 	
 	private static ObjectMapper mapper = new ObjectMapper();
 
@@ -55,7 +58,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Column(name = "client_secret_mobile",nullable = false)
 	private String clientSecretMobile;
 
-	@Column(name = "resource_ids")
+	@Column(name = "resource_ids",columnDefinition="LONGTEXT")
 	private String resourceIds;
 	
 	@Column(name = "scope",columnDefinition="LONGTEXT")
@@ -134,7 +137,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setRedirectUri(String redirectUri) {
 		this.redirectUri = redirectUri;
 	}
-
 	/**
 	 * @param authorities the authorities to set
 	 */
@@ -230,7 +232,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getResourceIds() {
 		if (resourceIds != null) {
-			Set<String> set = new HashSet<String>(Arrays.asList(resourceIds.split(",")));
+			Set<String> set = Utils.delimitedStringToSet(resourceIds, ",");
 			set.remove("");
 			return set;
 		}
@@ -255,7 +257,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getScope() {
 		if (scope != null) {
-			Set<String> set = new HashSet<String>(Arrays.asList(scope.split(",")));
+			Set<String> set =  Utils.delimitedStringToSet(scope, ",");
 			set.remove("");
 			return set;
 		}
@@ -265,7 +267,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getAuthorizedGrantTypes() {
 		if (authorizedGrantTypes != null) {
-			return new HashSet<String>(Arrays.asList(authorizedGrantTypes.split(",")));
+			return Utils.delimitedStringToSet(authorizedGrantTypes, ",");
 		}
 		return Collections.emptySet();
 	}
@@ -273,17 +275,26 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getRegisteredRedirectUri() {
 		if (redirectUri != null) {
-			return new HashSet<String>(Arrays.asList(redirectUri.split(",")));
+			return Utils.delimitedStringToSet(redirectUri, ",");
 		}
 		return Collections.emptySet();
 	}
+	
+	public Set<String> getNativeAppSignaturesSet() {
+		Map<String,Object> additionalInfo = getAdditionalInformation();
+		if (additionalInfo != null && additionalInfo.containsKey(KEY_APP_SIGNATURES)) {
+			return Utils.delimitedStringToSet(additionalInfo.get(KEY_APP_SIGNATURES).toString(), ",");
+		}
+		return Collections.emptySet();
+	}
+	
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		if (authorities != null) {
 			String[] arr = authorities.split(",");
 			HashSet<GrantedAuthority> res = new HashSet<GrantedAuthority>();
 			for (String s : arr) {
-				res.add(new SimpleGrantedAuthority(s));
+				res.add(new SimpleGrantedAuthority(s.trim()));
 			}
 			return res;
 		}

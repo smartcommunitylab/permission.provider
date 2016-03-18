@@ -7,13 +7,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-  <title>SmartCampus</title>
+  <title>AAC</title>
   <link type="text/css" rel="stylesheet" href="<c:url value="../style.css"/>"/>
 </head>
 
 <body>
 
-  <h1>SmartCampus</h1>
+  <h1>AAC</h1>
 
   <div id="content">
 
@@ -29,7 +29,7 @@
       <h2>Please Confirm</h2>
 
       <p>You hereby authorize "<c:out value="${clientName}"/>" to access the following resources:</p>
-      <ul>
+      <ul class="pprovider">
       <c:forEach items="${resources}" var="r">
         <li><c:out value="${r.name}"/></li>
       </c:forEach>        

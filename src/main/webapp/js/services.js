@@ -32,7 +32,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.error = '';
 	// info message
 	$scope.info = '';
-	// permissions of the current client 
+	$scope.services = null;
+	// permissions of the current client and services
 	$scope.permissions = null;
 	// permissions subview (available permissions/own resources)
 	$scope.permView = 'avail';
@@ -53,14 +54,19 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	});
 
 	// resource reference for the permissions API
-	var ClientAppPermissions = $resource('dev/permissions/:clientId', {}, {
+	var ClientAppPermissions = $resource('dev/permissions/:clientId/:serviceId', {}, {
 		update : { method : 'PUT' },		
 	});
 
 	// resource reference for the resources API
-	var ClientAppResourceParam = $resource('dev/resourceparams/:clientId/:resourceId/:value/', {}, {
+	var ClientAppResourceParam = $resource('dev/resourceparams/:id', {}, {
 		create : { method : 'POST' },
 		changeVis : {method : 'PUT'}
+	});
+	
+	// resource reference for the services API
+	var AppServices = $resource('dev/services/:clientId', {}, {
+		query : {method : 'GET'}
 	});
 	/**
 	 * Initialize the app: load list of the developer's apps and reset views
@@ -102,9 +108,9 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	
 	$scope.idpIcon = function(req,app) {
 		if (!req) return null;
-		if (app == null) return 'icon-time';
-		if (app) return 'icon-ok';
-		return 'icon-remove';
+		if (app == null) return 'glyphicon glyphicon-time';
+		if (app) return 'glyphicon glyphicon-ok';
+		return 'glyphicon glyphicon-remove';
 	};
 	
 	/**
@@ -148,17 +154,15 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	};
 
 	/**
-	 * select a different service container
+	 * open permissions of a service 
 	 */
-	$scope.switchPermService = function(idx) {
-		if (idx == $scope.permService) {
-			$scope.permServiceCollapsed = !$scope.permServiceCollapsed;
-		} else {
-			$scope.permServiceCollapsed = false;
-			$scope.permService = idx;
-			$scope.switchPermView('avail');
-		}
+	$scope.changeServicePermissions = function(item) {
+			$scope.service = item;
+			loadPermissions(item, function() {
+				$('#myModal').modal({keyboard:false});
+			});
 	};
+	
 	/**
 	 * Whether the specified service container is collapsed
 	 */
@@ -183,23 +187,39 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.viewPermissions = function() {
 		$scope.permissions = null;
 		$scope.switchClientView('permissions');
-		loadPermissions();
+		loadServices();
 	};
 
 	/**
 	 * load permissions of the current app.
 	 */
-	function loadPermissions() {
+	function loadPermissions(service, callback) {
 		var newClient = new ClientAppPermissions();
-		newClient.$get({clientId:$scope.clientId}, function(response) {
+		newClient.$get({clientId:$scope.clientId, serviceId: service.id}, function(response) {
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.permissions = response.data;
+				callback();
 			} else {
 				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
 			}	
 		});
 	}
+	/**
+	 * load services available
+	 */
+	function loadServices() {
+		var newClient = new AppServices();
+		newClient.$query({clientId:$scope.clientId}, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.error = '';
+				$scope.services = response.data;
+			} else {
+				$scope.error = 'Failed to load app permissions: '+response.errorMessage;
+			}	
+		});
+	}
+	
 	/**
 	 * switch to different client
 	 */
@@ -277,9 +297,10 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	/**
 	 * Save current app permissions
 	 */
-	$scope.savePermissions = function() {
+	$scope.savePermissions = function(service) {
 		var perm = new ClientAppPermissions($scope.permissions);
-		perm.$update({clientId:$scope.clientId}, function(response) {
+		perm.$update({clientId:$scope.clientId, serviceId:service.id}, function(response) {
+			$('#myModal').modal('hide');
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.info = 'App permissions saved!';
@@ -292,17 +313,17 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	/**
 	 * create new resource parameter value for the specified resource parameter, service, and client app
 	 */
-	$scope.saveResourceParam = function(resourceId,serviceId,clientId) {
-		var perm = new ClientAppResourceParam({resourceId:resourceId,serviceId:serviceId,clientId:clientId});
+	$scope.saveResourceParam = function(parameter,serviceId,clientId) {
+		var perm = new ClientAppResourceParam({parameter:parameter,service:{serviceId:serviceId},clientId:clientId});
 		var n = prompt("Create new resource", "value");
 		if (n == null || n.trim().length==0) return;
 		perm.value = n.trim();
 		
 		perm.$create(function(response) {
+			$('#myModal').modal('hide');
 			if (response.responseCode == 'OK') {
 				$scope.error = '';
 				$scope.info = 'Resource added!';
-				loadPermissions();
 			} else {
 				$scope.error = 'Failed to save own resource: '+response.errorMessage;
 			}	
@@ -316,11 +337,11 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.removeResourceParam = function(r) {
 		if (confirm('Are you sure you want to delete this resource and subresources?')) {
 			var perm = new ClientAppResourceParam();
-			perm.$delete({clientId:r.clientId,resourceId:r.resourceId,value:r.value},function(response){
+			perm.$delete({id:r.id},function(response){
+				$('#myModal').modal('hide');
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					$scope.info = 'Resource removed!';
-					loadPermissions();
 				} else {
 					$scope.error = 'Failed to remove resource: '+response.errorMessage;
 				}	
@@ -334,7 +355,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	$scope.changeResourceParamVis = function(r) {
 		if (confirm('Change visibility of the resource?')) {
 			var perm = new ClientAppResourceParam();
-			perm.$changeVis({clientId:r.clientId,resourceId:r.resourceId,value:r.value,vis:r.visibility},function(response){
+			perm.$changeVis({id:r.id,vis:r.visibility},function(response){
+				$('#myModal').modal('hide');
 				if (response.responseCode == 'OK') {
 					$scope.error = '';
 					$scope.info = 'Resource visibility updated!';
@@ -351,9 +373,9 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	 */
 	$scope.permissionIcon = function(val) {
 		switch (val){
-		case 1: return 'icon-ok';
-		case 2: return 'icon-remove';
-		case 3: return 'icon-time';
+		case 1: return 'glyphicon glyphicon-ok';
+		case 2: return 'glyphicon glyphicon-remove';
+		case 3: return 'glyphicon glyphicon-time';
 		default: return null;
 		}
 		
@@ -370,8 +392,8 @@ function AppController($scope, $resource, $http, $timeout, $location) {
 	 * return icon for the app access type
 	 */
 	$scope.statusIcon = function(val) {
-		if (val) return 'icon-ok';
-		else return 'icon-remove';
+		if (val) return 'glyphicon glyphicon-ok';
+		else return 'glyphicon glyphicon-remove';
 	};
 	/**
 	 * reset value for client id or secret
@@ -457,4 +479,238 @@ function processAuthParams(input) {
 	  params[m[1]] = m[2];
 	}
 	return params.access_token;
+}
+
+/**
+ * Service management controller.
+ * @param $scope
+ * @param $resource
+ * @param $http
+ * @param $timeout
+ */
+function ServiceController($scope, $resource, $http, $timeout, $location) {
+	// current service
+	$scope.currService = null;
+	// error message
+	$scope.error = '';
+	// info message
+	$scope.info = '';
+	// list of services
+	$scope.services = null;
+	// edited data
+	$scope.editService = null;
+	// edited parameter
+	$scope.param = null;
+	// edited mapping
+	$scope.mapping = null;
+
+	// resource reference for the app API
+	var Services = $resource('dev/services/my/:serviceId', {}, {
+		query : { method : 'GET' },
+		save : {method : 'POST'},
+		remove : {method : 'DELETE'}
+	});
+	// resource reference for the app API
+	var ServiceProps = $resource('dev/services/my/:serviceId/:prop/:id', {}, {
+		add : {method : 'PUT'},
+		remove : {method : 'DELETE'}
+	});
+	
+	/**
+	 * reload service view from server
+	 */
+	$scope.reload = function(service) {
+		$scope.editService = null;
+		Services.query({},function(data) {
+			$scope.services = data.data;
+			if ($scope.services && $scope.services.length > 0) {
+				if (service) {
+					$scope.currService = angular.copy(service);
+				} else {
+					$scope.currService = angular.copy($scope.services[0]);
+				}
+			}
+		});
+	};
+	$scope.reload();
+	
+	
+	/**
+	 * return 'active' if the specified service is selected
+	 */
+	$scope.activeService = function(service) {
+		var cls = service.id == $scope.currService.id ? 'active' : '';
+		return cls;
+	};
+
+	/**
+	 * switch to different service
+	 */
+	$scope.switchService = function(service) {
+		$scope.error = '';
+		$scope.info = '';
+		$scope.editService = null;
+		if (service != null && service.id != null) {
+			for (var i = 0; i < $scope.services.length; i++) {
+				if ($scope.services[i].id == service.id) {
+					$scope.currService = angular.copy($scope.services[i]);
+					return;
+				}
+			}
+		} else if ($scope.services != null && $scope.services.length > 0) {
+			$scope.currService = angular.copy($scope.services[0]);
+		}
+	};
+
+	/** 
+	 * initiate creation of new service
+	 */
+	$scope.newService = function() {
+		$scope.editService = {};
+	}; 
+	/**
+	 * initiate editing  of the current service
+	 */
+	$scope.startEdit = function() {
+		$scope.editService = angular.copy($scope.currService);
+	};
+	
+	/**
+	 * close edit form
+	 */
+	$scope.closeEdit = function() {
+		$scope.editService = null;
+	}
+	/**
+	 * save service data (without params and mappings)
+	 */
+	$scope.saveService = function() {
+		Services.save({},$scope.editService, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service created!';
+			} else {
+				$scope.error = 'Failed to save service descriptor: '+response.errorMessage;
+			}	
+			$scope.editService = null;
+		});
+	};
+	
+	/**
+	 * delete service
+	 */
+	$scope.removeService = function() {
+		if (confirm('Are you sure you want to delete?')) {
+			Services.remove({serviceId:$scope.currService.id}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service descriptor: '+response.errorMessage;
+				}	
+			});
+		}
+	};
+
+	/**
+	 * edit/create parameter declaration
+	 */
+	$scope.editParameter = function(param) {
+		if (param) {
+			$scope.updating = true;
+			$scope.param = param;
+		} else {
+			$scope.updating = false;
+			$scope.param = {};
+		}
+		$('#paramModal').modal({keyboard:false});
+	};
+	
+	/**
+	 * Add new parameter
+	 */
+	$scope.addParameter = function() {
+		ServiceProps.add({serviceId:$scope.currService.id,prop:'parameter'},$scope.param, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service updated!';
+			} else {
+				$scope.error = 'Failed to add service parameter declaration: '+response.errorMessage;
+			}	
+			$('#paramModal').modal('hide');
+		});
+	};
+	/**
+	 * delete parameter
+	 */
+	$scope.removeParameter = function(param) {
+		if (confirm('Are you sure you want to delete?')) {
+			ServiceProps.remove({serviceId:$scope.currService.id,prop:'parameter',id:param.id},{}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service parameter deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service parameter declaration: '+response.errorMessage;
+				}	
+			});
+		}
+	};
+	/**
+	 * edit/create mapping declaration
+	 */
+	$scope.editMapping = function(mapping) {
+		if (mapping) {
+			$scope.updating = true;
+			$scope.mapping = mapping;
+		} else {
+			$scope.updating = false;
+			$scope.mapping = {};
+		}
+		$('#mappingModal').modal({keyboard:false});
+	};
+	/**
+	 * Add new mapping
+	 */
+	$scope.addMapping = function() {
+		// TODO dialog
+		ServiceProps.add({serviceId:$scope.currService.id,prop:'mapping'},$scope.mapping, function(response) {
+			if (response.responseCode == 'OK') {
+				$scope.reload(response.data);
+				$scope.error = '';
+				$scope.info = 'Service updated!';
+			} else {
+				$scope.error = 'Failed to add service mapping: '+response.errorMessage;
+			}	
+		});
+		$('#mappingModal').modal('hide');
+	};
+	/**
+	 * delete mapping
+	 */
+	$scope.removeMapping = function(mapping) {
+		if (confirm('Are you sure you want to delete?')) {
+			ServiceProps.remove({serviceId:$scope.currService.id,prop:'mapping',id:mapping.id},{}, function(response) {
+				if (response.responseCode == 'OK') {
+					$scope.error = '';
+					$scope.info = 'Service mapping deleted!';
+					$scope.currService = null;
+					$scope.reload();
+				} else {
+					$scope.error = 'Failed to delete service mapping declaration: '+response.errorMessage;
+				}	
+			});
+		}
+	};
+	$scope.toAuthority = function(val) {
+		if ('ROLE_USER' == val) return 'U';
+		if ('ROLE_CLIENT'==val) return 'C';
+		if ('ROLE_CLIENT_TRUSTED'==val) return 'C';
+		return '*';
+	};
 }

@@ -12,80 +12,80 @@
 	<service name="Basic profile service" id="smartcampus.profile.basicprofie">
 		<description>Core service for managing basic user profiles.</description>
 
-		<resourceMapping id="smartcampus.profile.basicprofile.me"
-			name="Read user's basic profile" uri="smartcampus.profile.basicprofile.me"
+		<resourceMapping id="profile.basicprofile.me"
+			name="Read user's basic profile" uri="profile.basicprofile.me"
 			authority="ROLE_USER">
 			<description>Basic profile of the current platform user. Read access only.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.profile.basicprofile.all"
-			name="Read all basic profiles" uri="smartcampus.profile.basicprofile.all"
+		<resourceMapping id="profile.basicprofile.all"
+			name="Read all basic profiles" uri="profile.basicprofile.all"
 			authority="ROLE_ANY" approvalRequired="true">
 			<description>Basic profile of the platform users. Read access only.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.profile.accountprofile.me"
-			name="Read user's account profile" uri="smartcampus.profile.accountprofile.me"
+		<resourceMapping id="profile.accountprofile.me"
+			name="Read user's account profile" uri="profile.accountprofile.me"
 			authority="ROLE_USER">
 			<description>Account profile of the current platform user. Read access only.</description>
 		</resourceMapping>
-    <resourceMapping id="smartcampus.profile.accountprofile.all"
-      name="Read all account profiles" uri="smartcampus.profile.accountprofile.all"
+    <resourceMapping id="profile.accountprofile.all"
+      name="Read all account profiles" uri="profile.accountprofile.all"
       authority="ROLE_CLIENT" approvalRequired="true">
       <description>Account profile of the platform users. Read access only.</description>
     </resourceMapping>
 			</service>
 
-	<service name="Extended profile service" id="smartcampus.profile.extprofie">
+	<!-- <service name="Extended profile service" id="profile.extprofie">
 		<description>Core service for managing сustom user profiles defined by different applications.</description>
 		<resource name="Profile" id="profile">
 			<description>Extended profile name</description>
 		</resource>
 
-		<resourceMapping id="smartcampus.extprofile.own" name="Manage profile"
-			uri="smartcampus.extprofile.write.{profile}" authority="ROLE_CLIENT"
+		<resourceMapping id="extprofile.own" name="Manage profile"
+			uri="extprofile.write.{profile}" authority="ROLE_CLIENT"
 			accessibleByOthers="false">
 			<description>Write the profile '{profile}'.</description>
 		</resourceMapping>
 
-		<resourceMapping id="smartcampus.extprofile.me.read"
-			name="Read all user profiles" uri="smartcampus.extprofile.me.read"
+		<resourceMapping id="extprofile.me.read"
+			name="Read all user profiles" uri="extprofile.me.read"
 			authority="ROLE_USER" approvalRequired="true">
 			<description>Read all custom profiles of the current user.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.extprofile.me.app.profile.read"
-			name="Read specific user profile" uri="smartcampus.extprofile.me.{profile}.read"
+		<resourceMapping id="extprofile.me.app.profile.read"
+			name="Read specific user profile" uri="extprofile.me.{profile}.read"
 			authority="ROLE_USER" approvalRequired="true">
 			<description>Read custom profile '{profile}' of the current user.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.extprofile.me.app.profile.write"
-			name="Write specific user profile" uri="smartcampus.extprofile.me.{profile}.write"
+		<resourceMapping id="extprofile.me.app.profile.write"
+			name="Write specific user profile" uri="extprofile.me.{profile}.write"
 			authority="ROLE_USER" approvalRequired="true">
 			<description>Write custom profile '{profile}' of the current user.</description>
 		</resourceMapping>
 
-		<resourceMapping id="smartcampus.extprofile.shared.read"
-			name="Read all profiles shared with user" uri="smartcampus.extprofile.shared.read"
+		<resourceMapping id="extprofile.shared.read"
+			name="Read all profiles shared with user" uri="extprofile.shared.read"
 			authority="ROLE_USER" approvalRequired="true">
 			<description>Read all custom profiles shared with the current user.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.extprofile.shared.app.profile.read"
-			name="Read specific profiles shared with user" uri="smartcampus.extprofile.shared.{profile}.read"
+		<resourceMapping id="extprofile.shared.app.profile.read"
+			name="Read specific profiles shared with user" uri="extprofile.shared.{profile}.read"
 			authority="ROLE_USER" approvalRequired="true">
 			<description>Read custom profile '{profile}' shared with the current user.</description>
 		</resourceMapping>
 
-		<resourceMapping id="smartcampus.extprofile.all.read"
-			name="Read all profiles" uri="smartcampus.extprofile.all.read"
+		<resourceMapping id="extprofile.all.read"
+			name="Read all profiles" uri="extprofile.all.read"
 			authority="ROLE_CLIENT" approvalRequired="true">
 			<description>Read all custom profiles.</description>
 		</resourceMapping>
-		<resourceMapping id="smartcampus.extprofile.all.app.profile.read"
-			name="Read specific profiles" uri="smartcampus.extprofile.all.{profile}.read"
+		<resourceMapping id="extprofile.all.app.profile.read"
+			name="Read specific profiles" uri="extprofile.all.{profile}.read"
 			authority="ROLE_CLIENT" approvalRequired="true">
 			<description>Read custom profiles '{profile}'.</description>
 		</resourceMapping>
 	</service>
-
-	<service name="File storage service" id="smartcampus.filestorage">
+ -->
+	<!-- <service name="File storage service" id="filestorage">
 		<description>Service for storing user files through different cloud storages.</description>
 		<resource name="App" id="fsapp">
 			<description>Symbolic name of the application managing the resources. Corresponds to the app 'folder'.</description>
@@ -160,9 +160,9 @@
 			<description>Read files shared with the user of the app '{fsapp}'.</description>
 		</resourceMapping>
 
-	</service>
+	</service> -->
 
-	<service name="Communicator service" id="smartcampus.communicator">
+	<service name="Communicator service" id="communicator">
 		<description>Service manage notification</description>
 		<resource name="App" id="capp">
 			<description>Symbolic name of the application managing the notifications</description>
@@ -222,8 +222,8 @@
 
 	</service>
 
-
-	<service name="Social networking service" id="smartcampus.socialservice">
+<!-- 
+	<service name="Social networking service" id="socialservice">
 		<description>Service manage notification</description>
 		<resource name="Community" id="cid">
 			<description>Identificator of the community managed by the app</description>
@@ -312,8 +312,8 @@
 			<description>Manage entity types</description>
 		</resourceMapping>
 	</service>
-
-	<service name="Mobility service" id="smartcampus.mobilityservice">
+ -->
+	<service name="Mobility service" id="mobilityservice">
 		<description>Transportation information and route planning.</description>
 
 		<resourceMapping id="mobilityservice.data" name="Read mobility data"
@@ -351,7 +351,7 @@
 		</resourceMapping>
 	</service>
 
-	<service name="Territory service" id="smartcampus.territoryservice">
+	<service name="Territory service" id="territoryservice">
 		<description>Territory information about events, places, and itineraries.</description>
 
 		<resourceMapping id="territoryservice.data.read" name="Read territory data"
@@ -374,7 +374,7 @@
 
 	</service>
 	
-		<service name="Unidata service" id="smartcampus.unidataservice">
+<!-- 		<service name="Unidata service" id="smartcampus.unidataservice">
 		<description>Information about students.</description>
 		
 	    <resourceMapping id="smartcampus.unidataservice.studentdata.me"
@@ -427,8 +427,8 @@
 	      <description>Data for University canteens and opening hours</description>
 	    </resourceMapping> 		    
 	 </service>
-
-	<service name="Moderation service" id="smartcampus.moderation">
+ -->
+	<!-- <service name="Moderation service" id="moderation">
     <description>Service to manage content filtering / moderation</description>
     <resource name="App" id="app">
       <description>Symbolic name of the application managing the content</description>
@@ -463,6 +463,6 @@
     </resourceMapping>
 
     
-  </service>
+  </service> -->
 					  	 
 </services>

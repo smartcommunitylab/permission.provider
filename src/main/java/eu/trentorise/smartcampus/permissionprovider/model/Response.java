@@ -17,7 +17,7 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 /**
- * Service response descriptor: response code (OK/ERROR) contained data and optional error message
+ * ServiceDescriptor response descriptor: response code (OK/ERROR) contained data and optional error message
  * @author raman
  *
  */

@@ -28,6 +28,7 @@
     <context:component-scan
         base-package="eu.trentorise.smartcampus.permissionprovider" />
     
+    <!-- REST SERVICES EXPOSED BY THE AAC -->
     <sec:http pattern="/basicprofile/**" create-session="never" entry-point-ref="clientAuthenticationEntryPoint" >
         <sec:anonymous enabled="false" />
         <sec:intercept-url  pattern="/basicprofile/**" access="IS_AUTHENTICATED_FULLY" />
@@ -41,8 +42,14 @@
         <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
     </sec:http>
     
+    <sec:authentication-manager alias="authenticationManager">
+	    <sec:authentication-provider 
+	      user-service-ref="clientDetailsUserService" />
+    </sec:authentication-manager>
+    
+    
 	<sec:http pattern="/oauth/token" create-session="stateless"
-		authentication-manager-ref="clientAuthenticationManager">
+		authentication-manager-ref="authenticationManager">
 		<sec:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
 		<sec:anonymous enabled="false" />
 		<sec:http-basic entry-point-ref="clientAuthenticationEntryPoint" />
@@ -69,7 +76,19 @@
         <constructor-arg value="/admin"/>
     </bean>
 
-	<sec:http disable-url-rewriting="true">
+    <sec:http disable-url-rewriting="true" pattern="/cas/loginsuccess">
+        <sec:intercept-url pattern="/cas/loginsuccess" access="IS_AUTHENTICATED_FULLY" />
+        <sec:form-login login-page="/eauth/cas"/>
+        <sec:logout invalidate-session="true" logout-url="/caslogout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/cas/login"/>
+    </sec:http>
+
+    <sec:http disable-url-rewriting="true" pattern="/sso/**">
+        <sec:intercept-url pattern="/sso/**" access="IS_AUTHENTICATED_FULLY" />
+        <sec:form-login login-page="/eauth/sso" />
+        <sec:logout invalidate-session="true" logout-url="/ssologout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/sso"/>
+    </sec:http>
+    
+	  <sec:http disable-url-rewriting="true">
         <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/dev" />
@@ -88,19 +107,13 @@
 
 	<bean id="clientCredentialsTokenEndpointFilter"
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
+		<property name="authenticationManager" ref="authenticationManager" />
 	</bean>
 
-	<sec:authentication-manager id="clientAuthenticationManager">
-		<sec:authentication-provider
-			user-service-ref="clientDetailsUserService" />
-<!--     <sec:authentication-provider ref="extAuthProvider"/> -->
-	</sec:authentication-manager>
-
-	<sec:authentication-manager alias="authenticationManager">
-		<sec:authentication-provider 
-			user-service-ref="clientDetailsUserService" />
-	</sec:authentication-manager>
+<!-- 	<sec:authentication-manager id="clientAuthenticationManager"> -->
+<!-- 		<sec:authentication-provider -->
+<!-- 			user-service-ref="clientDetailsUserService" /> -->
+<!-- 	</sec:authentication-manager> -->
 
 <!--   <bean id="extAuthProvider" class="eu.trentorise.smartcampus.permissionprovider.oauth.ExtAuthProvider"> -->
 <!--     <property name="clientDetailsService" ref="clientDetails"/> -->
@@ -186,13 +199,21 @@
 	                    <constructor-arg value="${google.clientIds}"/>
 	                </bean>    
 	            </entry>
-              <entry key="anonymous">
+              <entry key="facebooklocal">
+                  <bean id="facebookLocalAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.FBAuthorityHandler">
+                  </bean>    
+              </entry>
+	            <entry key="anonymous">
                   <bean id="anonymousAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AnonymousAuthorityHandler"/>
               </entry>
-	            	        </map>
+         </map>
 	    </constructor-arg>
 	</bean>
 
+	<!--  default authority handler -->
+	<bean id="defaultHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.DefaultAuthorityHandler">
+	    <constructor-arg value="${mode.testing}"></constructor-arg>
+	</bean>
 	<bean id="socialEngine" class="${social.engine.impl}"/>
 		
 	<import resource="datalayer.xml"/>
@@ -214,4 +235,6 @@
         <constructor-arg ref="dataSource"/>
     </bean>
 	
+    <bean id="googleProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter"/>
+    <bean id="fbProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.fb.FBFilter"/>
 </beans>

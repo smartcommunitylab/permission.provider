@@ -37,16 +37,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager.ROLE;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
-import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
-import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
-import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.Identity;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
-import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
@@ -62,9 +61,7 @@ public class AppController extends AbstractController {
 	private Log logger = LogFactory.getLog(getClass());
 	
 	@Autowired
-	private ClientDetailsRepository clientDetailsRepository;
-	@Autowired
-	private ClientDetailsAdapter clientDetailsAdapter;
+	private ClientDetailsManager clientDetailsAdapter;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -85,23 +82,26 @@ public class AppController extends AbstractController {
 
 		if (accessMode) {
 			String authority = getUserAuthority();
-			Set<String> identityAttrs = new HashSet<String>();
+			Set<Identity> identityAttrs = new HashSet<Identity>();
 			for (Attribute a : user.getAttributeEntities()) {
 				if (a.getAuthority().getName().equals(authority) && 
-					attributesAdapter.isIdentityAttr(a)) {
-					identityAttrs.add(authority+";"+a.getKey()+";"+a.getValue());
+					attributesAdapter.isIdentityAttr(a)) 
+				{
+					identityAttrs.add(new Identity(authority, a.getKey(), a.getValue()));
 				}
 			}
 			
 			try {
-				if (!adminManager.checkAccount(identityAttrs)) {
+				if (!adminManager.checkAccount(identityAttrs, ROLE.developer)) {
 					model.put("error", "Not authorized");
-					return new ModelAndView("redirect:/logout");
+//					return new ModelAndView("redirect:/logout");
+					return new ModelAndView("accesserror",model);
 				}
 			} catch (Exception e) {
 				model.put("error", e.getMessage());
 				logger.error("Problem checking user account: "+e.getMessage());
-				return new ModelAndView("redirect:/logout");
+//				return new ModelAndView("redirect:/logout");
+				return new ModelAndView("accesserror",model);
 			}
 		}
 		
@@ -119,8 +119,8 @@ public class AppController extends AbstractController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
-			// read all the apps associated to the signed user
-			List<ClientAppBasic> list = clientDetailsAdapter.convertToClientApps(clientDetailsRepository.findByDeveloperId(getUserId()));
+			// read all the apps associated to the signed user 
+			List<ClientAppBasic> list = clientDetailsAdapter.getByDeveloperId(getUserId());
 			response.setData(list);
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
@@ -141,24 +141,7 @@ public class AppController extends AbstractController {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
-			ClientDetailsEntity entity = new ClientDetailsEntity();
-			ClientAppInfo info = new ClientAppInfo();
-			info.setName(appData.getName());
-			for (ClientDetailsEntity cde : clientDetailsRepository.findAll()) {
-				if (ClientAppInfo.convert(cde.getAdditionalInformation()).getName().equals(appData.getName())) {
-					throw new IllegalArgumentException("An app with the same name already exists");
-				}
-			}
-			entity.setAdditionalInformation(info.toJson());
-			entity.setClientId(clientDetailsAdapter.generateClientId());
-			entity.setAuthorities(clientDetailsAdapter.defaultAuthorities());
-			entity.setAuthorizedGrantTypes(clientDetailsAdapter.defaultGrantTypes());
-			entity.setDeveloperId(getUserId());
-			entity.setClientSecret(clientDetailsAdapter.generateClientSecret());
-			entity.setClientSecretMobile(clientDetailsAdapter.generateClientSecret());
-
-			entity = clientDetailsRepository.save(entity);
-			response.setData(clientDetailsAdapter.convertToClientApp(entity));
+			response.setData(clientDetailsAdapter.create(appData, getUserId()));
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);
@@ -184,9 +167,9 @@ public class AppController extends AbstractController {
 		try {
 			checkClientIdOwnership(clientId);
 			if (resetClientSecretMobile) {
-				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientSecretMobile(clientId)));
+				response.setData(clientDetailsAdapter.resetClientSecretMobile(clientId));
 			} else {
-				response.setData(clientDetailsAdapter.convertToClientApp(clientDetailsAdapter.resetClientSecret(clientId)));
+				response.setData(clientDetailsAdapter.resetClientSecret(clientId));
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
@@ -207,14 +190,7 @@ public class AppController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-			if (client == null) {
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage("client app not found");
-				return response;
-			}
-			clientDetailsRepository.delete(client);
-			response.setData(clientDetailsAdapter.convertToClientApp(client));
+			response.setData(clientDetailsAdapter.delete(clientId));
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);
@@ -235,22 +211,7 @@ public class AppController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
-			ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-			String error = null;
-			if  ((error = clientDetailsAdapter.validate(client,data)) != null) {
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage(error);
-				return response;
-			}
-			client = clientDetailsAdapter.convertFromClientApp(client,data);
-			if (client != null) {
-				clientDetailsRepository.save(client);
-				response.setData(clientDetailsAdapter.convertToClientApp(client));
-			} else {
-				logger.error("Problem converting the client");
-				response.setResponseCode(RESPONSE.ERROR);
-				response.setErrorMessage("internal error");
-			}
+			response.setData(clientDetailsAdapter.update(clientId, data));
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			response.setResponseCode(RESPONSE.ERROR);

@@ -9,15 +9,15 @@
 <service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="../../../../resource.api/src/main/resources/jaxb/binding/resourceTemplateSchema.xsd">
 
-	<resourceMapping uri="smartcampus.profile.basicprofile.me" pathPattern="/basicprofile/me"/>
-  <resourceMapping uri="smartcampus.profile.accountprofile.me" pathPattern="/accountprofile/me"/>
+	<resourceMapping uri="profile.basicprofile.me" pathPattern="/basicprofile/me"/>
+  <resourceMapping uri="profile.accountprofile.me" pathPattern="/accountprofile/me"/>
 	
-    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/social/{socialId}"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all/{userId}"/>
-	  <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/all"/>
-    <resourceMapping uri="smartcampus.profile.basicprofile.all" pathPattern="/basicprofile/profiles"/>
+    <resourceMapping uri="profile.basicprofile.all" pathPattern="/basicprofile/social/{socialId}"/>
+    <resourceMapping uri="profile.basicprofile.all" pathPattern="/basicprofile/all/{userId}"/>
+	  <resourceMapping uri="profile.basicprofile.all" pathPattern="/basicprofile/all"/>
+    <resourceMapping uri="profile.basicprofile.all" pathPattern="/basicprofile/profiles"/>
     
-    <resourceMapping uri="smartcampus.profile.accountprofile.all" pathPattern="/accountprofile/profiles"/>
+    <resourceMapping uri="profile.accountprofile.all" pathPattern="/accountprofile/profiles"/>
     
 </service>
 

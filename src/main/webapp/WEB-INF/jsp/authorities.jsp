@@ -24,14 +24,14 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="../css/style.css" rel="stylesheet" type="text/css">
-<title>Smart Campus Authentication</title>
+<title>Smart Community Authentication</title>
 </head>
 <body>
-	<img class="logo" src="../img/ls_logo.png" alt="SmartCampus" />
+	<img class="logo" src="../img/ls_logo.png" alt="SmartCommunity" />
 	<div class="clear"></div>
 	<div class="authorities">
 		<p>Please choose the provider for your login</p>
-		<ul>
+		<ul class="pprovider">
 <% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
    for (String s : authorities.keySet()) {%>		
             <li>

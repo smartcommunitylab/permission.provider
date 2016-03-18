@@ -38,11 +38,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager.ROLE;
 import eu.trentorise.smartcampus.permissionprovider.model.ApprovalData;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.IdPData;
+import eu.trentorise.smartcampus.permissionprovider.model.Identity;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
@@ -82,25 +84,26 @@ public class AdminController extends AbstractController{
 		String authority = getUserAuthority();
 		Map<String,Object> model = new HashMap<String, Object>();
 
-		Set<String> identityAttrs = new HashSet<String>();
+		Set<Identity> identityAttrs = new HashSet<Identity>();
 		for (Attribute a : user.getAttributeEntities()) {
 			if (a.getAuthority().getName().equals(authority) && 
-				attributesAdapter.isIdentityAttr(a)) {
-				identityAttrs.add(authority+";"+a.getKey()+";"+a.getValue());
+				attributesAdapter.isIdentityAttr(a)) 
+			{
+				identityAttrs.add(new Identity(authority, a.getKey(), a.getValue()));
 			}
 		}
 		
 		try {
-			if (!adminManager.checkAccount(identityAttrs)) {
+			if (!adminManager.checkAccount(identityAttrs, ROLE.admin)) {
 				model.put("error", "Not authorized");
-//				return new ModelAndView("adminerror",model);
-				return new ModelAndView("redirect:/admin/logout");
+				return new ModelAndView("accesserror",model);
+//				return new ModelAndView("redirect:/admin/logout");
 			}
 		} catch (Exception e) {
 			model.put("error", e.getMessage());
 			logger.error("Problem checking admin account: "+e.getMessage());
-//			return new ModelAndView("adminerror");
-			return new ModelAndView("redirect:/admin/logout");
+			return new ModelAndView("accesserror");
+//			return new ModelAndView("redirect:/admin/logout");
 		}
 		
 		String username = getUserName(user);

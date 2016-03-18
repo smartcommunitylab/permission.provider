@@ -20,21 +20,33 @@
 <authorities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel"  
   xsi:schemaLocation="http://permissionprovider.smartcampus.trentorise.eu/jaxbmodel ../../../../../jaxb/binding/attributeSchema.xsd">
-	<authorityMapping name="unitn" url="unitn">
+<!-- 	<authorityMapping name="unitn" url="unitn">
 		<attributes alias="eu.trentorise.smartcampus.givenname">givenName</attributes>
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
 		<attributes>mailAll</attributes>
 		<identifyingAttributes>idada</identifyingAttributes>
 	</authorityMapping>
-	<authorityMapping name="fbk" url="fbk">
+ -->	
+ <authorityMapping name="fbk" url="fbk">
 		<attributes alias="eu.trentorise.smartcampus.givenname">givenName</attributes>
 		<attributes alias="eu.trentorise.smartcampus.surname">sn</attributes>
 		<identifyingAttributes>eppn</identifyingAttributes>
 	</authorityMapping>
-  <authorityMapping name="google" url="google" useParams="true" public="true">
-      <attributes alias="eu.trentorise.smartcampus.givenname">openid.ext1.value.name</attributes>
-      <attributes alias="eu.trentorise.smartcampus.surname">openid.ext1.value.surname</attributes>
-      <identifyingAttributes>openid.ext1.value.email</identifyingAttributes>
+<!--   <authorityMapping name="google" url="google" useParams="true" public="true"> -->
+<!--       <attributes alias="eu.trentorise.smartcampus.givenname">openid.ext1.value.name</attributes> -->
+<!--       <attributes alias="eu.trentorise.smartcampus.surname">openid.ext1.value.surname</attributes> -->
+<!--       <identifyingAttributes>openid.ext1.value.email</identifyingAttributes> -->
+<!--   </authorityMapping> -->
+  <authorityMapping name="google" url="google" public="true" useParams="true">
+      <attributes alias="eu.trentorise.smartcampus.givenname">OIDC_CLAIM_given_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">OIDC_CLAIM_family_name</attributes>
+      <identifyingAttributes>OIDC_CLAIM_email</identifyingAttributes>
+  </authorityMapping>
+  <authorityMapping name="facebook" url="facebook" public="true" useParams="true">
+      <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
+      <attributes>email</attributes>
+      <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
   <authorityMapping name="googlelocal" url="googlelocal" public="true" web="false">
       <attributes alias="eu.trentorise.smartcampus.givenname">given_name</attributes>
@@ -42,6 +54,12 @@
       <attributes>email</attributes>
       <attributes>name</attributes>
       <attributes>link</attributes>
+      <identifyingAttributes>id</identifyingAttributes>
+  </authorityMapping>
+  <authorityMapping name="facebooklocal" url="facebooklocal" public="true" web="false">
+      <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
+      <attributes>email</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
   <authorityMapping name="anonymous" url="anonymous" public="true" web="false">
@@ -75,8 +93,40 @@
       <attributes>pat_attribute_base64</attributes>
       <identifyingAttributes>pat_attribute_codicefiscale</identifyingAttributes>
   </authorityMapping>
+
   <authorityMatching>
-      <authority name="google" attribute="openid.ext1.value.email"/>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
+      <authority name="googlelocal" attribute="email"/>
+      <authority name="facebook" attribute="email"/>
+      <authority name="facebooklocal" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebook" attribute="id"/>
+      <authority name="facebooklocal" attribute="id"/>
+  </authorityMatching>
+  
+<!--   <authorityMatching>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
       <authority name="googlelocal" attribute="email"/>
   </authorityMatching>
-</authorities>
+  <authorityMatching>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
+      <authority name="facebook" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebook" attribute="email"/>
+      <authority name="googlelocal" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebook" attribute="fb_id"/>
+      <authority name="facebooklocal" attribute="fb_id"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebooklocal" attribute="email"/>
+      <authority name="googlelocal" attribute="email"/>
+  </authorityMatching>
+  <authorityMatching>
+      <authority name="facebooklocal" attribute="email"/>
+      <authority name="google" attribute="OIDC_CLAIM_email"/>
+  </authorityMatching>
+ --></authorities>

@@ -20,9 +20,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
-import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameterKey;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 
 /**
  * Persistent repository of {@link ResourceParameter} entities
@@ -30,12 +29,14 @@ import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameterKey;
  *
  */
 @Repository
-public interface ResourceParameterRepository extends JpaRepository<ResourceParameter, ResourceParameterKey> {
+public interface ResourceParameterRepository extends JpaRepository<ResourceParameter, Long> {
 
 	List<ResourceParameter> findByClientId(String clientId);
-	List<ResourceParameter> findByClientIdAndServiceId(String clientId, String serviceId);
-	List<ResourceParameter> findByClientIdAndResourceId(String clientId, String resourceId);
-
-	List<ResourceParameter> findByResourceId(String resourceId);
-	List<ResourceParameter> findByServiceId(String serviceId);
+	List<ResourceParameter>  findByService(ServiceDescriptor s);
+//	List<ResourceParameter> findByClientIdAndServiceId(String clientId, String serviceId);
+//	List<ResourceParameter> findByClientIdAndResourceId(String clientId, String resourceId);
+//
+//	List<ResourceParameter> findByResourceId(String resourceId);
+//	List<ResourceParameter> findByServiceId(String serviceId);
+	List<ResourceParameter> findByServiceAndParameter(ServiceDescriptor service, String parameter);
 }

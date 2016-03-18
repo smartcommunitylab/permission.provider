@@ -38,6 +38,7 @@ public class ClientAppInfo {
 	private String name;
 
 	private boolean nativeAppsAccess;
+	private String nativeAppSignatures;
 
 	private Map<String, Boolean> resourceApprovals;
 	
@@ -105,5 +106,19 @@ public class ClientAppInfo {
 	 */
 	public void setIdentityProviders(Map<String, Integer> identityProviders) {
 		this.identityProviders = identityProviders;
+	}
+
+	/**
+	 * @return the nativeAppSignatures
+	 */
+	public String getNativeAppSignatures() {
+		return nativeAppSignatures;
+	}
+
+	/**
+	 * @param nativeAppSignatures the nativeAppSignatures to set
+	 */
+	public void setNativeAppSignatures(String nativeAppSignatures) {
+		this.nativeAppSignatures = nativeAppSignatures;
 	}
 }

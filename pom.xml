@@ -13,11 +13,40 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.jasig.cas</groupId>
+			<artifactId>cas-client-core</artifactId>
+			<version>3.1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-cas-client</artifactId>
+			<version>3.0.8.RELEASE</version>
+		</dependency>
+
+    <!-- Google authentication -->
     <dependency>
-      <groupId>eu.trentorise.smartcampus</groupId>
-      <artifactId>smartcampus.client.commons</artifactId>
-      <version>2.0.1</version>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>1.21.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client-servlet</artifactId>
+      <version>1.21.0</version>
+    </dependency>
+
+		<dependency>
+		  <groupId>com.github.scribejava</groupId>
+		  <artifactId>scribejava-apis</artifactId>
+		  <version>2.2.2</version>
+		</dependency>
+    
+		<dependency>
+			<groupId>eu.trentorise.smartcampus</groupId>
+			<artifactId>smartcampus.client.commons</artifactId>
+			<version>2.0.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>eu.trentorise.smartcampus</groupId>
@@ -224,23 +253,40 @@
 		</dependency>
 
 		<dependency>
-		  <groupId>org.log4mongo</groupId>
-		  <artifactId>log4mongo-java</artifactId>
-		  <version>0.7.4</version>
+			<groupId>org.log4mongo</groupId>
+			<artifactId>log4mongo-java</artifactId>
+			<version>0.7.4</version>
 		</dependency>
-            
-            
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>1.1.0.Final</version>
+		</dependency>
+		<!-- Use to bean validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.0.1.Final</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
-				<plugins>
+		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
 				<version>1.6</version>
 				<executions>
 					<execution>
-						<id>SayService</id>
+						<id>SmartCommunity</id>
 						<configuration>
 							<schemaDirectory>src/main/resources/jaxb/binding</schemaDirectory>
 							<outputDirectory>src/main/generated-sources</outputDirectory>
@@ -283,8 +329,8 @@
 
 	<repositories>
 		<repository>
-			<id>SmartCampus</id>
-			<url>http://repository.smartcampuslab.it/content/groups/public</url>
+			<id>SmartCommunity</id>
+			<url>http://repository.smartcommunitylab.it/content/groups/public</url>
 		</repository>
 		<repository>
 			<id>spring-milestone</id>

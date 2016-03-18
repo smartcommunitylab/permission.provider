@@ -39,9 +39,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaration;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
-import eu.trentorise.smartcampus.permissionprovider.manager.ResourceAdapter;
+import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Permissions;
@@ -50,6 +51,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
 /**
@@ -66,20 +68,23 @@ public class PermissionController extends AbstractController {
 	private static final Integer RA_PENDING = 3;
 	private static Log logger = LogFactory.getLog(PermissionController.class);
 	@Autowired
-	private ResourceAdapter resourceAdapter;
+	private ResourceManager resourceManager;
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
 	@Autowired
 	private ResourceRepository resourceRepository;
+	@Autowired
+	private ResourceParameterRepository resourceParameterRepository;
 	
 	/**
 	 * Save permissions requested by the app.
 	 * @param permissions
 	 * @param clientId
+	 * @param serviceId
 	 * @return {@link Response} entity containing the processed app {@link Permissions} descriptor
 	 */
-	@RequestMapping(value="/dev/permissions/{clientId}",method=RequestMethod.PUT)
-	public @ResponseBody Response savePermissions(@RequestBody Permissions permissions, @PathVariable String clientId) {
+	@RequestMapping(value="/dev/permissions/{clientId}/{serviceId:.*}",method=RequestMethod.PUT)
+	public @ResponseBody Response savePermissions(@RequestBody Permissions permissions, @PathVariable String clientId, @PathVariable String serviceId) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
@@ -116,7 +121,7 @@ public class PermissionController extends AbstractController {
 			clientDetails.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
 			clientDetails.setAdditionalInformation(info.toJson());
 			clientDetailsRepository.save(clientDetails);
-			response.setData(buildPermissions(clientDetails));
+			response.setData(buildPermissions(clientDetails, serviceId));
 		} catch (Exception e) {
 			logger.error("Failure saving permissions model: "+e.getMessage(),e);
 			response.setErrorMessage(e.getMessage());
@@ -129,18 +134,19 @@ public class PermissionController extends AbstractController {
 	
 
 	/**
-	 * Read permissions of the specified app
+	 * Read permissions of the specified app and service
 	 * @param clientId
+	 * @param serviceId
 	 * @return {@link Response} entity containing the app {@link Permissions} descriptor
 	 */
-	@RequestMapping(value="/dev/permissions/{clientId}",method=RequestMethod.GET)
-	public @ResponseBody Response getPermissions(@PathVariable String clientId) {
+	@RequestMapping(value="/dev/permissions/{clientId}/{serviceId:.*}",method=RequestMethod.GET)
+	public @ResponseBody Response getPermissions(@PathVariable String clientId, @PathVariable String serviceId) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(clientId);
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
-			Permissions permissions = buildPermissions(clientDetails);
+			Permissions permissions = buildPermissions(clientDetails, serviceId);
 			response.setData(permissions);
 		} catch (Exception e) {
 			logger.error("Failure reading permissions model: "+e.getMessage(),e);
@@ -151,25 +157,192 @@ public class PermissionController extends AbstractController {
 		return response;
 	}
 
+	/**
+	 * Read services
+	 * @param clientId
+	 * @return {@link Response} entity containing the service {@link Service} descriptors
+	 */
+	@RequestMapping(value="/dev/services/{clientId}",method=RequestMethod.GET)
+	public @ResponseBody Response getServices(@PathVariable String clientId) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			checkClientIdOwnership(clientId);
+			response.setData(resourceManager.getServiceObjects());
+		} catch (Exception e) {
+			logger.error("Failure reading permissions model: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	} 
+
+	/**
+	 * Read services defined by the current user
+	 * @return {@link Response} entity containing the service {@link Service} descriptors
+	 */
+	@RequestMapping(value="/dev/services/my",method=RequestMethod.GET)
+	public @ResponseBody Response myServices() {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			response.setData(resourceManager.getServiceObjects(""+getUserId()));
+		} catch (Exception e) {
+			logger.error("Failure reading permissions model: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	} 
+
+	/**
+	 * save service data (name, id, description)
+	 * @param sd
+	 * @return stored {@link Service} object
+	 */
+	@RequestMapping(value="/dev/services/my",method=RequestMethod.POST)
+	public @ResponseBody Response saveService(@RequestBody Service sd) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			response.setData(resourceManager.saveServiceObject(sd, getUserId()));
+		} catch (Exception e) {
+			logger.error("Failure saving service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * Delete service object if possible
+	 * @param serviceId
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId:.*}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteService(@PathVariable String serviceId) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			resourceManager.deleteService(serviceId, getUserId().toString());
+		} catch (Exception e) {
+			logger.error("Failure deleting service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * Add resource parameter declaration to the service object if possible
+	 * @param serviceId
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/parameter",method=RequestMethod.PUT)
+	public @ResponseBody Response addParameter(@PathVariable String serviceId, @RequestBody ResourceDeclaration decl) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.addResourceDeclaration(serviceId, decl, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure adding parameter to service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+	/**
+	 * Delete resource parameter declaration from the service object if possible
+	 * @param serviceId
+	 * @param id 
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/parameter/{id:.*}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteParameter(@PathVariable String serviceId, @PathVariable String id) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.removeResourceDeclaration(serviceId, id, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure deleting parameter from service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	
+	/**
+	 * Add resource parameter to the service object if possible
+	 * @param serviceId
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/mapping",method=RequestMethod.PUT)
+	public @ResponseBody Response addMapping(@PathVariable String serviceId, @RequestBody ResourceMapping mapping) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.addMapping(serviceId, mapping, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure adding parameter to service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
+
+	/**
+	 * Delete resource parameter declaration from the service object if possible
+	 * @param serviceId
+	 * @param id 
+	 * @return
+	 */
+	@RequestMapping(value="/dev/services/my/{serviceId}/mapping/{id:.*}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteMapping(@PathVariable String serviceId, @PathVariable String id) {
+		Response response = new Response();
+		response.setResponseCode(RESPONSE.OK);
+		try {
+			resourceManager.checkServiceOwnership(serviceId,getUserId().toString());
+			response.setData(resourceManager.removeMapping(serviceId, id, getUserId().toString()));
+		} catch (Exception e) {
+			logger.error("Failure deleting mapping from service: "+e.getMessage(),e);
+			response.setErrorMessage(e.getMessage());
+			response.setResponseCode(RESPONSE.ERROR);
+		}
+		
+		return response;
+	}
 
 	/**
 	 * Create {@link Permissions} descriptors from the client app data.
 	 * @param clientId
 	 * @param clientDetails
+	 * @param serviceId 
 	 * @return
 	 */
-	protected Permissions buildPermissions(ClientDetailsEntity clientDetails) {
+	protected Permissions buildPermissions(ClientDetailsEntity clientDetails, String serviceId) {
 		Permissions permissions = new Permissions();
-		permissions.setServices(resourceAdapter.getServices());
+		permissions.setService(resourceManager.getServiceObject(serviceId));
 		Map<String, List<ResourceParameter>> ownResources = new HashMap<String, List<ResourceParameter>>();
 		// read resource parameters owned by the client and create 'parameter-values' map
-		List<ResourceParameter> resourceParameters = resourceAdapter.getOwnResourceParameters(clientDetails.getClientId(), null, null);
+		List<ResourceParameter> resourceParameters = resourceManager.getOwnResourceParameters(clientDetails.getClientId());
 		if (resourceParameters != null) {
 			for (ResourceParameter resourceParameter : resourceParameters) {
-				List<ResourceParameter> sublist = ownResources.get(resourceParameter.getResourceId());
+				List<ResourceParameter> sublist = ownResources.get(resourceParameter.getParameter());
 				if (sublist == null) {
 					sublist = new ArrayList<ResourceParameter>();
-					ownResources.put(resourceParameter.getResourceId(), sublist);
+					ownResources.put(resourceParameter.getParameter(), sublist);
 				}
 				sublist.add(resourceParameter);
 			}
@@ -184,7 +357,7 @@ public class PermissionController extends AbstractController {
 		Set<String> set = clientDetails.getResourceIds();
 		if (set == null) set = Collections.emptySet();
 		
-		List<Resource> otherResources = resourceAdapter.getAvailableResources(clientDetails.getClientId(), getUserId());
+		List<Resource> otherResources = resourceManager.getAvailableResources(clientDetails.getClientId(), getUserId());
 		// read approval status for the resources that require approval explicitly
 		ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
 		if (info.getResourceApprovals() == null) info.setResourceApprovals(Collections.<String,Boolean>emptyMap());
@@ -212,39 +385,36 @@ public class PermissionController extends AbstractController {
 				}
 			}
 		}
-		Map<String, Map<String,List<Resource>>> map = new HashMap<String, Map<String,List<Resource>>>();
-		for (Service s : permissions.getServices()) {
-			Map<String,List<Resource>> serviceMap = new TreeMap<String, List<Resource>>();
-			map.put(s.getId(), serviceMap);
-			serviceMap.put("__", new ArrayList<Resource>());
-			for (ResourceMapping rm : s.getResourceMapping()) {
-				List<Resource> list = otherResourcesMap.get(rm.getId());
-				if (list != null) {
-					for (Resource r : list) {
-						String key = r.getResourceParameter() == null ? "__"
-								: (r.getResourceParameter().getResourceId()
-										+ "__" + r.getResourceParameter()
-										.getValue());
-						List<Resource> targetList = serviceMap.get(key);
-						if (targetList == null) {
-							targetList = new ArrayList<Resource>();
-							serviceMap.put(key, targetList);
-						}
-						targetList.add(r);
+		Map<String,List<Resource>> serviceMap = new TreeMap<String, List<Resource>>();
+		serviceMap.put("__", new ArrayList<Resource>());
+		for (ResourceMapping rm : permissions.getService().getResourceMapping()) {
+			List<Resource> list = otherResourcesMap.get(rm.getId());
+			if (list != null) {
+				for (Resource r : list) {
+					String key = r.getResourceParameter() == null ? "__"
+							: (r.getResourceParameter().getParameter()
+									+ "__" + r.getResourceParameter()
+									.getValue());
+					List<Resource> targetList = serviceMap.get(key);
+					if (targetList == null) {
+						targetList = new ArrayList<Resource>();
+						serviceMap.put(key, targetList);
 					}
+					targetList.add(r);
 				}
 			}
-		} 
+		}
 		
 		permissions.setResourceApprovals(resourceApprovals);
 		permissions.setSelectedResources(selectedResources);
-		permissions.setAvailableResources(map);
+		permissions.setAvailableResources(serviceMap);
 		return permissions;
 	}
 
 	/**
 	 * Create new resource property
 	 * @param rp
+	 * @param serviceId
 	 * @return {@link Response} entity containing the stored {@link ResourceParameter} descriptor
 	 */
 	@RequestMapping(value="/dev/resourceparams",method=RequestMethod.POST)
@@ -253,7 +423,7 @@ public class PermissionController extends AbstractController {
 		response.setResponseCode(RESPONSE.OK);
 		try {
 			checkClientIdOwnership(rp.getClientId());
-			resourceAdapter.storeResourceParameter(rp);
+			resourceManager.storeResourceParameter(rp, rp.getService().getServiceId());
 			response.setData(rp);
 		} catch (Exception e) {
 			logger.error("Failure creating resource parameter: "+e.getMessage(),e);
@@ -271,13 +441,14 @@ public class PermissionController extends AbstractController {
 	 * @param vis visibility
 	 * @return {@link Response} entity containing the processed {@link ResourceParameter} descriptor
 	 */
-	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value:.*}",method=RequestMethod.PUT)
-	public @ResponseBody Response updatePropertyVisibility(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value, @RequestParam RESOURCE_VISIBILITY vis) {
+	@RequestMapping(value="/dev/resourceparams/{id:.*}",method=RequestMethod.PUT)
+	public @ResponseBody Response updatePropertyVisibility(@PathVariable Long id, @RequestParam RESOURCE_VISIBILITY vis) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
-			checkClientIdOwnership(clientId);
-			ResourceParameter rp = resourceAdapter.updateResourceParameterVisibility(resourceId, value, clientId, vis);
+			ResourceParameter rp = resourceParameterRepository.findOne(id);
+			checkClientIdOwnership(rp.getClientId());
+			rp = resourceManager.updateResourceParameterVisibility(id, vis);
 			response.setData(rp);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -295,13 +466,14 @@ public class PermissionController extends AbstractController {
 	 * @param value parameter value
 	 * @return
 	 */
-	@RequestMapping(value="/dev/resourceparams/{clientId}/{resourceId}/{value:.*}",method=RequestMethod.DELETE)
-	public @ResponseBody Response deleteProperty(@PathVariable String clientId, @PathVariable String resourceId, @PathVariable String value) {
+	@RequestMapping(value="/dev/resourceparams/{id:.*}",method=RequestMethod.DELETE)
+	public @ResponseBody Response deleteProperty(@PathVariable Long id) {
 		Response response = new Response();
 		response.setResponseCode(RESPONSE.OK);
 		try {
-			checkClientIdOwnership(clientId);
-			resourceAdapter.removeResourceParameter(resourceId, value, clientId);
+			ResourceParameter rp = resourceParameterRepository.findOne(id);
+			checkClientIdOwnership(rp.getClientId());
+			resourceManager.removeResourceParameter(id);
 		} catch (Exception e) {
 			logger.error("Failure deleting resource parameter: "+e.getMessage(),e);
 			response.setErrorMessage(e.getMessage());
@@ -309,5 +481,4 @@ public class PermissionController extends AbstractController {
 		}
 		return response;
 	}
-
 }

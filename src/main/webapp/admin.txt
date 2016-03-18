@@ -1,2 +1,2 @@
-#the following format expected: authority;attrkey;attrvalue
-google;openid.ext1.value.email;abc@gmail.com
+#the following format expected: authority;attrkey;attrvalue;role
+google;OIDC_CLAIM_email;abc@gmail.com;admin

@@ -16,7 +16,6 @@
 
 package eu.trentorise.smartcampus.permissionprovider.model;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +30,8 @@ import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 public class Permissions {
 
 	private Map<String,List<ResourceParameter>> ownResources;
-	private Collection<Service> services;
-	private Map<String,Map<String, List<Resource>>> availableResources;
+	private Service service;
+	private Map<String, List<Resource>> availableResources;
 	private Map<String,Boolean> selectedResources;
 	
 	private Map<String,Integer> resourceApprovals;
@@ -49,16 +48,16 @@ public class Permissions {
 		this.ownResources = ownResources;
 	}
 	/**
-	 * @return the services
+	 * @return the service
 	 */
-	public Collection<Service> getServices() {
-		return services;
+	public Service getService() {
+		return service;
 	}
 	/**
-	 * @param services the services to set
+	 * @param service the service to set
 	 */
-	public void setServices(Collection<Service> services) {
-		this.services = services;
+	public void setService(Service service) {
+		this.service = service;
 	}
 	/**
 	 * @return the selectedResources
@@ -69,14 +68,14 @@ public class Permissions {
 	/**
 	 * @return the availableResources
 	 */
-	public Map<String, Map<String, List<Resource>>> getAvailableResources() {
+	public Map<String, List<Resource>> getAvailableResources() {
 		return availableResources;
 	}
 	/**
 	 * @param availableResources the availableResources to set
 	 */
 	public void setAvailableResources(
-			Map<String, Map<String, List<Resource>>> availableResources) {
+			Map<String, List<Resource>> availableResources) {
 		this.availableResources = availableResources;
 	}
 	/**
