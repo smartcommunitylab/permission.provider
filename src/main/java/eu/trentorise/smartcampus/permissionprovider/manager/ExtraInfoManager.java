@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -16,6 +15,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -37,6 +37,9 @@ public class ExtraInfoManager {
 
 	@Autowired
 	private UserRepository userRepo;
+
+	@Value("${api.token}")
+	private String token;
 
 	public boolean infoAlreadyCollected(Long userId) {
 		User load = userRepo.findOne(userId);
@@ -72,14 +75,15 @@ public class ExtraInfoManager {
 	 * @throws RemoteException 
 	 * @throws SecurityException 
 	 */
-	private static void sendAddUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
+	private void sendAddUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("CC_UserID", userId);
 		map.put("pilot",info.getPilot());
 		map.put("firstName", info.getName());
 		map.put("surname", info.getSurname());
 		map.put("email", info.getEmail());
-		map.put("isMale", info.getGender().equals("M"));
+		
+		map.put("isMale", "M".equals(info.getGender()));
 		Calendar c = Calendar.getInstance();
 		c.setTime(info.getBirthdate());
 		map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
@@ -93,12 +97,7 @@ public class ExtraInfoManager {
 		if (info.getLanguage() != null) map.put("languages", StringUtils.arrayToCommaDelimitedString(info.getLanguage()));
 		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 		
-		String authString = "welive@welive.eu:w3l1v3t00ls";
-		System.out.println("auth string: " + authString);
-		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-		String authStringEnc = new String(authEncBytes);
-		
-		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + authStringEnc));
+		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
 	}
 	
