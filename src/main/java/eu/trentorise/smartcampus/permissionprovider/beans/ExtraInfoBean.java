@@ -36,7 +36,9 @@ public class ExtraInfoBean {
 
 	@NotEmpty
 	private String pilot;
-	
+
+	private String role;
+
 	private String[] language;
 	private String zip, city, country;
 	private boolean developer;
@@ -180,6 +182,14 @@ public class ExtraInfoBean {
 	 */
 	public void setDeveloper(boolean developer) {
 		this.developer = developer;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	

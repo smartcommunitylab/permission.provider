@@ -160,14 +160,23 @@ input[type=checkbox] {
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
-					<%--           <div class="form-group">
-            <label for="developer" class="pull-left">Developer:</label>
-            <form:errors path="developer" cssClass="error pull-left"></form:errors>
-            <form:checkbox  path="developer"/>
-          </div>
- --%>
-                        <div class="form-group">
-							<label for="language" class="pull-left">Languages:</label>
+                    <div class="form-group">
+                        <label for="role" class="pull-left">Role: </label>
+                        <form:errors path="role" cssClass="error pull-left"></form:errors>
+                        <form:select path="role" cssClass="form-control">
+                            <form:option value=""></form:option>
+                            <form:option value="Citizen">Citizen</form:option>
+                            <form:option value="Academy">Academy</form:option>
+                            <form:option value="Business">Business</form:option>
+                        </form:select>
+                    </div>
+					<div class="form-group">
+						<label for="developer" class="pull-left">Developer:</label>
+						<form:errors path="developer" cssClass="error pull-left"></form:errors>
+						<form:checkbox path="developer" />
+					</div>
+
+					<label for="language" class="pull-left">Languages:</label>
 							<form:errors path="language" cssClass="error pull-left"></form:errors>
 							<br/>
 						</div>

@@ -14,6 +14,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -92,14 +93,19 @@ public class ExtraInfoManager {
 			map.put("birthdayYear",c.get(Calendar.YEAR));
 		}
 		map.put("isDeveloper", info.isDeveloper());
+		map.put("role", info.getRole() != null ? info.getRole() : "Citizen");
 		map.put("zipCode", info.getZip());
 		map.put("country", info.getCountry());
 		map.put("city", info.getCity());
 		map.put("address", info.getAddress());
 		if (info.getLanguage() != null) map.put("languages", StringUtils.arrayToCommaDelimitedString(info.getLanguage()));
-		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
+		if (info.getKeywords() != null) {
+			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
+		}
+//		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 		
-		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
+//		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
+		String postJSON = call("https://dev.welive.eu/api/lum/add-new-user", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
 	}
 	
@@ -115,6 +121,7 @@ public class ExtraInfoManager {
 		final HttpPost post = new HttpPost(url);
 
 		post.setHeader("Accept", "application/json");
+		post.setHeader("Content-Type", "application/json");
 		if (headers != null) {
 			for (String key : headers.keySet()) {
 				post.setHeader(key, headers.get(key));
@@ -122,13 +129,15 @@ public class ExtraInfoManager {
 		}		
 
 		try {
-			String bodyStr = "";
-			for (String key : body.keySet()) {
-				bodyStr += "&"+key+"="+URLEncoder.encode(""+body.get(key), "UTF-8");
-			}
+//			String bodyStr = "";
+//			for (String key : body.keySet()) {
+//				bodyStr += "&"+key+"="+URLEncoder.encode(""+body.get(key), "UTF-8");
+//			}
+			String bodyStr = new ObjectMapper().writeValueAsString(body);
 			StringEntity input = new StringEntity(bodyStr, "UTF-8");
 			
-			input.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
+//			input.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
+			input.setContentType("application/json; charset=UTF-8");
 			post.setEntity(input);
 
 			resp = getDefaultHttpClient(null).execute(post);
