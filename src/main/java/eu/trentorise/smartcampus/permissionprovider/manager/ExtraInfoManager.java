@@ -105,7 +105,7 @@ public class ExtraInfoManager {
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 		
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
-		String postJSON = call("https://dev.welive.eu/api/lum/add-new-user", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
+		String postJSON = call("https://dev.welive.eu/dev/api/lum/add-new-user", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
 	}
 	
