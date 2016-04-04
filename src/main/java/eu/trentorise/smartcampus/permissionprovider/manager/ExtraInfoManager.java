@@ -84,11 +84,13 @@ public class ExtraInfoManager {
 		map.put("email", info.getEmail());
 		
 		map.put("isMale", "M".equals(info.getGender()));
-		Calendar c = Calendar.getInstance();
-		c.setTime(info.getBirthdate());
-		map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
-		map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
-		map.put("birthdayYear",c.get(Calendar.YEAR));
+		if (info.getBirthdate() != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(info.getBirthdate());
+			map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
+			map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
+			map.put("birthdayYear",c.get(Calendar.YEAR));
+		}
 		map.put("isDeveloper", info.isDeveloper());
 		map.put("zipCode", info.getZip());
 		map.put("country", info.getCountry());
