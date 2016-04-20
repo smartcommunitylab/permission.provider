@@ -44,7 +44,7 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 		Map<String, String> attrs = new HashMap<String, String>();
 		for (String key : mapping.getIdentifyingAttributes()) {
 			Object value = readAttribute(request, key, testMode ? true
-					: mapping.isUseParams());
+					: mapping.isUseParams(), map);
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -54,7 +54,7 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 			String key = (attribute.getAlias() != null && !attribute.getAlias()
 					.isEmpty()) ? attribute.getAlias() : attribute.getValue();
 			Object value = readAttribute(request, attribute.getValue(),
-					testMode ? true : mapping.isUseParams());
+					testMode ? true : mapping.isUseParams(), map);
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -72,9 +72,9 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 	 * @return
 	 */
 	private Object readAttribute(HttpServletRequest request, String key,
-			boolean useParams) {
+			boolean useParams, Map<String,String> extParams) {
 		if (request == null) {
-			return null;
+			return extParams != null ? extParams.get(key) : null;
 		}
 		if (useParams) {
 			return request.getParameter(key);

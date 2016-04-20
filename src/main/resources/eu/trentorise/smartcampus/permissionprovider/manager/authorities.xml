@@ -62,6 +62,12 @@
       <attributes>email</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="internal" url="internal" public="false" web="false"  useParams="true">
+      <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
+      <attributes>email</attributes>
+      <identifyingAttributes>email</identifyingAttributes>
+  </authorityMapping>
   <authorityMapping name="anonymous" url="anonymous" public="true" web="false">
       <identifyingAttributes>externalId</identifyingAttributes>
   </authorityMapping>
@@ -99,7 +105,8 @@
       <authority name="googlelocal" attribute="email"/>
       <authority name="facebook" attribute="email"/>
       <authority name="facebooklocal" attribute="email"/>
-  </authorityMatching>
+      <authority name="internal" attribute="email"/>
+      </authorityMatching>
   <authorityMatching>
       <authority name="facebook" attribute="id"/>
       <authority name="facebooklocal" attribute="id"/>

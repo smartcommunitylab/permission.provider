@@ -12,10 +12,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 
+import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
@@ -63,12 +65,27 @@ public class ClientCredentialsTokenEndpointFilter extends
 		}
 
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(clientId, clientSecret);
-		if ("authorization_code".equals(grant_type) || "refresh_token".equals(grant_type)) {
+		if ("authorization_code".equals(grant_type) || "refresh_token".equals(grant_type) || "password".equals(grant_type)) {
 			
 			ClientDetailsEntity clientDetails = clientDetailsRepository.findByClientId(clientId);
 			Set<String> grantTypes = clientDetails.getAuthorizedGrantTypes();
 			if (grantTypes == null || !grantTypes.contains(grant_type)) {
-				throw new InvalidGrantException("Unauthorized grant type: " + grant_type);
+				// check if trusted client
+				if ("password".equals(grant_type)) {
+					boolean isTrusted = false;
+					if (clientDetails.getAuthorities() != null) {
+						for (GrantedAuthority ga : clientDetails.getAuthorities())
+							if (Config.AUTHORITY.ROLE_CLIENT_TRUSTED.toString().equals(ga.getAuthority())) {
+								isTrusted = true;
+								break;
+							}
+					}
+					if (!isTrusted) {
+						throw new InvalidGrantException("Unauthorized grant type: " + grant_type);
+					}
+				} else{
+					throw new InvalidGrantException("Unauthorized grant type: " + grant_type);
+				}
 			}
 			
 			String clientSecretServer = clientDetails.getClientSecret();

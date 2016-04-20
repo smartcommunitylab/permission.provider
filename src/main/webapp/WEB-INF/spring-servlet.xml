@@ -22,7 +22,7 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-    <mvc:annotation-driven />
+    <mvc:annotation-driven/>
     
     <!-- Scan controllers in this package -->
     <context:component-scan
@@ -47,6 +47,13 @@
 	      user-service-ref="clientDetailsUserService" />
     </sec:authentication-manager>
     
+    <sec:authentication-manager alias="userAuthenticationManager">
+      <sec:authentication-provider 
+        user-service-ref="internalUserDetailsService">
+         <sec:password-encoder ref="internalPasswordEncoder">
+        </sec:password-encoder>    
+       </sec:authentication-provider> 
+    </sec:authentication-manager>
     
 	<sec:http pattern="/oauth/token" create-session="stateless"
 		authentication-manager-ref="authenticationManager">
@@ -127,7 +134,13 @@
 	<bean id="userDetailsService"
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.UserDetailsRepo">
 	</bean>
-
+  <bean id="internalUserDetailsService"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalUserDetailsRepo">
+  </bean>
+  <bean id="internalPasswordEncoder"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalPasswordEncoder">
+  </bean>
+  	
 	<bean id="tokenStore" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore">
         <constructor-arg ref="dataSource" />
 	</bean>
@@ -151,7 +164,7 @@
 		<oauth:implicit />
 		<oauth:refresh-token />
 		<oauth:client-credentials />
-		<oauth:password />
+		<oauth:password authentication-manager-ref="userAuthenticationManager" />
 	</oauth:authorization-server>
 
     <bean id="authorizationCodeServices" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcAuthorizationCodeServices">
@@ -237,4 +250,28 @@
 	
     <bean id="googleProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter"/>
     <bean id="fbProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.fb.FBFilter"/>
+    <bean id="internalProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.internal.InternalRegFilter"/>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
+        <property name="defaultLocale" value="en" />
+    </bean>
+
+		<bean id="templateEngine" class="org.thymeleaf.TemplateEngine">
+			<property name="templateResolver">
+				<bean id="templateResolver"
+					class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
+					<property name="prefix" value="/templates/" />
+					<property name="suffix" value=".html" />
+					<property name="characterEncoding" value="UTF-8"/>
+					<property name="templateMode" value="HTML5" />
+				</bean>
+			</property>
+		</bean>
+
+	  <bean id="messageSource"
+    class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename">
+      <value>resources/internal</value>
+    </property>
+  </bean>
 </beans>
