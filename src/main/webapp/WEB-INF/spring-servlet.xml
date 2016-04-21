@@ -46,7 +46,7 @@
 	    <sec:authentication-provider 
 	      user-service-ref="clientDetailsUserService" />
     </sec:authentication-manager>
-    
+<!--    
     <sec:authentication-manager alias="userAuthenticationManager">
       <sec:authentication-provider 
         user-service-ref="internalUserDetailsService">
@@ -54,7 +54,7 @@
         </sec:password-encoder>    
        </sec:authentication-provider> 
     </sec:authentication-manager>
-    
+-->    
 	<sec:http pattern="/oauth/token" create-session="stateless"
 		authentication-manager-ref="authenticationManager">
 		<sec:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
@@ -67,6 +67,7 @@
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</sec:http>
 
+<!--
 	<sec:http pattern="/internal/register/rest" create-session="stateless"
     authentication-manager-ref="authenticationManager" >
     <sec:intercept-url pattern="/internal/register/rest" access="IS_AUTHENTICATED_FULLY" />
@@ -75,7 +76,19 @@
     <sec:http-basic entry-point-ref="clientAuthenticationEntryPoint" />
     <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
   </sec:http>
+  <bean id="clientCredentialsFilter"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsFilter">
+		<constructor-arg value="/internal/register/rest"/>
+    <property name="authenticationManager" ref="authenticationManager" />
+  </bean>
+  <bean id="internalUserDetailsService"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalUserDetailsRepo">
+  </bean>
+  <bean id="internalPasswordEncoder"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalPasswordEncoder">
+  </bean>
 	
+-->	
     <sec:http disable-url-rewriting="true" pattern="/admin/**">
         <sec:intercept-url pattern="/admin/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/admin" />
@@ -125,12 +138,7 @@
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="authenticationManager" />
 	</bean>
-  <bean id="clientCredentialsFilter"
-    class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsFilter">
-		<constructor-arg value="/internal/register/rest"/>
-    <property name="authenticationManager" ref="authenticationManager" />
-  </bean>
-	
+
 <!-- 	<sec:authentication-manager id="clientAuthenticationManager"> -->
 <!-- 		<sec:authentication-provider -->
 <!-- 			user-service-ref="clientDetailsUserService" /> -->
@@ -148,13 +156,7 @@
 	<bean id="userDetailsService"
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.UserDetailsRepo">
 	</bean>
-  <bean id="internalUserDetailsService"
-    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalUserDetailsRepo">
-  </bean>
-  <bean id="internalPasswordEncoder"
-    class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalPasswordEncoder">
-  </bean>
-  	
+
 	<bean id="tokenStore" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore">
         <constructor-arg ref="dataSource" />
 	</bean>
@@ -178,7 +180,8 @@
 		<oauth:implicit />
 		<oauth:refresh-token />
 		<oauth:client-credentials />
-		<oauth:password authentication-manager-ref="userAuthenticationManager" />
+<!--		<oauth:password authentication-manager-ref="userAuthenticationManager" /> -->
+		<oauth:password />
 	</oauth:authorization-server>
 
     <bean id="authorizationCodeServices" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcAuthorizationCodeServices">
