@@ -42,7 +42,7 @@ public class RegistrationBean implements Serializable {
 	@Size(min = 6, message = "{validation.pwdlength}")
 	private String password;
 	
-	
+	private String lang;
 	
 	public RegistrationBean() {
 		super();
@@ -100,6 +100,19 @@ public class RegistrationBean implements Serializable {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	/**
+	 * @return the lang
+	 */
+	public String getLang() {
+		return lang;
+	}
+	/**
+	 * @param lang the lang to set
+	 */
+	public void setLang(String lang) {
+		this.lang = lang;
 	}	
+
 	
 }

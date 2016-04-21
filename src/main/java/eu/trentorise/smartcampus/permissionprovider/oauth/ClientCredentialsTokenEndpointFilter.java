@@ -114,4 +114,7 @@ public class ClientCredentialsTokenEndpointFilter extends
 		return this.getAuthenticationManager().authenticate(authRequest);
 	}
 
+
+	
+	
 }

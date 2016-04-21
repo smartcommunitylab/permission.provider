@@ -67,6 +67,15 @@
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</sec:http>
 
+	<sec:http pattern="/internal/register/rest" create-session="stateless"
+    authentication-manager-ref="authenticationManager" >
+    <sec:intercept-url pattern="/internal/register/rest" access="IS_AUTHENTICATED_FULLY" />
+    <sec:anonymous enabled="false" />
+    <sec:custom-filter ref="clientCredentialsFilter" after="BASIC_AUTH_FILTER" />
+    <sec:http-basic entry-point-ref="clientAuthenticationEntryPoint" />
+    <sec:access-denied-handler ref="oauthAccessDeniedHandler" />
+  </sec:http>
+	
     <sec:http disable-url-rewriting="true" pattern="/admin/**">
         <sec:intercept-url pattern="/admin/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/admin" />
@@ -116,7 +125,12 @@
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="authenticationManager" />
 	</bean>
-
+  <bean id="clientCredentialsFilter"
+    class="eu.trentorise.smartcampus.permissionprovider.oauth.ClientCredentialsFilter">
+		<constructor-arg value="/internal/register/rest"/>
+    <property name="authenticationManager" ref="authenticationManager" />
+  </bean>
+	
 <!-- 	<sec:authentication-manager id="clientAuthenticationManager"> -->
 <!-- 		<sec:authentication-provider -->
 <!-- 			user-service-ref="clientDetailsUserService" /> -->

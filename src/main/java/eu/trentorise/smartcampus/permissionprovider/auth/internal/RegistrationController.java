@@ -19,20 +19,30 @@ package eu.trentorise.smartcampus.permissionprovider.auth.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.trentorise.smartcampus.permissionprovider.common.AlreadyRegisteredException;
 import eu.trentorise.smartcampus.permissionprovider.common.RegistrationException;
 import eu.trentorise.smartcampus.permissionprovider.manager.RegistrationManager;
 import eu.trentorise.smartcampus.permissionprovider.model.Registration;
@@ -140,6 +150,41 @@ public class RegistrationController {
 			return "registration/register";
 		}
 	}
+	
+	/**
+	 * Register with the REST call
+	 * @param model
+	 * @param reg
+	 * @param result
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/register/rest", method = RequestMethod.POST)
+	public @ResponseBody void registerREST(@RequestBody RegistrationBean reg,
+			HttpServletResponse res) 
+	{
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+		Set<ConstraintViolation<RegistrationBean>> errors = validator.validate(reg);
+	      
+		if (errors.size() > 0) {
+			res.setStatus(HttpStatus.BAD_REQUEST.value());
+			return;
+        }
+		try {
+			manager.register(reg.getName(), reg.getSurname(), reg.getEmail(), reg.getPassword(), reg.getLang());
+		} catch(AlreadyRegisteredException e) {
+			res.setStatus(HttpStatus.CONFLICT.value());
+		} catch (RegistrationException e) {
+			e.printStackTrace();
+			res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		} catch (Exception e) {
+			e.printStackTrace();
+			res.setStatus(HttpStatus.CONFLICT.value());
+			res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+	}
+	
 
 	/**
 	 * Redirect to the resend page to ask for the email
