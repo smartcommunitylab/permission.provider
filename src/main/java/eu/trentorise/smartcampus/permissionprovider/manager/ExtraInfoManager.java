@@ -1,6 +1,5 @@
 package eu.trentorise.smartcampus.permissionprovider.manager;
 
-import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,6 +29,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Component
 public class ExtraInfoManager {
 
+	private static final String DEFAULT_ROLE = "Citizen";
+	
 	@Autowired
 	private WeLiveLogger logger;
 	
@@ -41,6 +42,9 @@ public class ExtraInfoManager {
 
 	@Value("${api.token}")
 	private String token;
+
+	@Value("${welive.lum}")
+	private String lumEndpoint;
 
 	public boolean infoAlreadyCollected(Long userId) {
 		User load = userRepo.findOne(userId);
@@ -54,7 +58,8 @@ public class ExtraInfoManager {
 	public void collectInfoForUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
 		User load = userRepo.findOne(userId);
 		if (load != null) {
-			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
+			ExtraInfo entity = createEntity(info);
+//			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
 			entity.setUser(load);
 			infoRepo.save(entity);
 			
@@ -73,39 +78,54 @@ public class ExtraInfoManager {
 
 	/**
 	 * @param info
+	 * @return
+	 */
+	private ExtraInfo createEntity(ExtraInfoBean info) {
+		ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
+		if (!StringUtils.hasText(entity.getRole())) {
+			entity.setRole(DEFAULT_ROLE);
+		}
+		
+		return entity;
+	}
+
+	/**
+	 * @param info
 	 * @throws RemoteException 
 	 * @throws SecurityException 
 	 */
 	private void sendAddUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
 		Map<String,Object> map = new HashMap<String, Object>();
-		map.put("CC_UserID", userId);
+		map.put("ccUserId", userId);
 		map.put("pilot",info.getPilot());
 		map.put("firstName", info.getName());
 		map.put("surname", info.getSurname());
 		map.put("email", info.getEmail());
 		
-		map.put("isMale", "M".equals(info.getGender()));
+		map.put("isMale", !"F".equals(info.getGender()));
+		Calendar c = Calendar.getInstance();
 		if (info.getBirthdate() != null) {
-			Calendar c = Calendar.getInstance();
 			c.setTime(info.getBirthdate());
-			map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
-			map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
-			map.put("birthdayYear",c.get(Calendar.YEAR));
+		} else {
+			c.setTimeInMillis(0L);
 		}
+		map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
+		map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
+		map.put("birthdayYear",c.get(Calendar.YEAR));
 		map.put("isDeveloper", info.isDeveloper());
-		map.put("role", info.getRole() != null ? info.getRole() : "Citizen");
+		map.put("role", StringUtils.hasText(info.getRole()) ? info.getRole() : "Citizen");
 		map.put("zipCode", info.getZip());
 		map.put("country", info.getCountry());
 		map.put("city", info.getCity());
 		map.put("address", info.getAddress());
-		if (info.getLanguage() != null) map.put("languages", StringUtils.arrayToCommaDelimitedString(info.getLanguage()));
+		if (info.getLanguage() != null) map.put("languages", info.getLanguage());
 		if (info.getKeywords() != null) {
 			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
 		}
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 		
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
-		String postJSON = call("https://dev.welive.eu/dev/api/lum/add-new-user", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
+		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
 	}
 	
@@ -143,6 +163,11 @@ public class ExtraInfoManager {
 			resp = getDefaultHttpClient(null).execute(post);
 			String response = EntityUtils.toString(resp.getEntity(),"UTF-8");
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				Map<String,Object> respMap = new ObjectMapper().readValue(response, HashMap.class);
+				if (respMap != null && StringUtils.hasText((String)respMap.get("exception"))) {
+					throw new RemoteException((String)respMap.get("exception"));
+
+				}
 				return response;
 			}
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN

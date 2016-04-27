@@ -2,10 +2,6 @@ package eu.trentorise.smartcampus.permissionprovider.beans;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,9 +23,9 @@ public class ExtraInfoBean {
 
 	private String keywords;
 
-	@NotEmpty
-	@Pattern(regexp = "M|F|^$", message = "Not valid value")
-	@Size(max = 1, message = "Not valid value")
+//	@NotEmpty
+//	@Pattern(regexp = "M|F|^$", message = "Not valid value")
+//	@Size(max = 1, message = "Not valid value")
 	private String gender;
 
 	private String address;

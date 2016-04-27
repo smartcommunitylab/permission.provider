@@ -17,6 +17,10 @@
 --%>
 <%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<fmt:setBundle basename="resources.internal" var="res"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +28,7 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="../css/style.css" rel="stylesheet" type="text/css">
-<title>Smart Community Authentication</title>
+<title>WeLive AAC</title>
 <style type="text/css">
 a.link {
 	color: #555;
@@ -47,7 +51,7 @@ a.link {
 	<img class="logo" src="../img/welive-logo.png" alt="WeLive" />
 	<div class="clear"></div>
 	<div class="authorities">
-		<p>Please choose the provider for your login</p>
+		<p><fmt:message bundle="${res}" key="authorities_select" /></p>
 		<ul class="pprovider">
 			<%
 				Map<String, String> authorities = (Map<String, String>) request
@@ -67,7 +71,7 @@ a.link {
 			<p>
 				<a class="link"
 					href="https://dev.welive.eu/?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"
-					target="_blank">WeLive sign up</a>
+					target="_blank"><fmt:message bundle="${res}" key="authorities_signup" /></a>
 			</p>
 		</div>
 	</footer>

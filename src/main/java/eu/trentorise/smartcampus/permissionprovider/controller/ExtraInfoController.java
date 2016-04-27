@@ -74,7 +74,7 @@ public class ExtraInfoController extends AbstractController {
 				infoManager.collectInfoForUser(info, getUserId());
 			} catch (Exception e) {
 				e.printStackTrace();
-				model.addAttribute("genericError", "A generic error has occured.");
+				model.addAttribute("genericError", "error_error");
 				return "collect_info";
 			}
 			logger.info(String.format("Collected info for user "));
@@ -85,30 +85,30 @@ public class ExtraInfoController extends AbstractController {
 		}
 	}
 
-	@RequestMapping(params = "skip", method = RequestMethod.POST)
-	public String skipCollectInfo(HttpServletRequest request, Model model) {
-		String redirectURL = (String) request.getSession().getAttribute(
-				"redirect");
-		
-		BasicProfile profile = profileManager.getBasicProfileById(Long
-				.toString(getUserId()));
-		ExtraInfoBean info = new ExtraInfoBean();
-		
-		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
-		info.setEmail(getEmail(accProfile));
-		
-		info.setName(profile.getName() != null ? profile.getName() : "");
-		info.setSurname(profile.getSurname() != null ? profile.getSurname()
-				: "");
-
-		
-		try {
-			infoManager.collectInfoForUser(info, getUserId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		logger.info("Skipped collection info for user " + getUserId());
-		return "redirect:" + redirectURL;
-	}
+//	@RequestMapping(params = "skip", method = RequestMethod.POST)
+//	public String skipCollectInfo(HttpServletRequest request, Model model) {
+//		String redirectURL = (String) request.getSession().getAttribute(
+//				"redirect");
+//		
+//		BasicProfile profile = profileManager.getBasicProfileById(Long
+//				.toString(getUserId()));
+//		ExtraInfoBean info = new ExtraInfoBean();
+//		
+//		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
+//		info.setEmail(getEmail(accProfile));
+//		
+//		info.setName(profile.getName() != null ? profile.getName() : "");
+//		info.setSurname(profile.getSurname() != null ? profile.getSurname()
+//				: "");
+//
+//		
+//		try {
+//			infoManager.collectInfoForUser(info, getUserId());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		logger.info("Skipped collection info for user " + getUserId());
+//		return "redirect:" + redirectURL;
+//	}
 
 }

@@ -1,5 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="resources.internal" var="res"/>
 
 <!DOCTYPE html>
 <html>
@@ -11,7 +13,7 @@
 <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
 	type="text/css">
 <link href="css/style.css" rel="stylesheet" type="text/css">
-<title>WeLive users extended profile</title>
+<title><fmt:message bundle="${res}" key="extinfo_title" /></title>
 
 <style type="text/css">
 .note {
@@ -47,77 +49,66 @@ input[type=checkbox] {
 			<img class="logo" src="img/welive-logo.png" alt="Welive" />
 		</div>
 		<div class="row">
-			<h3>WeLive users extended profile form</h3>
+			<h3><fmt:message bundle="${res}" key="extinfo_title" /></h3>
 		</div>
 
 		<div class="row">
 			<div class="highlight">
-				<p>
-					The compilation of this form is highly encouraged to improve your experience in the usage of the WeLive framework.
-					It is not compulsory and can be skipped with the button below. 
-					Besides, each single field is optional. 
-					Finally, please note that this is not a registration form.<br /> 
-					<span class="note"><strong>*</strong> </span>
-					The information provided in the fields marked with an asterisk 
-					will be used to provide recommendations to users about services and other functionalities provided by 
-					the WeLive framework.
-				</p>
+				<p><fmt:message bundle="${res}" key="extinfo_message" /></p>
 			</div>
-			<div class="error"><c:out value="${genericError}"/></div>
+            <c:if test="${genericError != null}">
+			 <div class="error"><fmt:message bundle="${res}" key="${genericError}" /></div>
+			</c:if>
 			<div role="form">
 				<form:form method="POST" modelAttribute="info"
 					action="/aac/collect-info">
 					<div class="button-row">
-						<input type="submit" name="save" value="Save"
-							class="btn btn-default" /> <input type="submit" name="skip"
-							value="Skip" class="btn btn-default" />
+						<input type="submit" name="save" value="Save" class="btn btn-default" />
 					</div>
 					<div class="form-group">
-						<label for="pilot" class="pull-left">Pilot<span
+						<label for="pilot" class="pull-left"><fmt:message bundle="${res}" key="extinfo_pilot" /><span
 							class="note">*</span>:
 						</label>
 						<form:errors path="pilot" cssClass="error pull-left"></form:errors>
 						<form:select path="pilot" cssClass="form-control">
 							<form:option value=""></form:option>
-							<form:option value="M">Trento</form:option>
-							<form:option value="F">Bilbao</form:option>
-							<form:option value="F">Novi Sad</form:option>
-							<form:option value="F">Region on Uusimaa-Helsinki</form:option>
+							<form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
+							<form:option value="Bilbao"><fmt:message bundle="${res}" key="extinfo_pilot_bilbao" /></form:option>
+							<form:option value="Novisad"><fmt:message bundle="${res}" key="extinfo_pilot_novisad" /></form:option>
+							<form:option value="Helsinki"><fmt:message bundle="${res}" key="extinfo_pilot_helsinki" /></form:option>
 						</form:select>
 					</div>
 					<div class="form-group">
-						<label for="name" class="pull-left">Name<span class="note">*</span>:
+						<label for="name" class="pull-left"><fmt:message bundle="${res}" key="extinfo_name" /><span class="note">*</span>:
 						</label>
 						<form:errors path="name" cssClass="error pull-left"></form:errors>
 						<form:input path="name" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="surname" class="pull-left">Surname<span
+						<label for="surname" class="pull-left"><fmt:message bundle="${res}" key="extinfo_surname" /><span
 							class="note">*</span>:
 						</label>
 						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="gender" class="pull-left">Gender<span
-							class="note">*</span>:
-						</label>
-						<form:errors path="gender" cssClass="error pull-left"></form:errors>
-						<form:select path="gender" cssClass="form-control">
-							<form:option value=""></form:option>
-							<form:option value="M">Male</form:option>
-							<form:option value="F">Female</form:option>
-						</form:select>
-					</div>
-					<div class="form-group">
-						<label for="email" class="pull-left">Email<span
+						<label for="email" class="pull-left"><fmt:message bundle="${res}" key="extinfo_email" /><span
 							class="note">*</span>:
 						</label>
 						<form:errors path="email" cssClass="error pull-left"></form:errors>
 						<form:input path="email" cssClass="form-control" />
 					</div>
-					<label for="birthdate" class="pull-left">Birthdate<span
-						class="note">*</span>:
+                    <div class="form-group">
+                        <label for="gender" class="pull-left"><fmt:message bundle="${res}" key="extinfo_gender" />:
+                        </label>
+                        <form:errors path="gender" cssClass="error pull-left"></form:errors>
+                        <form:select path="gender" cssClass="form-control">
+                            <form:option value=""></form:option>
+                            <form:option value="M"><fmt:message bundle="${res}" key="extinfo_gender_m" /></form:option>
+                            <form:option value="F"><fmt:message bundle="${res}" key="extinfo_gender_f" /></form:option>
+                        </form:select>
+                    </div>
+					<label for="birthdate" class="pull-left"><fmt:message bundle="${res}" key="extinfo_birthday" />:
 					</label>
 					<form:errors path="birthdate" cssClass="error pull-left"></form:errors>
 					<div class="form-group" style="clear: both;">
@@ -130,68 +121,65 @@ input[type=checkbox] {
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="address" class="pull-left">Address: </label>
+						<label for="address" class="pull-left"><fmt:message bundle="${res}" key="extinfo_address" />: </label>
 						<form:errors path="address" cssClass="error pull-left"></form:errors>
 						<form:input path="address" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="city" class="pull-left">City: </label>
+						<label for="city" class="pull-left"><fmt:message bundle="${res}" key="extinfo_city" />: </label>
 						<form:errors path="city" cssClass="error pull-left"></form:errors>
 						<form:input path="city" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="zip" class="pull-left">Zip: </label>
+						<label for="zip" class="pull-left"><fmt:message bundle="${res}" key="extinfo_zip" />: </label>
 						<form:errors path="zip" cssClass="error pull-left"></form:errors>
 						<form:input path="zip" cssClass="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="country" class="pull-left">Country: </label>
+						<label for="country" class="pull-left"><fmt:message bundle="${res}" key="extinfo_country" />: </label>
 						<form:errors path="country" cssClass="error pull-left"></form:errors>
 						<form:select path="country" cssClass="form-control">
 							<form:option value=""></form:option>
-							<form:option value="IT">Italy</form:option>
-							<form:option value="ES">Spain</form:option>
-							<form:option value="RS">Serbia</form:option>
-							<form:option value="FI">Finland</form:option>
+							<form:option value="IT"><fmt:message bundle="${res}" key="extinfo_country_italy" /></form:option>
+							<form:option value="ES"><fmt:message bundle="${res}" key="extinfo_country_spain" /></form:option>
+							<form:option value="RS"><fmt:message bundle="${res}" key="extinfo_country_serbia" /></form:option>
+							<form:option value="FI"><fmt:message bundle="${res}" key="extinfo_country_finland" /></form:option>
 						</form:select>
 					</div>
 					<div class="form-group">
-						<label for="keywords" class="pull-left">Keywords:</label>
+						<label for="keywords" class="pull-left"><fmt:message bundle="${res}" key="extinfo_tags" />:</label>
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
                     <div class="form-group">
-                        <label for="role" class="pull-left">Role: </label>
+                        <label for="role" class="pull-left"><fmt:message bundle="${res}" key="extinfo_role" />: </label>
                         <form:errors path="role" cssClass="error pull-left"></form:errors>
                         <form:select path="role" cssClass="form-control">
                             <form:option value=""></form:option>
-                            <form:option value="Citizen">Citizen</form:option>
-                            <form:option value="Academy">Academy</form:option>
-                            <form:option value="Business">Business</form:option>
+                            <form:option value="Citizen"><fmt:message bundle="${res}" key="extinfo_role_citizen" /></form:option>
+                            <form:option value="Academy"><fmt:message bundle="${res}" key="extinfo_role_academy" /></form:option>
+                            <form:option value="Business"><fmt:message bundle="${res}" key="extinfo_role_business" /></form:option>
                         </form:select>
                     </div>
-					<div class="form-group">
-						<label for="developer" class="pull-left">Developer:</label>
-						<form:errors path="developer" cssClass="error pull-left"></form:errors>
-						<form:checkbox path="developer" />
+					<div class="form-group" style="text-align:left;">
+                        <div><label><form:checkbox path="developer" disabled="true"/><fmt:message bundle="${res}" key="extinfo_developer" /></label></div>  
 					</div>
 
-					<label for="language" class="pull-left">Languages:</label>
+					<label for="language" class="pull-left"><fmt:message bundle="${res}" key="extinfo_languages" />:</label>
 							<form:errors path="language" cssClass="error pull-left"></form:errors>
 							<br/>
 						</div>
                         <div class="form-group" style="text-align:left;">
-							<div><label><form:checkbox path="language" value="Italian" />Italian</label></div>  
-                            <div><label><form:checkbox path="language" value="Spanish" />Spanish</label></div>  
-                            <div><label><form:checkbox path="language" value="Finnish" />Finnish</label></div>  
-                            <div><label><form:checkbox path="language" value="Serbian" />Serbian</label></div>  
-                            <div><label><form:checkbox path="language" value="SerbianLatin" />Serbian (Latin)</label></div>  
-                            <div><label><form:checkbox path="language" value="English" />English</label></div>  
+							<div><label><form:checkbox path="language" value="Italian" /><fmt:message bundle="${res}" key="extinfo_lang_it" /></label></div>  
+                            <div><label><form:checkbox path="language" value="Spanish" /><fmt:message bundle="${res}" key="extinfo_lang_es" /></label></div>  
+                            <div><label><form:checkbox path="language" value="Finnish" /><fmt:message bundle="${res}" key="extinfo_lang_fi" /></label></div>  
+                            <div><label><form:checkbox path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
+                            <div><label><form:checkbox path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
+                            <div><label><form:checkbox path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
                         </div>
 					<div class="button-row">
-						<input type="submit" name="save" value="Save"
-							class="btn btn-default" /> <input type="submit" name="skip"
-							value="Skip" class="btn btn-default" />
+						<input type="submit" name="save" value="<fmt:message bundle="${res}" key="extinfo_save" />"
+							class="btn btn-default" /> 
 					</div>
 				</form:form>
 			</div>

@@ -18,6 +18,8 @@
 <%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setBundle basename="resources.internal" var="res"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,10 +30,10 @@
 <title>Error</title>
 </head>
 <body>
-	<img class="logo" src="/aac/img/ls_logo.png" alt="SmartCommunity" />
+	<img class="logo" src="/aac/img/welive-logo.png" alt="WeLive" />
 	<div class="clear"></div>
 	<div class="authorities">
-		<p>An error has occurred while processing you request. Please contact the administrator.</p>
+		<p><fmt:message bundle="${res}" key="error_error" /></p>
 	</div>
 	
 	<!--
