@@ -45,7 +45,12 @@
     <sec:authentication-manager alias="authenticationManager">
 	    <sec:authentication-provider 
 	      user-service-ref="clientDetailsUserService" />
-    </sec:authentication-manager>
+      <sec:authentication-provider 
+        user-service-ref="internalUserDetailsService">
+         <sec:password-encoder ref="internalPasswordEncoder">
+        </sec:password-encoder>    
+       </sec:authentication-provider> 
+	  </sec:authentication-manager>
 <!--    
     <sec:authentication-manager alias="userAuthenticationManager">
       <sec:authentication-provider 
@@ -67,7 +72,6 @@
 		<sec:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</sec:http>
 
-<!--
 	<sec:http pattern="/internal/register/rest" create-session="stateless"
     authentication-manager-ref="authenticationManager" >
     <sec:intercept-url pattern="/internal/register/rest" access="IS_AUTHENTICATED_FULLY" />
@@ -88,8 +92,7 @@
     class="eu.trentorise.smartcampus.permissionprovider.oauth.InternalPasswordEncoder">
   </bean>
 	
--->	
-    <sec:http disable-url-rewriting="true" pattern="/admin/**">
+  <sec:http disable-url-rewriting="true" pattern="/admin/**">
         <sec:intercept-url pattern="/admin/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/admin" />
 <!--         <sec:logout invalidate-session="true" logout-url="/admin/logout" delete-cookies="JSESSIONID,open_id_session_id" logout-success-url="/admin"/> -->
@@ -180,8 +183,8 @@
 		<oauth:implicit />
 		<oauth:refresh-token />
 		<oauth:client-credentials />
-<!--		<oauth:password authentication-manager-ref="userAuthenticationManager" /> -->
-		<oauth:password />
+		<oauth:password authentication-manager-ref="authenticationManager" /> 
+<!-- 		<oauth:password /> -->
 	</oauth:authorization-server>
 
     <bean id="authorizationCodeServices" class="eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcAuthorizationCodeServices">
