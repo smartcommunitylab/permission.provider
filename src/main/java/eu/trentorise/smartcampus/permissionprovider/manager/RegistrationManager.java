@@ -80,6 +80,10 @@ public class RegistrationManager {
 			throw new InvalidDataException();
 		}
 		
+		if (lang == null) {
+			lang = "en";
+		}
+		
 		Registration existing = getUserByEmail(email);
 		if (existing != null) {
 			throw new AlreadyRegisteredException();

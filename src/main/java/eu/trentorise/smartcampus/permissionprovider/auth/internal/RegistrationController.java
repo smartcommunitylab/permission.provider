@@ -180,7 +180,6 @@ public class RegistrationController {
 			res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		} catch (Exception e) {
 			e.printStackTrace();
-			res.setStatus(HttpStatus.CONFLICT.value());
 			res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 	}
