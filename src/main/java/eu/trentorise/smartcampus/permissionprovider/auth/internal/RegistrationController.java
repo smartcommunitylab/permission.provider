@@ -221,12 +221,13 @@ public class RegistrationController {
 	 * @return
 	 */
 	@RequestMapping("/confirm")
-	public String confirm(Model model, @RequestParam String confirmationCode) {
+	public String confirm(Model model, @RequestParam String confirmationCode, HttpServletRequest req) {
 		try {
 			Registration user = manager.confirm(confirmationCode);
 			if (user.getPassword() != null) {
 				return "registration/confirmsuccess";
 			} else {
+				req.getSession().setAttribute("changePwdEmail", user.getEmail());
 				model.addAttribute("reg", new RegistrationBean());
 				return "registration/changepwd";
 			}
@@ -260,6 +261,13 @@ public class RegistrationController {
 		if (result.hasFieldErrors("password")) {
 			return "registration/changepwd";
 		}
+		String userMail = (String)req.getSession().getAttribute("changePwdEmail");
+		if (userMail == null || !userMail.equals(reg.getEmail())) {
+			model.addAttribute("error", RegistrationException.class.getSimpleName());
+			return "registration/changepwd";
+		}
+		req.getSession().removeAttribute("changePwdEmail");
+		
 		try {
 			manager.updatePassword(reg.getEmail(), reg.getPassword());
 		} catch (RegistrationException e) {
