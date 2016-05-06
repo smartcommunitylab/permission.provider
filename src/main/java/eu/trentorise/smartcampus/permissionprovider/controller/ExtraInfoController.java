@@ -1,8 +1,6 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import eu.trentorise.smartcampus.network.RemoteException;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;

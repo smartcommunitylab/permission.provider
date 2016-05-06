@@ -214,9 +214,8 @@ input[type=checkbox] {
 	</div>
 
 	<script type="text/javascript">
-	 	var userLang = navigator.language || navigator.userLanguage;
- 		var passedLang ="<%=request.getAttribute("language")%>";
- 		//alert ("The language is: " + userLang + ", passed: " + passedLang);
+	 	var userLang = navigator.language || navigator.userLanguage; 	//read the browser language
+ 		var passedLang ="<%=request.getAttribute("language")%>";		//read the passed language
  		var langToUse = correctLang(userLang);
  		if(passedLang && passedLang != 'null'){
  			langToUse = correctLang(passedLang);
@@ -255,19 +254,6 @@ input[type=checkbox] {
             }
             $('[data-toggle="tooltip"]').tooltip(option)
         });
-        
-        /* function updateDatePickerLang(lang){
-        	$('#datetimepicker1').datetimepicker({
-            	locale: lang,
-            	format: 'DD/MM/YYYY',
-            	viewMode: 'years'
-            });
-        };
-        
-        var enl = document.getElementById('enlang');
-        enl.onclick = updateDatePickerLang("en");
-        var itl = document.getElementById('itlang');
-        itl.onclick = updateDatePickerLang("it"); */
         
         </script>
 </body>
