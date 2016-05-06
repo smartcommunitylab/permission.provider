@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,7 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
@@ -373,7 +371,6 @@ public class AuthController extends AbstractController {
 				}
 			}
 		}
-		
 		return new ModelAndView("redirect:" + target);
 	}
 
