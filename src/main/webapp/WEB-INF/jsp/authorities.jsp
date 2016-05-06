@@ -73,7 +73,10 @@ a.link {
 	</div>
 	<div class="row">
 		<img class="logo-centered"  src="../img/welive-logo.png" alt="WeLive" />
-		<div class="col-md-12 lateralmargin">
+		<div id="my-big-authtitle" class="col-md-offset-1 col-md-10">
+			<h3><fmt:message bundle="${res}" key="authorities_ecosystem_text" /></h3>
+		</div>
+		<div id="my-small-authtitle" class="col-xs-offset-1 col-xs-10">
 			<h3><fmt:message bundle="${res}" key="authorities_ecosystem_text" /></h3>
 		</div>
 	</div>

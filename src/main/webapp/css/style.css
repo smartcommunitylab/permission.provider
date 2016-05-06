@@ -36,7 +36,7 @@ ul.pprovider {
 	margin: 0 auto;
 	padding: 0;
 	list-style-type: none;
-	width: 50%;
+	width: 70%;
 	max-width: 200px;
 }
 
@@ -135,23 +135,28 @@ div.authorities {
 	position: absolute;
 	right: 30px;
 }
-.lateralmargin {
-	margin: 0 5% 0 5%;
-}
 
 .minor-padding {
 	padding-left: 5px !important;
 	/* padding-right: 10px !important; */
 }
 
+.footer a:hover {
+	color:#000;
+}
+
 #my-small-authrequest { display: block; }   /* hide it elsewhere */
 #my-big-authrequest { display: none; }   /* show it elsewhere */
 #my-small-authbuttons {display: block; }
 #my-big-authbuttons {display: none; }
+#my-small-authtitle {display: block; }
+#my-big-authtitle {display: none; }
 
 @media (min-width:768px) {
 	#my-small-authrequest { display: none; }   /* hide it elsewhere */
   	#my-big-authrequest { display: block; }   /* show it elsewhere */
   	#my-small-authbuttons {display: none; }
 	#my-big-authbuttons {display: block; }
+	#my-small-authtitle {display: none; }
+	#my-big-authtitle {display: block; }
 }
