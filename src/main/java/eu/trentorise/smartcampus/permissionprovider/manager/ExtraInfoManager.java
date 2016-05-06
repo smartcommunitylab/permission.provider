@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.network.RemoteException;
@@ -27,6 +28,7 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ExtraInfoReposito
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 @Component
+@Transactional(rollbackFor = Exception.class)
 public class ExtraInfoManager {
 
 	private static final String DEFAULT_ROLE = "Citizen";
@@ -66,7 +68,7 @@ public class ExtraInfoManager {
 			if (info != null) {
 				sendAddUser(info, userId);
 			
-				if (info.getPilot() != null) {
+				if(info.getPilot() != null) {
 					Map<String,Object> logMap = new HashMap<String, Object>();
 					logMap.put("UserID", ""+userId);
 					logMap.put("Pilot", info.getPilot());
@@ -123,7 +125,6 @@ public class ExtraInfoManager {
 			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
 		}
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
-		
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
@@ -166,7 +167,6 @@ public class ExtraInfoManager {
 				Map<String,Object> respMap = new ObjectMapper().readValue(response, HashMap.class);
 				if (respMap != null && StringUtils.hasText((String)respMap.get("exception"))) {
 					throw new RemoteException((String)respMap.get("exception"));
-
 				}
 				return response;
 			}

@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +82,7 @@ public class AppController extends AbstractController {
 	 * @return
 	 */
 	@RequestMapping("/dev")
-	public ModelAndView developer() {
+	public ModelAndView developer(HttpServletRequest request) {
 		User user =  userRepository.findOne(getUserId());
 		Map<String,Object> model = new HashMap<String, Object>();
 
@@ -112,8 +114,6 @@ public class AppController extends AbstractController {
 		Map<String,Object> logMap = new HashMap<String, Object>();
 		logMap.put("UserID", ""+user.getId());
 		weliveLogger.log(WeLiveLogger.USER_DEVELOPER_ACCESS, logMap);
-
-		
 		String username = getUserName(user);
 		model.put("username",username);
 		return new ModelAndView("index", model);

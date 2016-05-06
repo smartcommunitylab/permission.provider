@@ -251,16 +251,26 @@
     <bean id="googleProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter"/>
     <bean id="fbProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.fb.FBFilter"/>
 
-    
-    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
-        <property name="defaultLocale" value="en" />
-    </bean>
-
-
     <bean id="messageSource"
-    class="org.springframework.context.support.ResourceBundleMessageSource">
-    <property name="basename">
-      <value>resources/internal</value>
-    </property>
-  </bean>	
+    	class="org.springframework.context.support.ResourceBundleMessageSource">
+    	<property name="basename">
+      		<value>resources/internal</value>
+    	</property>
+  	</bean>
+  	
+    <mvc:interceptors>
+	    <mvc:interceptor>
+	        <mvc:mapping path="/**" />
+	        <bean id="localeChangeInterceptor"
+	            class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	            <property name="paramName" value="language" />
+	        </bean>
+	    </mvc:interceptor>
+	</mvc:interceptors>
+  
+  	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
+        <property name="cookieName" value="language" />
+        <!-- <property name="defaultLocale" value="it" /> -->
+    </bean>
+    	
 </beans>

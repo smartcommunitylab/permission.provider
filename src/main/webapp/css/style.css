@@ -47,13 +47,52 @@ ul.pprovider li {
 	max-height: 100px;
 }
 
+.btn-social span {
+	line-height: 2em !important;
+}
+
+ul.pproviderwhite {
+	text-align: left;
+	margin: 0 auto;
+	padding: 0;
+	list-style-type: disc;
+	width: 50%;
+	max-width: 230px;
+	font-size: 14px;
+}
+
+ul.pproviderwhite li {
+	background-color: #fff;
+	/*padding: 15%;*/
+	margin: 7%;
+	max-height: 100px;
+}
+
 ul.pprovider li a {
 	color: #ffffff;
 	text-decoration: none;
 	font-size: larger;
 	display: block;
 	/*width: 100%;*/
-	line-height: 3em;
+	line-height: 2em;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+ul.pproviderwhitesmall {
+	text-align: left;
+	margin: 0 auto;
+	padding: 0;
+	list-style-type: disc;
+	max-width: 230px;
+	font-size: 14px;
+}
+
+ul.pproviderwhitesmall li {
+	background-color: #fff;
+	/*padding: 15%;*/
+	margin: 7%;
+	max-height: 100px;
 }
 
 img.logo {
@@ -61,8 +100,18 @@ img.logo {
 	padding: 5% 5% 0 0;
 }
 
+img.logo-nopadtop {
+	float: right;
+	padding: 20px 5% 0 0;
+}
+
+img.logo-centered {
+	float: center;
+	padding: 3% 0 0 0;
+}
+
 div.authorities {
-	margin-top: 10%;
+	margin-top: 2%;
 }
 
 .clear {
@@ -72,4 +121,37 @@ div.authorities {
 .error {
 	font-weight: bold;
 	color: red;
+}
+
+.posrel {
+	position: relative;
+}
+
+.wrapp-confirm {
+	position: absolute;
+	right: 50%;
+}
+.wrapp-deny {
+	position: absolute;
+	right: 30px;
+}
+.lateralmargin {
+	margin: 0 5% 0 5%;
+}
+
+.minor-padding {
+	padding-left: 5px !important;
+	/* padding-right: 10px !important; */
+}
+
+#my-small-authrequest { display: block; }   /* hide it elsewhere */
+#my-big-authrequest { display: none; }   /* show it elsewhere */
+#my-small-authbuttons {display: block; }
+#my-big-authbuttons {display: none; }
+
+@media (min-width:768px) {
+	#my-small-authrequest { display: none; }   /* hide it elsewhere */
+  	#my-big-authrequest { display: block; }   /* show it elsewhere */
+  	#my-small-authbuttons {display: none; }
+	#my-big-authbuttons {display: block; }
 }

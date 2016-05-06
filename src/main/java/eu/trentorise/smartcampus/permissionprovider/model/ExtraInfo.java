@@ -11,10 +11,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 
 @Entity
+@Transactional
 @Table(name = "extra_info")
 public class ExtraInfo implements Serializable {
 
@@ -48,6 +50,8 @@ public class ExtraInfo implements Serializable {
 	private Date birthdate;
 	@Column
 	private String keywords;
+	//@Column
+	//private String[] language;
 
 	@Column
 	private String role;
@@ -113,6 +117,14 @@ public class ExtraInfo implements Serializable {
 	public void setKeywords(String keywords) {
 		this.keywords = keywords;
 	}
+
+	//public String[] getLanguage() {
+	//	return language;
+	//}
+
+	//public void setLanguage(String[] language) {
+	//	this.language = language;
+	//}
 
 	public String getGender() {
 		return gender;

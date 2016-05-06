@@ -22,8 +22,11 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -168,13 +171,57 @@ public class AttributesAdapter {
 	 * @return the authorities to show on any web-based login
 	 */
 	public Map<String, String> getWebAuthorityUrls() {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		String weLiveName = "";
+		String weLiveUrl = "";
 		for (AuthorityMapping mapping : authorities.values()) {
 			if (mapping.isWeb()) {
-				map.put(mapping.getName(), mapping.getUrl());
+				if(mapping.getName().compareTo("welive") == 0){
+					weLiveName = mapping.getName();
+					weLiveUrl = mapping.getUrl();
+				} else {
+					map.put(mapping.getName(), mapping.getUrl());
+				}
 			}
 		}
+		if(weLiveName.compareTo("") != 0){
+			map.put(weLiveName, weLiveUrl);	// add weLive at the last position
+		}
 		return map;
+	}
+	
+	/**
+	 * 
+	 * @return a value ordered map (alphabetical order)
+	 */
+	public Map<String, String> sortHashMapByValues(
+	        Map<String, String> passedMap) {
+	    List<String> mapKeys = new ArrayList<String>(passedMap.keySet());
+	    List<String> mapValues = new ArrayList<String>(passedMap.values());
+	    Collections.sort(mapValues);
+	    Collections.sort(mapKeys);
+
+	    Map<String, String> sortedMap =
+	        new LinkedHashMap<String, String>();
+
+	    Iterator<String> valueIt = mapValues.iterator();
+	    while (valueIt.hasNext()) {
+	        String val = valueIt.next();
+	        Iterator<String> keyIt = mapKeys.iterator();
+
+	        while (keyIt.hasNext()) {
+	            String key = keyIt.next();
+	            String comp1 = passedMap.get(key);
+	            String comp2 = val;
+
+	            if (comp1.equals(comp2)) {
+	                keyIt.remove();
+	                sortedMap.put(key, val);
+	                break;
+	            }
+	        }
+	    }
+	    return sortedMap;
 	}
 	
 	/**

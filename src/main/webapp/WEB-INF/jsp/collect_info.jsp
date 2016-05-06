@@ -7,11 +7,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
-<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet"
-	type="text/css">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
 <link href="css/style.css" rel="stylesheet" type="text/css">
 <title><fmt:message bundle="${res}" key="extinfo_title" /></title>
 
@@ -40,13 +38,38 @@
 input[type=checkbox] {
     margin-right: 5px !important;
 }
+.marginleft {
+	margin-left: 2px;
+	text-align: left;
+}
+.relativepos {
+	position: relative;
+}
+.tooltip-img {
+	position: absolute;
+	right: 5px;
+}
+
 
 </style>
+<script src="lib/jquery.js" type="text/javascript"></script>
+<script src="lib/jquery-ui.min.js" type="text/javascript"></script>
+<script src="lib/bootstrap.js" type="text/javascript"></script>
+<script src="lib/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="lib/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
 </head>
 <body>
 	<div class="container">
+		<fmt:message bundle="${res}" key="language_label" /> : 
+		<a id="enlang" href="?language=en">English</a>&nbsp;|&nbsp;
+		<a id="itlang" href="?language=it">Italiano</a>&nbsp;|&nbsp;
+		<a href="?language=es">Espa&ntilde;ol</a>&nbsp;|&nbsp;
+		<a href="?language=sr">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
+		<a href="?language=sh">Spski (latinica)</a>&nbsp;|&nbsp;
+		<a href="?language=fi">Suomi</a>
+		<%-- Current Locale : ${pageContext.response.locale} --%>
 		<div class="row">
-			<img class="logo" src="img/welive-logo.png" alt="Welive" />
+			<img class="logo-centered" src="img/welive-logo.png" alt="Welive" />
 		</div>
 		<div class="row">
 			<h3><fmt:message bundle="${res}" key="extinfo_title" /></h3>
@@ -60,18 +83,18 @@ input[type=checkbox] {
 			 <div class="error"><fmt:message bundle="${res}" key="${genericError}" /></div>
 			</c:if>
 			<div role="form">
-				<form:form method="POST" modelAttribute="info"
-					action="/aac/collect-info">
+				<form:form method="POST" modelAttribute="info" action="/aac/collect-info">
 					<div class="button-row">
-						<input type="submit" name="save" value="Save" class="btn btn-default" />
+						<input type="submit" name="save" value="<fmt:message bundle="${res}" key="extinfo_save" />" class="btn btn-default" />
 					</div>
-					<div class="form-group">
-						<label for="pilot" class="pull-left"><fmt:message bundle="${res}" key="extinfo_pilot" /><span
-							class="note">*</span>:
+					<div class="form-group relativepos">
+						<label for="pilot" class="pull-left"><fmt:message bundle="${res}" key="extinfo_pilot" />
+							<span class="note">*</span>:
 						</label>
+						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_city_title" />">
 						<form:errors path="pilot" cssClass="error pull-left"></form:errors>
 						<form:select path="pilot" cssClass="form-control">
-							<form:option value=""></form:option>
+							<%-- <form:option value=""></form:option> --%>
 							<form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
 							<form:option value="Bilbao"><fmt:message bundle="${res}" key="extinfo_pilot_bilbao" /></form:option>
 							<form:option value="Novisad"><fmt:message bundle="${res}" key="extinfo_pilot_novisad" /></form:option>
@@ -103,7 +126,6 @@ input[type=checkbox] {
                         </label>
                         <form:errors path="gender" cssClass="error pull-left"></form:errors>
                         <form:select path="gender" cssClass="form-control">
-                            <form:option value=""></form:option>
                             <form:option value="M"><fmt:message bundle="${res}" key="extinfo_gender_m" /></form:option>
                             <form:option value="F"><fmt:message bundle="${res}" key="extinfo_gender_f" /></form:option>
                         </form:select>
@@ -146,16 +168,17 @@ input[type=checkbox] {
 							<form:option value="FI"><fmt:message bundle="${res}" key="extinfo_country_finland" /></form:option>
 						</form:select>
 					</div>
-					<div class="form-group">
+					<div class="form-group relativepos">
 						<label for="keywords" class="pull-left"><fmt:message bundle="${res}" key="extinfo_tags" />:</label>
+						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_keys_title" />">
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
 						<form:input path="keywords" cssClass="form-control" />
 					</div>
-                    <div class="form-group">
+                    <div class="form-group relativepos">
                         <label for="role" class="pull-left"><fmt:message bundle="${res}" key="extinfo_role" />: </label>
+                        <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
                         <form:errors path="role" cssClass="error pull-left"></form:errors>
                         <form:select path="role" cssClass="form-control">
-                            <form:option value=""></form:option>
                             <form:option value="Citizen"><fmt:message bundle="${res}" key="extinfo_role_citizen" /></form:option>
                             <form:option value="Academy"><fmt:message bundle="${res}" key="extinfo_role_academy" /></form:option>
                             <form:option value="Business"><fmt:message bundle="${res}" key="extinfo_role_business" /></form:option>
@@ -165,18 +188,22 @@ input[type=checkbox] {
                         <div><label><form:checkbox path="developer" disabled="true"/><fmt:message bundle="${res}" key="extinfo_developer" /></label></div>  
 					</div>
 
-					<label for="language" class="pull-left"><fmt:message bundle="${res}" key="extinfo_languages" />:</label>
-							<form:errors path="language" cssClass="error pull-left"></form:errors>
-							<br/>
-						</div>
-                        <div class="form-group" style="text-align:left;">
-							<div><label><form:checkbox path="language" value="Italian" /><fmt:message bundle="${res}" key="extinfo_lang_it" /></label></div>  
-                            <div><label><form:checkbox path="language" value="Spanish" /><fmt:message bundle="${res}" key="extinfo_lang_es" /></label></div>  
-                            <div><label><form:checkbox path="language" value="Finnish" /><fmt:message bundle="${res}" key="extinfo_lang_fi" /></label></div>  
-                            <div><label><form:checkbox path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
-                            <div><label><form:checkbox path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
-                            <div><label><form:checkbox path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
-                        </div>
+					<div class="form-group relativepos">
+						<label for="language" class="pull-left"><fmt:message bundle="${res}" key="extinfo_languages" />:
+						</label>
+						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_language_title" />">
+						<form:errors path="language" cssClass="error pull-left"></form:errors>
+						<br/>
+					</div>
+                    <div class="form-group marginleft">
+						<div><label><form:checkbox path="language" value="Italian" /><fmt:message bundle="${res}" key="extinfo_lang_it" /></label></div>  
+                       	<div><label><form:checkbox path="language" value="Spanish" /><fmt:message bundle="${res}" key="extinfo_lang_es" /></label></div>  
+                      	<div><label><form:checkbox path="language" value="Finnish" /><fmt:message bundle="${res}" key="extinfo_lang_fi" /></label></div>  
+                        <div><label><form:checkbox path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
+                        <div><label><form:checkbox path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
+                        <div><label><form:checkbox path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
+                    </div>
+                    <!-- </div> -->    
 					<div class="button-row">
 						<input type="submit" name="save" value="<fmt:message bundle="${res}" key="extinfo_save" />"
 							class="btn btn-default" /> 
@@ -186,18 +213,62 @@ input[type=checkbox] {
 		</div>
 	</div>
 
-	<script src="lib/jquery.js"></script>
-	<script src="lib/bootstrap.min.js"></script>
-	<script src="lib/moment.min.js"></script>
-	<script src="lib/bootstrap-datetimepicker.min.js"></script>
-
-
 	<script type="text/javascript">
-            $(function () {
-                $('#datetimepicker1').datetimepicker({
-                	format: 'DD/MM/YYYY', viewMode: 'years'
-                });
+	 	var userLang = navigator.language || navigator.userLanguage;
+ 		var passedLang ="<%=request.getAttribute("language")%>";
+ 		//alert ("The language is: " + userLang + ", passed: " + passedLang);
+ 		var langToUse = correctLang(userLang);
+ 		if(passedLang && passedLang != 'null'){
+ 			langToUse = correctLang(passedLang);
+ 		}
+	 	
+        function correctLang(lang){
+        	if(lang.indexOf("en") > -1){
+        		return "en";
+        	} else if(lang.indexOf("it") > -1){
+        		return "it";
+        	} else if(lang.indexOf("es") > -1){
+        		return "es";
+        	} else if(lang.indexOf("sr") > -1){
+        		return "bs";
+        	} else if(lang.indexOf("sh") > -1){
+        		return "bs";
+        	} else if(lang.indexOf("fi") > -1){
+        		return "fi";
+        	}
+        };
+        
+        $(function () {
+            $('#datetimepicker1').datetimepicker({
+            	locale: langToUse,
+            	format: 'DD/MM/YYYY', 
+            	viewMode: 'years'
             });
+        });
+        
+        $(function () {
+        	var option = {
+        		animation: true,
+           		delay: { "show": 300, "hide": 100 },
+            	placement: 'left',
+            	trigger: 'hover focus click'
+            }
+            $('[data-toggle="tooltip"]').tooltip(option)
+        });
+        
+        /* function updateDatePickerLang(lang){
+        	$('#datetimepicker1').datetimepicker({
+            	locale: lang,
+            	format: 'DD/MM/YYYY',
+            	viewMode: 'years'
+            });
+        };
+        
+        var enl = document.getElementById('enlang');
+        enl.onclick = updateDatePickerLang("en");
+        var itl = document.getElementById('itlang');
+        itl.onclick = updateDatePickerLang("it"); */
+        
         </script>
 </body>
 </html>

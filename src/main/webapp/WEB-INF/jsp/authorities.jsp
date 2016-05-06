@@ -28,6 +28,10 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="../css/style.css" rel="stylesheet" type="text/css">
+<link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/docs.css" rel="stylesheet" type="text/css">
+<link href="../css/bootstrap-social.css" rel="stylesheet" type="text/css">
 <title>WeLive AAC</title>
 <style type="text/css">
 a.link {
@@ -44,11 +48,35 @@ a.link {
 	border-top: 1px solid #EEE;
 	margin-top: 2em;
 	padding: 1em;
+	background-image: none;
+	background-repeat: no-repeat;
+	opacity: 1;
+}
+.langSelect {
+	align: center;
+	heght: 30px;
+	font-size: 14px;
+	margin-top: 5px;
 }
 </style>
 </head>
 <body>
-	<img class="logo" src="../img/welive-logo.png" alt="WeLive" />
+	<div class="langSelect">
+		<fmt:message bundle="${res}" key="language_label" /> : 
+		<a id="enlang" href="?language=en">English</a>&nbsp;|&nbsp;
+		<a id="itlang" href="?language=it">Italiano</a>&nbsp;|&nbsp;
+		<a href="?language=es">Espa&ntilde;ol</a>&nbsp;|&nbsp;
+		<a href="?language=sr">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
+		<a href="?language=sh">Spski (latinica)</a>&nbsp;|&nbsp;
+		<a href="?language=fi">Suomi</a>
+		<%-- Current Locale : ${pageContext.response.locale} --%>
+	</div>
+	<div class="row">
+		<img class="logo-centered"  src="../img/welive-logo.png" alt="WeLive" />
+		<div class="col-md-12 lateralmargin">
+			<h3><fmt:message bundle="${res}" key="authorities_ecosystem_text" /></h3>
+		</div>
+	</div>
 	<div class="clear"></div>
 	<div class="authorities">
 		<p><fmt:message bundle="${res}" key="authorities_select" /></p>
@@ -58,11 +86,32 @@ a.link {
 						.getAttribute("authorities");
 				for (String s : authorities.keySet()) {
 			%>
-			<li><a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
+			<%-- <c:if test="${s == 'google'}">
+				<a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/<%=s%>">
+            		<span class="fa fa-google"></span> Sign in with Google
+          		</a>
+          	</c:if>
+          	<c:if test="${s == 'facebook'}">
+				<a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/<%=s%>">
+            		<span class="fa fa-facebook"></span> Sign in with Facebook
+          		</a>
+          	</c:if> --%>
+	        <li>
+	        	<% if(s.compareTo("google") == 0) { %>
+					<a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/<%=s%>">
+            			<span class="fa fa-google"></span> GOOGLE
+          			</a>
+				<% } %>
+				<% if(s.compareTo("facebook") == 0) { %>
+					<a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/<%=s%>">
+            			<span class="fa fa-facebook"></span> FACEBOOK
+          			</a>
+				<% } %>
+	          	<% if(s.compareTo("google") != 0 && s.compareTo("facebook") != 0) { %>
+	          		<a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
+				<% } %>
 			</li>
-			<%
-				}
-			%>
+			<% } %>
 		</ul>
 	</div>
 
