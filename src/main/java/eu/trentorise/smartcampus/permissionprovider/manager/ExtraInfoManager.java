@@ -65,6 +65,10 @@ public class ExtraInfoManager {
 			entity.setUser(load);
 			infoRepo.save(entity);
 			
+			if (!StringUtils.hasText(load.email())) {
+				addEmail(load, info.getEmail());
+			}
+			
 			if (info != null) {
 				sendAddUser(info, userId);
 			
@@ -76,6 +80,15 @@ public class ExtraInfoManager {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param user
+	 * @param email
+	 */
+	private void addEmail(User user, String email) {
+		user.updateEmail(email);
+		userRepo.save(user);
 	}
 
 	/**

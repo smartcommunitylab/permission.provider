@@ -17,7 +17,9 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -29,6 +31,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.springframework.util.StringUtils;
 
 /**
  * DB entity representing the user: user ID, social ID, and the attributes
@@ -145,40 +149,110 @@ public class User implements Serializable {
 		setFullName((getName()+" "+getSurname()).trim().toLowerCase());
 	}
 	
-	public String email() {
+	public void updateEmail(String email) {
 		if (attributeEntities != null) {
+			Map<String, Authority> authorities = new HashMap<String,Authority>();
 			for (Attribute a : attributeEntities) {
 				if ("google".equals(a.getAuthority().getName()) && 
 					"OIDC_CLAIM_email".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
 				if ("welive".equals(a.getAuthority().getName()) && 
 						"email".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
 				if ("welive".equals(a.getAuthority().getName()) && 
 						"username".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
 				if ("googlelocal".equals(a.getAuthority().getName()) && 
 						"email".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
 				if ("facebook".equals(a.getAuthority().getName()) && 
 						"email".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
 				if ("facebooklocal".equals(a.getAuthority().getName()) && 
 						"email".equals(a.getKey())) 
 				{
-					return a.getValue();
+					a.setValue(email);
+					return;
 				}
+				authorities.put(a.getAuthority().getName(), a.getAuthority());
 			}
+			
+			Attribute newAttr = new Attribute();
+			newAttr.setValue(email);
+			if (authorities.containsKey("facebook")) {
+				newAttr.setAuthority(authorities.get("facebook"));
+				newAttr.setKey("email");
+			} else if (authorities.containsKey("facebooklocal")) {
+				newAttr.setAuthority(authorities.get("facebooklocal"));
+				newAttr.setKey("email");
+			} else if (authorities.containsKey("welive")) {
+				newAttr.setAuthority(authorities.get("welive"));
+				newAttr.setKey("username");
+			} else if (authorities.containsKey("googlelocal")) {
+				newAttr.setAuthority(authorities.get("googlelocal"));
+				newAttr.setKey("email");
+			} else if (authorities.containsKey("google")) {
+				newAttr.setAuthority(authorities.get("google"));
+				newAttr.setKey("OIDC_CLAIM_email");
+			}
+			attributeEntities.add(newAttr);
+		}
+	}
+	
+	private String findEmail() {
+		for (Attribute a : attributeEntities) {
+			if ("google".equals(a.getAuthority().getName()) && 
+				"OIDC_CLAIM_email".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+			if ("welive".equals(a.getAuthority().getName()) && 
+					"email".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+			if ("welive".equals(a.getAuthority().getName()) && 
+					"username".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+			if ("googlelocal".equals(a.getAuthority().getName()) && 
+					"email".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+			if ("facebook".equals(a.getAuthority().getName()) && 
+					"email".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+			if ("facebooklocal".equals(a.getAuthority().getName()) && 
+					"email".equals(a.getKey())) 
+			{
+				return a.getValue();
+			}
+		}
+		return null;
+	}
+	public String email() {
+		if (attributeEntities != null) {
+			String res = findEmail();
+			if (StringUtils.hasText(res) && !"null".equals(res)) return res;
 		}
 		return null;
 	}

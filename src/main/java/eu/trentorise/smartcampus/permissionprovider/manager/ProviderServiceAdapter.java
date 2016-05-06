@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.permissionprovider.Config;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
@@ -151,14 +152,6 @@ public class ProviderServiceAdapter {
 	}
 
 	private void populateAttributes(Authority auth, Map<String, String> attributes, List<Attribute> list, Set<Attribute> old) {
-		for (String key : attributes.keySet()) {
-			String value = attributes.get(key);
-			Attribute attr = new Attribute();
-			attr.setAuthority(auth);
-			attr.setKey(key);
-			attr.setValue(value);
-			list.add(attr);
-		}
 		if (old != null) {
 			for (Attribute a : old) {
 				if (!a.getAuthority().equals(auth)) {
@@ -167,8 +160,23 @@ public class ProviderServiceAdapter {
 					attr.setKey(a.getKey());
 					attr.setValue(a.getValue());
 					list.add(attr);
+				} else {
+					// if no value for old attribute, use the old value
+					if (!StringUtils.hasText(attributes.get(a.getKey())) || "null".equals(attributes.get(a.getKey()))) {
+						attributes.put(a.getKey(), a.getValue());
+					}
 				}
 			}
+		}
+
+		
+		for (String key : attributes.keySet()) {
+			String value = attributes.get(key);
+			Attribute attr = new Attribute();
+			attr.setAuthority(auth);
+			attr.setKey(key);
+			attr.setValue(value);
+			list.add(attr);
 		}
 	}
 
