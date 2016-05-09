@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -88,6 +89,18 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 			// do retry: it may be the case of race condition so retry the operation but only once
 			if (!repeat) return refreshWithRepeat(refreshTokenValue, request, true);
 			throw e;
+		}
+	}
+
+	
+	
+	@Override
+	protected int getAccessTokenValiditySeconds(AuthorizationRequest authorizationRequest) {
+		if ("client_credentials".equals(authorizationRequest.getAuthorizationParameters().get("grant_type"))) {
+			// infinity for client credentials token
+			return Integer.MAX_VALUE;
+		} else {
+			return super.getAccessTokenValiditySeconds(authorizationRequest);
 		}
 	}
 

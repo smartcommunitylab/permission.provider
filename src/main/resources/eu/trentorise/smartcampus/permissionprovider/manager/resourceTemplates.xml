@@ -43,11 +43,23 @@
 		</resourceMapping>
 	</service>
 	
+    <service name="Logging service" id="welive.logging">
+        <description>WeLive project-wide logging service.</description>
+        <resource name="App" id="app">
+            <description>Logging application identifier</description>
+        </resource>
+        
+        <resourceMapping id="welive.logging.read"
+            name="Read logs" uri="welive.logging.read" authority="ROLE_CLIENT">
+            <description>Read, aggregate, and process logged information.</description>
+        </resourceMapping>
+        <resourceMapping id="welive.logging.write"
+            name="Write logs" uri="welive.logging.{app}.write" authority="ROLE_CLIENT">
+            <description>Send logged event information for the app '{app}'.</description>
+        </resourceMapping>
+        </service>
 	
-	
-	
-	
-	
+		
 	<!-- <service name="Extended profile service" id="profile.extprofie">
 		<description>Core service for managing сustom user profiles defined by different applications.</description>
 		<resource name="Profile" id="profile">
