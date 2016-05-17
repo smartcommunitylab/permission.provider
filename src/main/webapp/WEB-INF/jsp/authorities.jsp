@@ -59,16 +59,25 @@ a.link {
 	margin-top: 5px;
 }
 </style>
+<script type="text/javascript">
+  function changeLang(lang) {
+	  var str = window.location.href;
+	  str = str.replace(/\&language=[^\&]{2}/g,'');
+      str = str.replace(/\?language=[^\&]{2}/g,'');
+	  if (str.indexOf('?')>0) window.location.href = str +'&language='+lang;
+	  else window.location.href = str +'?language='+lang;
+  }
+</script>
 </head>
 <body>
 	<div class="langSelect">
 		<fmt:message bundle="${res}" key="language_label" /> : 
-		<a id="enlang" href="?language=en">English</a>&nbsp;|&nbsp;
-		<a id="itlang" href="?language=it">Italiano</a>&nbsp;|&nbsp;
-		<a href="?language=es">Espa&ntilde;ol</a>&nbsp;|&nbsp;
-		<a href="?language=sr">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
-		<a href="?language=sh">Spski (latinica)</a>&nbsp;|&nbsp;
-		<a href="?language=fi">Suomi</a>
+		<a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
+		<a id="itlang" href="javascript:changeLang('it')">Italiano</a>&nbsp;|&nbsp;
+		<a href="javascript:changeLang('es')">Espa&ntilde;ol</a>&nbsp;|&nbsp;
+		<a href="javascript:changeLang('sr')">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
+		<a href="javascript:changeLang('sh')">Spski (latinica)</a>&nbsp;|&nbsp;
+		<a href="javascript:changeLang('fi')">Suomi</a>
 		<%-- Current Locale : ${pageContext.response.locale} --%>
 	</div>
 	<div class="row">
@@ -87,32 +96,26 @@ a.link {
 			<%
 				Map<String, String> authorities = (Map<String, String>) request
 						.getAttribute("authorities");
+			%>
+            <% if(authorities.containsKey("google")) { %>
+            <li>
+                <a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/google">
+                    <span class="fa fa-google"></span> GOOGLE
+                </a>
+            </li>
+            <% authorities.remove("google");} %>
+            <% if(authorities.containsKey("facebook")) { %>
+            <li>
+                <a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/facebook">
+                    <span class="fa fa-facebook"></span> FACEBOOK
+                </a>
+            </li>
+            <% authorities.remove("facebook");} %>
+			<%
 				for (String s : authorities.keySet()) {
 			%>
-			<%-- <c:if test="${s == 'google'}">
-				<a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/<%=s%>">
-            		<span class="fa fa-google"></span> Sign in with Google
-          		</a>
-          	</c:if>
-          	<c:if test="${s == 'facebook'}">
-				<a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/<%=s%>">
-            		<span class="fa fa-facebook"></span> Sign in with Facebook
-          		</a>
-          	</c:if> --%>
 	        <li>
-	        	<% if(s.compareTo("google") == 0) { %>
-					<a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/<%=s%>">
-            			<span class="fa fa-google"></span> GOOGLE
-          			</a>
-				<% } %>
-				<% if(s.compareTo("facebook") == 0) { %>
-					<a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/<%=s%>">
-            			<span class="fa fa-facebook"></span> FACEBOOK
-          			</a>
-				<% } %>
-	          	<% if(s.compareTo("google") != 0 && s.compareTo("facebook") != 0) { %>
-	          		<a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
-				<% } %>
+         		<a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
 			</li>
 			<% } %>
 		</ul>

@@ -57,16 +57,25 @@ input[type=checkbox] {
 <script src="lib/bootstrap.js" type="text/javascript"></script>
 <script src="lib/moment-with-locales.min.js" type="text/javascript"></script>
 <script src="lib/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  function changeLang(lang) {
+      var str = window.location.href;
+      str = str.replace(/\&language=[^\&]{2}/g,'');
+      str = str.replace(/\?language=[^\&]{2}/g,'');
+      if (str.indexOf('?')>0) window.location.href = str +'&language='+lang;
+      else window.location.href = str +'?language='+lang;
+  }
+</script>
 </head>
 <body>
 	<div class="container">
 		<fmt:message bundle="${res}" key="language_label" /> : 
-		<a id="enlang" href="?language=en">English</a>&nbsp;|&nbsp;
-		<a id="itlang" href="?language=it">Italiano</a>&nbsp;|&nbsp;
-		<a href="?language=es">Espa&ntilde;ol</a>&nbsp;|&nbsp;
-		<a href="?language=sr">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
-		<a href="?language=sh">Spski (latinica)</a>&nbsp;|&nbsp;
-		<a href="?language=fi">Suomi</a>
+        <a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
+        <a id="itlang" href="javascript:changeLang('it')">Italiano</a>&nbsp;|&nbsp;
+        <a href="javascript:changeLang('es')">Espa&ntilde;ol</a>&nbsp;|&nbsp;
+        <a href="javascript:changeLang('sr')">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
+        <a href="javascript:changeLang('sh')">Spski (latinica)</a>&nbsp;|&nbsp;
+        <a href="javascript:changeLang('fi')">Suomi</a>
 		<%-- Current Locale : ${pageContext.response.locale} --%>
 		<div class="row">
 			<img class="logo-centered" src="img/welive-logo.png" alt="Welive" />
