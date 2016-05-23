@@ -63,8 +63,7 @@ ul.pproviderwhite {
 
 ul.pproviderwhite li {
 	background-color: #fff;
-	/*padding: 15%;*/
-	margin: 7%;
+	padding: 5px;
 	max-height: 100px;
 }
 

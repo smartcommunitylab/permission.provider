@@ -26,7 +26,6 @@ import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 @Controller
 @Transactional
-@RequestMapping(value = "/collect-info")
 public class ExtraInfoController extends AbstractController {
 
 	private Log logger = LogFactory.getLog(getClass());
@@ -37,7 +36,14 @@ public class ExtraInfoController extends AbstractController {
 	@Autowired
 	private BasicProfileManager profileManager;
 
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/terms", method = RequestMethod.GET)
+	public String terms(Model model, HttpServletRequest req) {
+		Locale locale = RequestContextUtils.getLocale(req);
+        model.addAttribute("language", locale.getLanguage());
+        return "terms";
+	}
+	
+	@RequestMapping(value = "/collect-info", method = RequestMethod.GET)
 	public String load(Model model, HttpServletRequest req) {
 		BasicProfile profile = profileManager.getBasicProfileById(Long
 				.toString(getUserId()));
@@ -68,7 +74,7 @@ public class ExtraInfoController extends AbstractController {
 
 	// bind name of bean in ModelAttribute annotation should be defined. If not
 	// error are not shown in view
-	@RequestMapping(method = RequestMethod.POST, params = "save")
+	@RequestMapping(value = "/collect-info", method = RequestMethod.POST, params = "save")
 	public String collectInfo(
 			@ModelAttribute("info") @Valid ExtraInfoBean info,
 			BindingResult result, Model model, HttpServletRequest req,

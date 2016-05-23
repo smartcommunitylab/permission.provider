@@ -159,6 +159,35 @@ public class AuthController extends AbstractController {
 		return new ModelAndView("authorities", model);
 	}
 
+	@RequestMapping("/eauth/start")
+	public ModelAndView reAuthorise(HttpServletRequest req) {
+		Map<String, Object> model = new HashMap<String, Object>();
+	
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
+		String clientId = (String)req.getSession().getAttribute("client_id");
+		if (clientId != null) {
+			Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
+
+			Set<String> all = new HashSet<String>(authorities.keySet());
+			Map<String, String> resultAuthorities = new HashMap<String, String>();
+			for (String idp : all) {
+				if (authorities.containsKey(idp) && idps.contains(idp))
+					resultAuthorities.put(idp, authorities.get(idp));
+			}			
+			if (resultAuthorities.size() == 1) {
+				return new ModelAndView("redirect:/eauth/"
+						+ resultAuthorities.keySet().iterator().next());
+			}
+			model.put("authorities", resultAuthorities);
+		} else {
+			model.put("authorities", authorities);
+		}
+
+		return new ModelAndView("authorities", model);
+
+	}
+	
+	
 	/**
 	 * Entry point for resource access authorization request. Redirects to the
 	 * login page. In addition to standard OAuth parameters, it is possible to
@@ -367,7 +396,7 @@ public class AuthController extends AbstractController {
 			if (collectInfoMode && !authorityUrl.equals("welive")) {
 				if (!infoManager.infoAlreadyCollected(getUserId())) {
 					req.getSession().setAttribute("redirect", target);
-					return new ModelAndView("redirect:/collect-info");
+					return new ModelAndView("redirect:/terms");
 				}
 			}
 		}

@@ -47,8 +47,7 @@
 					            <div ng-switch-default>
 					             <div ng-repeat="(key,arr) in permissions.availableResources">
 					                <div ng-repeat="r in arr" class="row">
-					                    <div class="col-md-1">{{r.resourceParameter.value}}</div>
-					                  <div class="col-md-5"><strong>{{r.resourceUri}}</strong></div>
+					                  <div class="col-md-6"><strong>{{r.resourceUri}}</strong> <span ng-if="r.resourceParameter != null">[{{r.resourceParameter.value}}]</span></div>
 					                  <div class="col-md-4">{{r.name}}</div>
 					                    <div class="col-md-1">{{toAuthority(r.authority)}}</div>
 					                    <div class="col-md-1"><input type="checkbox" ng-model="permissions.selectedResources[r.resourceId]"> <span class="{{permissionIcon(permissions.resourceApprovals[r.resourceId])}}"></span></div>

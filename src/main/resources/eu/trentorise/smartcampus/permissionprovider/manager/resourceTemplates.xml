@@ -49,15 +49,19 @@
             <description>Logging application identifier</description>
         </resource>
         
-        <resourceMapping id="welive.logging.read"
-            name="Read logs" uri="welive.logging.read" authority="ROLE_CLIENT">
-            <description>Read, aggregate, and process logged information.</description>
-        </resourceMapping>
         <resourceMapping id="welive.logging.write"
             name="Write logs" uri="welive.logging.{app}.write" authority="ROLE_CLIENT">
             <description>Send logged event information for the app '{app}'.</description>
         </resourceMapping>
-        </service>
+        <resourceMapping id="welive.logging.read"
+            name="Read logs" uri="welive.logging.{app}.read" authority="ROLE_CLIENT">
+            <description>Read logged event information of the app '{app}'.</description>
+        </resourceMapping>
+        <resourceMapping id="welive.logging.aggregate"
+            name="Aggregate logs" uri="welive.logging.aggregate" authority="ROLE_CLIENT" approvalRequired="true">
+            <description>Aggregate and process logged information.</description>
+        </resourceMapping>
+    </service>
 	
 		
 	<!-- <service name="Extended profile service" id="profile.extprofie">

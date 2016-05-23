@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -58,13 +59,14 @@ input[type=checkbox] {
 <script src="lib/moment-with-locales.min.js" type="text/javascript"></script>
 <script src="lib/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
 <script type="text/javascript">
+  var showTerms = true;
   function changeLang(lang) {
       var str = window.location.href;
       str = str.replace(/\&language=[^\&]{2}/g,'');
       str = str.replace(/\?language=[^\&]{2}/g,'');
       if (str.indexOf('?')>0) window.location.href = str +'&language='+lang;
       else window.location.href = str +'?language='+lang;
-  }
+  }  
 </script>
 </head>
 <body>
