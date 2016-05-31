@@ -50,12 +50,13 @@
                 <div>&nbsp;</div>
                 <c:if test="${error != null}"><div class="error"><fmt:message bundle="${res}" key="${error}" /></div></c:if>
                 <div>&nbsp;</div>
-                <div class="col-md-12 form-group">
+                  <form:input type="hidden" path="email" value="<%=request.getSession().getAttribute(\"changePwdEmail\") %>"/>
+<%--                 <div class="col-md-12 form-group">
                   <label> <fmt:message bundle="${res}" key="lbl_user" />*: </label>
                   <form:input cssClass="form-control" path="email"/>
                   <form:errors cssClass="error" path="email"/>
                 </div>
-                <div class="col-md-12 form-group">
+ --%>                <div class="col-md-12 form-group">
                   <label> <fmt:message bundle="${res}" key="lbl_pwd" />*: </label>
                   <form:input class="form-control" type="password" path="password"/>
                   <form:errors cssClass="error" path="password"/>

@@ -273,7 +273,7 @@
     <bean id="internalProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.internal.InternalRegFilter"/>
 
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
-        <property name="defaultLocale" value="en" />
+        <property name="defaultLocale" value="it" />
     </bean>
 
 		<bean id="templateEngine" class="org.thymeleaf.TemplateEngine">
