@@ -379,8 +379,8 @@ public class AuthController extends AbstractController {
 			if (clientId != null) {
 				Map<String,Object> logMap = new HashMap<String, Object>();
 				ClientAppBasic clientAppBasic = clientDetailsAdapter.get(clientId);
-				logMap.put("UserID", ""+userEntity.getId());
-				logMap.put("ClientApp", ""+clientAppBasic.getName());
+				logMap.put("userid", ""+userEntity.getId());
+				logMap.put("clientapp", ""+clientAppBasic.getName());
 				logger.log(WeLiveLogger.USER_CLIENT_AUTHORIZATION, logMap);
 
 			}

@@ -112,7 +112,7 @@ public class AppController extends AbstractController {
 		}
 		
 		Map<String,Object> logMap = new HashMap<String, Object>();
-		logMap.put("UserID", ""+user.getId());
+		logMap.put("userid", ""+user.getId());
 		weliveLogger.log(WeLiveLogger.USER_DEVELOPER_ACCESS, logMap);
 		String username = getUserName(user);
 		model.put("username",username);
@@ -152,8 +152,8 @@ public class AppController extends AbstractController {
 		try {
 			response.setData(clientDetailsAdapter.create(appData, getUserId()));
 			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("UserID", ""+getUserId());
-			logMap.put("ClientApp", ""+appData.getName());
+			logMap.put("userid", ""+getUserId());
+			logMap.put("clientapp", ""+appData.getName());
 			weliveLogger.log(WeLiveLogger.CLIENT_APP_CREATED, logMap);
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
@@ -207,8 +207,8 @@ public class AppController extends AbstractController {
 			ClientAppBasic appData = clientDetailsAdapter.delete(clientId);
 			response.setData(appData);
 			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("UserID", ""+getUserId());
-			logMap.put("ClientApp", ""+appData.getName());
+			logMap.put("userid", ""+getUserId());
+			logMap.put("clientapp", ""+appData.getName());
 			weliveLogger.log(WeLiveLogger.CLIENT_APP_DELETED, logMap);
 
 		} catch (Exception e) {
@@ -233,8 +233,8 @@ public class AppController extends AbstractController {
 			checkClientIdOwnership(clientId);
 			response.setData(clientDetailsAdapter.update(clientId, data));
 			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("UserID", ""+getUserId());
-			logMap.put("ClientApp", ""+data.getName());
+			logMap.put("userid", ""+getUserId());
+			logMap.put("clientapp", ""+data.getName());
 			weliveLogger.log(WeLiveLogger.CLIENT_APP_DELETED, logMap);
 
 		} catch (Exception e) {

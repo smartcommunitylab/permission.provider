@@ -133,8 +133,8 @@ public class ProviderServiceAdapter {
 			}
 			
 			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("UserID", ""+user.getId());
-			logMap.put("Authority", authorityUrl);
+			logMap.put("userid", ""+user.getId());
+			logMap.put("authority", authorityUrl);
 			logger.log(WeLiveLogger.USER_CREATED, logMap);
 		} else {
 			user = users.get(0);
@@ -144,8 +144,8 @@ public class ProviderServiceAdapter {
 			userRepository.save(user);
 			
 			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("UserID", ""+user.getId());
-			logMap.put("Authority", authorityUrl);
+			logMap.put("userid", ""+user.getId());
+			logMap.put("authority", authorityUrl);
 			logger.log(WeLiveLogger.USER_UPDATED, logMap);
 		}
 		return user;

@@ -109,7 +109,7 @@ input[type=checkbox] {
 							<form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
 							<form:option value="Bilbao"><fmt:message bundle="${res}" key="extinfo_pilot_bilbao" /></form:option>
 							<form:option value="Novisad"><fmt:message bundle="${res}" key="extinfo_pilot_novisad" /></form:option>
-							<form:option value="Helsinki"><fmt:message bundle="${res}" key="extinfo_pilot_helsinki" /></form:option>
+							<form:option value="Uusimaa"><fmt:message bundle="${res}" key="extinfo_pilot_helsinki" /></form:option>
 						</form:select>
 					</div>
 					<div class="form-group">
