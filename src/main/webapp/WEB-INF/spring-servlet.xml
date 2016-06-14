@@ -243,10 +243,6 @@
     <bean id="authServices" class="eu.trentorise.smartcampus.resourceprovider.jdbc.JdbcServices">
         <constructor-arg ref="dataSource"/>
     </bean>
-
-       <bean id="weliveLogging" class="it.smartcommunitylab.logging.LoggingClient">
-        <constructor-arg value="${logging.endpoint}"></constructor-arg>
-    </bean>
     
     <bean id="googleProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.google.GoogleProviderFilter"/>
     <bean id="fbProviderFilterBean" class="eu.trentorise.smartcampus.permissionprovider.auth.fb.FBFilter"/>

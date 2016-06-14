@@ -20,7 +20,10 @@ import it.smartcommunitylab.logging.model.LogMsg;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -44,8 +47,19 @@ public class WeLiveLogger {
 
 	public static final String USER_DEVELOPER_ACCESS = "DeveloperAccess";
 	
-	@Autowired
-	private LoggingClient log;
+	
+	
+	@Value("${api.token}")
+	private String token;
+	@Value("${logging.endpoint}")
+	private String endpoint;
+
+	private LoggingClient log = null;
+	
+	@PostConstruct
+	public void init() {
+		log = LoggingClient.logClient(endpoint, "Basic " + token);;
+	}
 	
 	public void log(String type, Map<String, Object> data) {
 		try {
