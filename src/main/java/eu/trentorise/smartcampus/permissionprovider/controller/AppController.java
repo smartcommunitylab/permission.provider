@@ -235,7 +235,7 @@ public class AppController extends AbstractController {
 			Map<String,Object> logMap = new HashMap<String, Object>();
 			logMap.put("userid", ""+getUserId());
 			logMap.put("clientapp", ""+data.getName());
-			weliveLogger.log(WeLiveLogger.CLIENT_APP_DELETED, logMap);
+			weliveLogger.log(WeLiveLogger.CLIENT_APP_UPDATED, logMap);
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
