@@ -72,7 +72,9 @@ public class ResourceAccessController {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
 			Collection<String> actualScope = auth.getAuthorizationRequest().getScope();
-			Collection<String> scopeSet = StringUtils.commaDelimitedListToSet(scope);
+			String asString = StringUtils.collectionToCommaDelimitedString(actualScope);
+			actualScope = StringUtils.commaDelimitedListToSet(asString.toLowerCase());
+			Collection<String> scopeSet = StringUtils.commaDelimitedListToSet(scope.toLowerCase());
 			if (actualScope != null && !actualScope.isEmpty() && actualScope.containsAll(scopeSet)) {
 				return true;
 			}
