@@ -82,22 +82,64 @@ public class ExtraInfoController extends AbstractController {
 		if (result.hasErrors()) {
 			return "collect_info";
 		} else {
-			info.setDeveloper(true);
+			if(info.getPilot().compareTo("Novisad") == 0){
+				req.getSession().setAttribute("extra_info_data", info);
+				return "extra_info_confirm";
+			}
 			try {
-				infoManager.collectInfoForUser(info, getUserId());
+				saveInfo(info);
 			} catch (Exception e) {
 				e.printStackTrace();
 				model.addAttribute("genericError", "error_error");
 				return "collect_info";
 			}
-			logger.info(String.format("Collected info for user "));
 			String redirectURL = (String) req.getSession().getAttribute(
 					"redirect");
 			logger.info(String.format("Redirected to url %s", redirectURL));
 			return "redirect:" + redirectURL;
 		}
 	}
+	
+	@RequestMapping(value = "/collect-info", method = RequestMethod.POST, params = "accept")
+	public String acceptInfo(
+			@ModelAttribute("info") @Valid ExtraInfoBean info,
+			BindingResult result, Model model, HttpServletRequest req,
+			HttpServletResponse res) {
+		info = (ExtraInfoBean)req.getSession().getAttribute("extra_info_data");
+		try {
+			saveInfo(info);
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("genericError", "error_error");
+			return "collect_info";
+		}
+		String redirectURL = (String) req.getSession().getAttribute(
+				"redirect");
+		logger.info(String.format("Redirected to url %s", redirectURL));
+		return "redirect:" + redirectURL;
+		
+	}
 
+	@RequestMapping(value = "/collect-info", method = RequestMethod.POST, params = "reject")
+	public String rejectInfo(
+			@ModelAttribute("info") @Valid ExtraInfoBean info,
+			BindingResult result, Model model, HttpServletRequest req,
+			HttpServletResponse res) {
+		info = (ExtraInfoBean)req.getSession().getAttribute("extra_info_data");
+		model.addAttribute("info", info);
+		return "collect_info";
+	}
+	
+	private void saveInfo(ExtraInfoBean info) throws Exception {
+		info.setDeveloper(true);
+		try{
+			infoManager.collectInfoForUser(info, getUserId());
+		} catch(Exception ex){
+			new Exception(ex);
+		}
+		logger.info(String.format("Collected info for user "));
+	}
+	
 //	@RequestMapping(params = "skip", method = RequestMethod.POST)
 //	public String skipCollectInfo(HttpServletRequest request, Model model) {
 //		String redirectURL = (String) request.getSession().getAttribute(

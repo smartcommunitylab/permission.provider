@@ -188,5 +188,4 @@ public class ExtraInfoBean {
 		this.role = role;
 	}
 
-	
 }
