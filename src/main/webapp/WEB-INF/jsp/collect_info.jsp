@@ -106,7 +106,7 @@ input[type=checkbox] {
 						</label>
 						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_city_title" />">
 						<form:errors path="pilot" cssClass="error pull-left"></form:errors>
-						<form:select path="pilot" cssClass="form-control">
+						<form:select id="pilot_city_sel" path="pilot" cssClass="form-control" onChange="updateLang(this.value);">
 							<%-- <form:option value=""></form:option> --%>
 							<form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
 							<form:option value="Bilbao"><fmt:message bundle="${res}" key="extinfo_pilot_bilbao" /></form:option>
@@ -223,12 +223,12 @@ input[type=checkbox] {
 						<br/>
 					</div>
                     <div class="form-group marginleft">
-						<div><label><form:checkbox path="language" value="Italian" /><fmt:message bundle="${res}" key="extinfo_lang_it" /></label></div>  
-                       	<div><label><form:checkbox path="language" value="Spanish" /><fmt:message bundle="${res}" key="extinfo_lang_es" /></label></div>  
-                      	<div><label><form:checkbox path="language" value="Finnish" /><fmt:message bundle="${res}" key="extinfo_lang_fi" /></label></div>  
-                        <div><label><form:checkbox path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
-                        <div><label><form:checkbox path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
-                        <div><label><form:checkbox path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
+						<div><label><form:checkbox id="ck_ita_lang" path="language" value="Italian" /><fmt:message bundle="${res}" key="extinfo_lang_it" /></label></div>  
+                       	<div><label><form:checkbox id="ck_spa_lang" path="language" value="Spanish" /><fmt:message bundle="${res}" key="extinfo_lang_es" /></label></div>  
+                      	<div><label><form:checkbox id="ck_fin_lang" path="language" value="Finnish" /><fmt:message bundle="${res}" key="extinfo_lang_fi" /></label></div>  
+                        <div><label><form:checkbox id="ck_ser_lang" path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
+                        <div><label><form:checkbox id="ck_sel_lang" path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
+                        <div><label><form:checkbox id="ck_eng_lang" path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
                     </div>
                     <!-- </div> -->    
 					<div class="button-row">
@@ -242,6 +242,28 @@ input[type=checkbox] {
 	</div>
 
 	<script type="text/javascript">
+		// function to auto set the pilot city language
+		function updateLang(city){
+			document.getElementById("ck_ita_lang").checked = false;
+			document.getElementById("ck_spa_lang").checked = false;
+			document.getElementById("ck_fin_lang").checked = false;
+			document.getElementById("ck_ser_lang").checked = false;
+			document.getElementById("ck_sel_lang").checked = false;
+			document.getElementById("ck_eng_lang").checked = false;
+			if(city == "Trento"){
+				document.getElementById("ck_ita_lang").checked = true;
+			} else if(city == "Bilbao"){
+				document.getElementById("ck_spa_lang").checked = true;
+			} else if(city == "Novisad"){
+				document.getElementById("ck_ser_lang").checked = true;
+				document.getElementById("ck_sel_lang").checked = true;
+			} else if(city == "Uusimaa"){
+				document.getElementById("ck_fin_lang").checked = true;
+			}
+		};
+		var actualCity = document.getElementById("pilot_city_sel").value;
+		updateLang(actualCity);
+		
 		
 	 	var userLang = navigator.language || navigator.userLanguage; 	//read the browser language
  		var passedLang ="<%=request.getAttribute("language")%>";		//read the passed language
