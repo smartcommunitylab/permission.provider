@@ -5,243 +5,216 @@
 	<div class="policy_box">
 		<div class="policy_text">
 
-			<p class="tool_tit">1. INTRODUCTION: TERMS & CONDITIONS -
-				Applicable worldwide expect where we publish specific territorial
-				terms and conditions</p>
+			<p class="tool_tit">1. JOHDANTO: EHDOT JA EDELLYTYKSET - Sovelletaan maailmanlaajuisesti paitsi kun julkaisemme erityisiä alueellisia
+                    ehtoja </p>
+                <p class="tool_desc">Nämä käyttöehdot ("Ehdot") kertovat tärkeää tietoa oikeuksista, velvollisuuksista ja rajoitteista, jotka
+                    voivat koskea sinua käyttäjänä ("Käyttäjä") kun käytät mitä tahansa https://dev.welive.eu-toimialueen
+                    ("Verkkosivu") verkkopalveluista ("Palvelu") päästäksesi käsiksi, ladataksesi tai käyttääksesi WeLive
+                    Player -sovellusta ja muita julkisen palvelun sovelluksia ("Sovellus") tai mitä tahansa muita sen tarjoamia
+                    palveluita. Kaikki WeLive-palvelun artefaktit eli tietoaineistot, rakennuspalikat (tai koottavat mikropalvelut)
+                    ja sovellukset noudattavat sen viitekehystä ("Viitekehys"). WeLive Player -sovellus toimii markkinapaikkana
+                    WeLive-viitekehyksessä kehitetyille sovelluksille, ja sen avulla käyttäjät löytävät saatavilla olevat
+                    julkista dataa hyödyntävät sovellukset. Lisäksi verkkosivu mahdollistaa pääsyn muihin artefakteihin ("Artefakti")
+                    kuten julkisten palveluiden sovelluksiin, rakennuspalikoihin ja tietoineistoihin. Ellei toisin mainita,
+                    Viitekehys, Verkkosivu ja Sovellus ovat kaikkien WeLive-konsortion ("Konsortio") muodostavien partnerien
+                    tarjoamia. WeLive-hanke (http://www.welive.eu) on saanut rahoitusta Euroopan unionin H2020-ohjelmasta
+                    tutkimukseen, teknologiseen kehitykseen ja demonstraatioon apurahasopimuksen Nro 645845 mukaisesti. Hanke
+                    kestää 36 kuukautta helmikuusta 2015 tammikuuhun 2018.</p>
+                <p class="tool_desc">Nämä käyttöehdot ovat saatavilla laitteeseesi asennetussa sovelluksessa tai verkkosivulla. </p>
+                <p class="tool_desc">Sinun on hyväksyttävä ehdot ja muut soveltuvat lait, jotka koskevat niiden palveluiden käyttöä, jotka WeLive
+                    tarjoaa komponenttiensa ja artefaktiensa (Artefakti, Verkkosivu ja Viitekehys) kautta. Käyttäjä voi olla
+                    WeLive-palveluiden kuluttaja, mutta myös palveluiden tuottaja. Tuotettujen palveluiden on noudatettava
+                    WeLive-infrastruktuuria ylläpitävän maan dataa koskevaa lainsäädäntöä. Käyttäjän tarjoamat ja Viitekehyksessä
+                    ylläpidetyt vapaat palvelut ja ei-yksityinen tieto ovat Konsortion omaisuutta. Artefaktin tarjoajalla
+                    on kuitenkin oikeus poistaa omat julkaistut artefaktinsa riippumatta siitä käyttävätkö muut niitä vai
+                    eivät. Kun käyttäjä lakkauttaa tilinsä Viitekehyksestä, hänen artefaktinsa anonymisoidaan ja ne säilyvät
+                    Viitekehyksessä ellei käyttäjä selvästi osoita haluavansa ne poistettavan. </p>
+                <p class="tool_desc">Jollet hyväksy näitä ehtoja tai epäilet mahdollisten tulevien muutosten tekevän ne sinulle mahdottomiksi,
+                    ethän käytä WeLiveä. Jos käytät WeLiveä, mukaan lukien Verkkosivua, Sovellusta, Viitekehystä, rakennuspalikoita,
+                    tietoaineistoa, julkisten palveluiden sovelluksia, päivityksiä jne., katsomme sinun hyväksyvän nämä Ehdot
+                    ja niihin tekemämme muutokset. Sitoudut käyttämään WeLiveä ainoastaan tarkoituksiin, jotka ovat laillisia,
+                    asiallisia ja näiden Ehtojen ja muiden soveltuvien säännösten mukaisia. </p>
+                <p class="tool_desc">Katsomme sinun hyväksyvän Ehdot, kun selvästi hyväksyt ne rekisteröintiprosessin ja/tai Sovelluksen asennusprosessin
+                    aikana, kun lataat tai päivität sen tai kun käytät sitä laitteellasi. </p>
 
-			<p class="tool_desc">These terms and conditions ("Terms") set
-				important information regarding the rights, obligations and
-				restrictions that may apply you as user ("User") when you access to
-				the Internet site at http://www.welive.eu/server ("Website") or when
-				you access to, download and use the application WeLive Player and
-				the different public services app ("Application") or whatever the
-				services provided by using it. The application act as a marketplace
-				for those applications developed within the WeLive framework,
-				allowing users to discover which applications are available on their
-				surroundings making use of public data. Moreover the Website allow
-				the access to other artidfacts such as: public services
-				applications, building blocks and datasets. The Website and the
-				Application, where no specifically provided, are supplied by all the
-				partners that make up WeLive Consortium. WeLive Project
-				(http://www.welive.eu) has received funding from the European
-				Union's H2020 Programme for research, technological development and
-				demonstration under grant agreement No 645845</p>
+                <p class="tool_tit">2. KÄYTTÖSÄÄNNÖT</p>
+                <p class="tool_desc">WeLive on ilmainen avoimen lähdekoodin viitekehys, joten sen käyttöä ei ole rajoitettu. Sitoudut käyttämään
+                    Verkkosivua, Viitekehystä ja Sovellusta sekä muita artefakteja järkevästi. Järjestelmän ruuhkauttaminen
+                    tai sen toimintaan vaikuttaminen lukemalla tai kirjoittamalla dataa niin että se vaikuttaa Palvelun muihin
+                    käyttäjiin on Ehtojen vastaista. </p>
+                <p class="tool_desc">Verkkosivu ja Sovellus antavat sinun julkaista joitakin tietoja. Olet vastuussa tiedoista, mielipiteistä,
+                    kommenteista jne. jotka ilmaiset WeLivessä suoraan tai käyttämällä Verkkosivua, Sovellusta ja/tai Palvelua.
+                </p>
+                <p class="tool_desc">Käyttäjä sitoutuu olemaan julkaisematta tai olemaan rohkaisematta julkaisemaan: </p>
+                <ul>
+                    <li> tietoja, jotka ovat loukkaavia, syrjiviä, nöyryyttäviä, säädyttömiä jne. tai jotka voivat loukata muita
+                        rodun, uskonnon, sukupuolen tai etnisyyden perusteella; </li>
+                    <li> mitään rikoksen tekoon yllyttävää materiaalia; </li>
+                    <li> mitään materiaalia, joka ei ole sinun, jonka julkaisuun sinulla ei ole lupaa tai joka loukkaa tekijänoikeuksia
+                        tai patentteja; </li>
+                    <li> mainoksia, roskapostia, pyramidihuijauksia; </li>
+                    <li> tietoja muiden käyttäjien huijaamiseksi; </li>
+                    <li> tietoja turvallisuusaukkojen hyödyntämisestä; </li>
+                    <li> tiedostoja, jotka sisältävät viruksia, troijalaisia tai muita haittaohjelmia, jotka voivat vaikuttaa
+                        Palvelun toimintaan tai muihin Käyttäjiin; </li>
+                    <li> tiedostoja, linkkejä tai muuta materiaalia, joilla pyritään varastamaan toisten käyttäjien tileiltä;
+                    </li>
+                    <li> mitään ohjelmistoja, joilla kerätään tietoja muilta käyttäjiltä; </li>
+                    <li> mitään muuta mikä kiertää tai ei noudata voimassaolevia paikallisia lakeja.</li>
+                </ul>
+                <p class="tool_desc">Joskus sinun on rekisteröidyttävä Verkkosivulle ja/tai muihin WeLiven kautta kehitettyihin ja ylläpidettyihin
+                    sovelluksiin, jotta voit käyttää niitä. Käyttäjä sitoutuu antamaan oikeat tiedot rekisteröintiprosessin
+                    aikana ja Palvelun niitä pyytäessä. Sinun on päivitettävä tiedot aina kun niihin tulee muutoksia. Mikäli
+                    epäilemme tietojesi todenmukaisuutta, meillä on oikeus lakkauttaa tilisi. Jos käyttäjä lakkauttaa WeLive-tilinsä,
+                    kaikki hänen tarjoamansa artefaktit anonymisoidaan eli linkit tilinsä lakkauttaneeseen käyttäjään poistetaan
+                    Viitekehyksestä. </p>
+                <p class="tool_desc">WeLive-viitekehys tarjoaa julkisen ohjelmointirajapinnan ("Rajapinta") menetelmin, jotka mahdollistavat käyttäjien
+                    statuksen, ideoitten ja artefaktien vaihtamisen alustalla. Vain käyttäjät, jotka ovat rekisteröityneet
+                    Viitekehykseen ja joiden profiili on tallennettuna Citizen Data Vault ("CDV") -komponentissa, voivat
+                    käyttää näitä toimintoja. </p>
+                <p class="tool_desc">Ehtojen rikkominen johtaa käyttäjätilin perumiseen ja uuden tilin luomisen estämiseen ja voimme myös käyttää
+                    joitakin menetelmiä estääksemme kiellettyä käyttäjää käyttämästä Sovellusta jatkossa. </p>
+                <p class="tool_desc">Voimme muuttaa Palvelua koska tahansa lisäämällä, muokkaamalla tai poistamalla jotakin. Pyrimme kertomaan
+                    muutoksista kohtuullisella tavalla. Jos jatkat Palvelun käyttöä, katsomme sinun hyväksyvän muutokset
+                    ja Ehdot. </p>
 
-			<p class="tool_desc">These Terms and conditions are available in
-				the Application installed in your device or in the Website.</p>
+                <p class="tool_tit">3. PALVELUSTA MAKSAMINEN</p>
+                <p class="tool_desc">Verkkosivu, Viitekehys, Sovellus, Rajapinta, julkiset palvelut ja mikä tahansa muu WeLive-konsortion tarjoama
+                    artefakti on ilmainen kaksivaiheisen pilotin aikana. Kolmansien osapuolten tarjoamien julkisten palvelujen,
+                    sovellusten, rakennuspalikoiden tai muiden artefaktien käyttöön voi liittyä maksu. Mahdolliset maksut
+                    näistä kolmannen osapuolen palveluista veloitetaan suoraan palveluntarjoajan toimesta WeLive-viitekehyksen
+                    ulkopuolella eikä WeLive vastaa näistä maksuista millään tavalla. </p>
+                <p class="tool_desc">Hankkeen loppupuolella määritellään artefaktien maksuperiaate. Jos päätämme muuttaa Palvelun tai osan siitä
+                    maksulliseksi hankkeen päätyttyä, kerromme siitä ja hinnoista kohtuullisella tavalla ja kohtuullisessa
+                    ajassa, jotta käyttäjät voivat lakata käyttämästä Palvelua, mikäli eivät halua maksaa siitä. </p>
+                <p class="tool_desc">Sovellus voi kaivata yhteyttä tietoliikenneverkkoon toimiakseen oikein. Verkkoyhteys voi tuoda lisäkuluja
+                    dataverkon käyttämisestä. Nämä kulut eivät ole kytköksissä WeLiveen ja Käyttäjä huolehtii niistä itse.
+                </p>
 
-			<p class="tool_desc">You must accept the Terms and other
-				applicable laws regarding the use of WeLive in case you want to use
-				of the Application, the Website and WeLive framework and any other
-				kind of artifact related to WeLive.</p>
+                <p class="tool_tit">4. TIETOSUOJA</p>
 
-			<p class="tool_desc">If you do not agree with these Terms or
-				consider that possible future changes of them will make unacceptable
-				for you, please do not use WeLive. By using WeLive including, but
-				not limiting to, the Website, the Application, the building blocks,
-				datasets, public Services apps, updates, etc. we will consider that
-				you accept these Terms and any change we make to them. You accept to
-				use WeLive only for purposes that are legal, proper and in
-				accordance with these Terms and with any applicable regulation.</p>
+                <p class="tool_desc">Ennen Palvelun käyttämistä käyttäjien on hyväksyttävä Suostumuslomake, joka tarjotaan heille Sovellusta tai
+                    Verkkosivua käytettäessä ensimmäisen kerran. Kun täytät rekisteröintilomakkeen Verkkosivulla tai jossakin
+                    WeLive-sovelluksessa, annat henkilötietoja (ei arkaluonteisia) ja odotat meidän käsittelevän niitä huolellisesti.
+                    WeLive Palveluun liittyvät sovellukset tai Verkkosivu eivät koskaan pyydä sinua antamaan arkaluonteisia
+                    tietoja (lisätietoja arkaluonteisiksi luettavista tiedoista löydät directiivin 95/46/EY artiklasta 8
+                    - https://secure.edps.europa.eu/EDPSWEB/webdav/site/mySite/shared/Documents/EDPS/DataProt/Legislation/Dir_1995_46_FI.pdf).
+                    Konsortio (TECNALIA Research and Innovation ja muut partnerit) käsittelee niitä sopivalla tavalla ja
+                    aina noudattaen kansallisia säädöksiä tai soveltuvin osin tulevaa EU:n tietosuojalakia, joka tulee voimaan
+                    vuonna 2018. </p>
+                <p class="tool_desc">Lisäksi Käyttäjän on suojeltava tiliään käyttämällä siihen tarkoitettuja suojauskeinoja, joihin lukeutuvat:
+                    Vahvan salasanan luominen; Salasanan vaihtaminen usein; Se, ettei jaa kirjautumistietoja; jne. </p>
+                <p class="tool_desc">Konsortio käyttää Käyttäjien tarjoamia tietoja Verkkosivun, Sovelluksen, Viitekehyksen ja WeLive-artefaktien
+                    hallintaan. Emme myy käyttäjien tietoja.</p>
+                <p class="tool_desc">Konsortio kerää käyttäjiltä henkilötietoja, aina käyttäjän luvalla, palvelun käyttämisen aikana. Näitä tietoja
+                    säilytetään CDV-komponentissa, joka varmistaa, että ainoastaan hallittu ja aiemmin auktorisoitu pääsy
+                    sallitaan. Kerätyt yksityiset tiedot anonymisoidaan ja kootaan yhteen, jotta Palvelun käytöstä saadaan
+                    kerättyä tilastotietoa. Ainoastaan WeLive-viitekehyksen sisäiset komponentit pystyvät lukemaan kerättyjä
+                    lokitietoja, joissa käyttäjät tunnistetaan pelkästään heille luodun yksilöivän ID-tunnisteen perusteella,
+                    minkä avulla eri vaiheissa kerättyjä tietoja pystytään yhdistelemään. WeLiven tarjoamien työkalujen ja
+                    artefaktien käytöstä kerättyjen tietojen avulla voidaan luoda mittareita ja visualisointeja viitekehyksen
+                    ja sen palveluiden hyväksynnän ja käytön mittaamiseksi. Mittareissa tai visualisoinneissa ei näytetä
+                    käyttäjien tunnistetietoja. Kerättyjä tietoja käytetään Viitekehyksen ja Palveluiden parantamiseen tai
+                    eri työkalujen ja komponenttien käytön arviointiin. Tietoa voidaan myös hyödyntää suositus- ja analysointikäyttöön
+                    WeLivessä. Lisäksi henkilötietoja (sähköpostiosoitteita) käytetään käyttäjien kanssa kommunikointiin
+                    pilottiarvioinnin aikana. Henkilötietoja ei koskaan luovuteta kolmansille osapuolille ellei käyttäjä
+                    selvästi anna siihen lupaansa. Arkaluonteisten henkilötietojen tallentaminen WeLive-komponentteihin on
+                    erityisesti kiellettyä. WeLive-viitekehykseen perustuvat sovellukset ja palvelut eivät saa käyttää WeLive-komponentteja
+                    arkaluonteisten henkilötietojen tallennukseen. Arkaluonteisten henkilötietojen määritelmänä sovellamme
+                    EU:n antamia suosituksia aiheesta1. WeLive-yhteensopivien sovellusten kehittäjien ja käyttäjien tulee
+                    sitoutua noudattamaan näissä Ehdoissa annettuja rajoitteita arkaluonteisten henkilötietojen tallentamisessa
+                    WeLive-komponentteihin. Käyttäjät voivat kustomoida Sovelluksen käyttöä ja hakua erilaisia suodattimia
+                    käyttämällä (jotka voivat vaatia henkilötietoja). Näitä ei kerätä mistään syystä. </p>
 
-			<p class="tool_desc">We consider you accept the Terms, when you
-				expressly accept them during the registration process and /or in the
-				installation process of the Application, when you download or update
-				it o when you use it with your device.</p>
+                <p class="tool_tit">5. DATAN OMISTUSOIKEUS</p>
+                <p class="tool_desc">Palvelussa tarjotut digitaaliset tietoaineistot ("Data"), jotka ovat käytettävissä Verkkosivun, Sovelluksen
+                    tai minkä tahansa muun WeLive-palveluympäristön osan kautta, tulevat julkisesti käytettävissä olevista
+                    lähteistä tai niiden omistaja on sallinut niiden yleisen käytön. Datan alkuperäiset omistajat säilyttävät
+                    datan omistusoikeuden ja hallinnan yhdessä Viitekehyksen ylläpitäjien kanssa. WeLive-järjestelmässä on
+                    myös mahdollista säilyttää yksityistä dataa, johon pääsy on sallittu vain käyttäjän sallimille tahoille.
+                </p>
+                <p class="tool_desc">Käyttäjät saavat ilmaisen pääsyn dataan. Kaikkien tätä dataa käyttävien johdannaisteosten tulisi sallia ilmainen
+                    pääsy dataan. </p>
+                <p class="tool_desc">Käyttäjät voivat luoda uusia tietoaineistoja joko Viitekehyksen tai Sovelluksen kautta ja heillä on näihin
+                    aineistoihin täysi käyttöoikeus. Kun käyttäjä luo aineiston, hän määrittelee onko aineisto julkisessa
+                    vai yksityisessä käytössä. Käyttäjän toimittama data, lukuunottamatta henkilökohtaista tai yksityistä
+                    tietoa, kuuluu sekä käyttäjälle että Konsortiolle. Käyttäjät säilyttävät hallinnan luomiinsa aineistoihin
+                    ja voivat halutessaan poistaa ne. Aikaisempiin julkisiin tietoaineistoihin pohjautuvat käyttäjän lisäämät
+                    tietoaineistot jaetaan Viitekehyksessä, eikä käyttäjällä ole mahdollisuutta poistaa niitä, elleivät ne
+                    sisällä henkilökohtaista tai yksityistä tietoa. Mikäli käyttäjän tili poistetaan Palvelusta, kaikki viittaukset
+                    kyseiseen käyttäjään poistetaan myös hänen toimittamiensa tietoaineistojen lähdetiedoista. Käyttäjällä
+                    on koska tahansa mahdollisuus saada kaikki henkilökohtainen tietonsa Viitekehyksen Citizen Data Vault
+                    (CDV) -komponentin kautta. Käyttäjällä on myös pääsy kaikkiin omistamiinsa aineistoihin Open Data Stack
+                    (ODS) -komponentin kautta. </p>
+                <p class="tool_desc">Jos aiot julkaista Viitekehyksessä muualta saatavissa olevia tietoaineistoja, tarkista ensin niiden alkuperäisistä
+                    käyttöehdoista, että sinulla on oikeus tehdä niin. Jos aiot julkaista Viitekehyksestä löytyviä tietoaineistoja
+                    muilla tavoilla, kuten esimerkiksi yhteisöpalveluissa tai kolmansien tahojen verkkosivuilla, perehdy
+                    ensin näiden palveluiden käyttöehtoihin varmistaaksesi, ettet loukkaa WeLive-käyttöehtoja tai kyseisten
+                    tietoaineistojen lisenssejä. Muista myös säilyttää viite alkuperäiseen tietoaineistoon uudelleenjulkaisun
+                    yhteydessä. </p>
+                <p class="tool_desc">Konsortio ei maksa palkkioita käyttäjien julkaisemasta datasta. Konsortio voi tarkistaa käyttäjien julkaiseman
+                    datan ja poistaa sen, mikäli se on virheellistä tai ei vastaa palvelun tarkoitusta. Viitekehyksen ODS-komponentti
+                    sisältää mekanismeja, joilla voidaan havaita aineistojen väärinkäyttöä. </p>
+                <p class="tool_desc">Myöhemmässä vaiheessa WeLive-hanketta, tietoaineistojen toimittajilla voi olla mahdollisuus muuttaa julkaisemiensa
+                    tietoaineistojen käyttö maksulliseksi. </p>
 
-			<p class="tool_tit">2. POLICY OF USE</p>
+                <p class="tool_tit">6. DATAN TARKKUUS</p>
+                <p class="tool_desc">Data toimitetaan tietosisällöltään sellaisena, kuin se on alkuperäisissä tietolähteissä, mutta aineiston
+                    esitysmuoto voi poiketa alkuperäisestä käytön helpottamiseksi. TECNALIA ja sen WeLive-konsortion partnerit
+                    eivät ole vastuussa datan tarkkuudesta tai saatavuudesta, eivätkä tiedon käytöstä johtuvista suorista
+                    tai epäsuorista kustannuksista. Viitekehys tarjoaa mahdollisuuksia automaattiseen datan laadun ja oikeellisuuden
+                    arviointiin. </p>
 
-			<p class="tool_desc">WeLive is an open source framework offered
-				for free which allows using it with no limitations. You commit to
-				make a reasonable use of the Website and the Application and any
-				other kind of artifact. Flood or affect the system performance by
-				reading or writing data in excess that affects to the use of the
-				Service by other users, it is a violation of the Terms.</p>
+                <p class="tool_tit">7. KOLMANNET OSAPUOLET</p>
+                <p class="tool_desc">Käyttäjä saattaa toisinaan ohjautua Verkkosivun tai joidenkin Sovellusten kautta Konsortion ulkopuolisten
+                    kolmansien osapuolien hallitsemiin palveluihin, esimerkiksi yhteisöpalveluihin. TECNALIA ja sen WeLive-konsortion
+                    partnerit eivät ole vastuussa näiden palveluiden yksityisyyden suojasta tai mahdollisista käyttökustannuksista.
+                </p>
+                <p class="tool_desc">Mikäli käytät yhteisöpalvelun käyttäjätiliä tunnistautuaksesi Verkkosivulle tai Sovellukseen, TECNALIA ja
+                    sen WeLive-konsortion partnerit eivät kerää muita tietoja kuin ne, joihin Käyttäjä on nimenomaisesti
+                    antanut luvan ja pääsyn. </p>
+                <p class="tool_desc">Mikäli julkaiset tietoa yhteisöpalveluissa Sovelluksen tai Verkkosivun kautta, huomioi että tämä tiedon julkaisu
+                    tapahtuu kyseisen yhteisöpalvelun yksityisyydensuojasopimuksen ja käyttöehtojen alaisesti. </p>
 
-			<p class="tool_desc">The Website and Application allows you to
-				publish some information. You will be responsible for the
-				information, opinion, comments, etc. you express in WeLive, directly
-				or by using the Website, Application and/or services. The user
-				commits not to publish, or encourage the publication of:</p>
+                <p class="tool_tit">8. SOVELLUKSEN OMISTUSOIKEUS</p>
+                <p class="tool_desc">Verkkosivu, Sovellus ja Viitekehys ovat Konsortion omaisuutta. Mikä tahansa muu WeLive -artefakti on sen
+                    tekijöiden ja Viitekehyksen hallinnoijan eli WeLive-ratkaisun palveluntarjoajan omaisuutta. Kolmannen
+                    osapuolen artefaktien tuotto, mikäli hinnoittelumalli on kyseiselle artefaktille määritelty, jaetaan
+                    sen tekijöiden ja Viitekehyksen palveluntarjoajan kesken. </p>
+                <p class="tool_desc">Tekijät sallivat ei-yksinomaisen ja peruutettavissa olevan lisenssin kopioida, asentaa ja käyttää Sovellusta
+                    käyttäjien laitteissa ja käyttää Palvelua ilman kustannuksia. Tämä lisenssi ei anna käyttäjälle Sovelluksen
+                    omistusoikeutta, vaan se säilyy tekijöillä. </p>
 
-			<ul>
-				<li>information that is offensive, discriminatory, humiliating,
-					obscene, etc. or which may cause offence to others in terms of
-					race, religion, sex or ethnicity;</li>
-				<li>any material which incites the commission of crime;</li>
-				<li>any material is not yours, you don't have authorization to
-					publish it or infringes copyrights, patents or marks;</li>
-				<li>advertising, spam, pyramid scheme;</li>
-				<li>information to deceive other users;</li>
-				<li>information on how to exploit security breaches;</li>
-				<li>files containing virus, Trojans or another type of
-					malicious code which can affect to the performance of the Service
-					or to other Users;</li>
-				<li>files, links or other material which tries to stole other
-					users accounts;</li>
-				<li>any piece of software to collect information from other
-					user;</li>
-				<li>any other thing that circumvents or doesn't comply with
-					current local laws.</li>
-			</ul>
+                <p class="tool_tit">9. SAATAVUUS</p>
+                <p class="tool_desc">TECNALIA ja sen WeLive-konsortion partrerit eivät sitoudu huolehtimaan Verkkosivun, Sovellusten tai tiedon
+                    saatavuudesta. Edellä mainitut tahot pyrkivät välttämään ja minimoimaan Palvelun katkot ja maksimoimaan
+                    sen saatavuuden. Palvelun tarjoajat tiedottavat suunnitelluista palvelun katkoksista sopivaksi katsomallaan
+                    tavalla ja pyrkivät minimoimaan katkosten keston. </p>
+                <p class="tool_desc">TECNALIA ja sen WeLive-konsortion partnerit eivät ole vastuussa Palvelun käyttökatkoksista aiheutuvista vahingoista
+                    eikä suorista tai epäsuorista kustannuksista. </p>
 
-			<p class="tool_desc">Sometimes you will need to register at the
-				Website and/or some of the applications in order to be able to use
-				them. The User commits to provide real information during the
-				registration process and whenever the Service asks for it. You must
-				update the information when there are any changes in it. In case of
-				suspicion about the veracity of your data we are entitled to suspend
-				your account.</p>
+                <p class="tool_tit">10. OIKEUSTURVA</p>
+                <p class="tool_desc">Myönnämme käyttäjälle ei-yksinomaisen ja peruutettavissa olevan lisenssin asentaa, kopioida ja käyttää Sovellusta
+                    laitteisaan ja käyttää Palvelua ilman kustannuksia. </p>
+                <p class="tool_desc">Käyttäjä hyväksyy, ettei käytä Palvelua mihinkään seuraavista tarkoituksista: </p>
+                <ul>
+                    <li> Palvelun häirintään tai väärinkäyttöön; </li>
+                    <li> Datan muokkaamiseen pahansuovasti; </li>
+                    <li> Tietojen keräämiseksi palvelun käyttäjistä; </li>
+                    <li> Muiden käyttäjien uhkaamiseen, häirintään tai kiristämiseen; </li>
+                    <li> Kolmansien osapuolien palveluiden häirintään; </li>
+                    <li> Kolmansien osapuolien tekijänoikeuksien loukkaamiseen.</li>
+                </ul>
+                <p class="tool_desc">Sovellus tarjotaan käyttöön sellaisenaan ja sen käyttö tapahtuu omalla vastuulla. Konsortio ei ole vastuussa
+                    Sovelluksen käytöstä aiheutuneista virheistä, vikatilanteista päätelaitteessa, muiden sovellusten käytön
+                    häiriöistä, eikä datan tai sen käyttömahdollisuuksien menetyksestä.</p>
 
-			<p class="tool_desc">The infringement of the policy of use will
-				cause the cancelation of the user account and the rejection to the
-				creation of a new one and we could also apply some methods to avoid
-				the future use of the Application by the banned user.</p>
-
-			<p class="tool_desc">We can change the Service at any time,
-				adding, modifying or suppressing some of them. We'll try to
-				communicate those changes in a reasonable way. If you continue using
-				the Service, we understand then you have accepted the changes and
-				the Terms.</p>
-
-			<p class="tool_tit">3. PAY FOR THE SERVICE</p>
-
-			<p class="tool_desc">The Website, Application, public services
-				and any other kind of artefact provided by WeLive are cost free.</p>
-			<p class="tool_desc">In case we decide to change the Service or
-				part of it into a pay per use Service we would communicate it and
-				the prices in a reasonable way and enough time to allow the users
-				stop using the Service if they do not want to pay.</p>
-			<p class="tool_desc">The Application may need access to a network
-				for a correct operation. The access to a network may mean additional
-				costs for the use of data networks. These costs are not attributable
-				to WeLive and the User must deal on them.</p>
-
-
-			<p class="tool_tit">4. DATA PRIVACY</p>
-
-			<p class="tool_desc">When you fill out the registration form in
-				the Website or in some of the applications, you provide some
-				personal data you expect we manage them diligently. TECNALIA
-				Research and Innovation ("TECNALIA") and the rest of the partners of
-				the WeLive consortium will manage data in a suitable way and always
-				in accordance with local regulations or, when applicable, European
-				regulations regarding data protection.</p>
-			<p class="tool_desc">Additionally the User must protect provided
-				account using security means supplied for it, including but no
-				limiting to: Build a strong password; Change the password
-				frequently; Not to share login data; etc.</p>
-			<p class="tool_desc">TECNALIA and the partners from WeLive
-				consortium will use data, provided by Users, to manage the use of
-				Website, Application and WeLive artefacts. We do not trade with the
-				data of the users.</p>
-			<p class="tool_desc">TECNALIA and the partners from WeLive
-				consortium will not collect personal data from users during the use
-				of the Service. They can collect some anonymous statistical data
-				regarding the use of the framework and services in order to improve
-				the framework and Services or evaluate the use of the different
-				tools and components.</p>
-			<p class="tool_desc">Users can customize the use of the
-				Application and searches determining some filters (they may involve
-				personal data). They are not also collected for any reason.</p>
-
-			<p class="tool_tit">5. PROPERTY OF THE DATA</p>
-
-			<p class="tool_desc">The data provided by the Service and
-				accessible through the Website, Application and any kind of artefact
-				part of the WeLive environment come from publicly accessible sources
-				or their proprietors allow the use of them by the public, and
-				therefore they maintain the ownership of data.</p>
-			<p class="tool_desc">The collection of data and/or creation of
-				databases from them is not allowed, they are for consult only.</p>
-			<p class="tool_desc">User may access data with no cost. Any
-				derivative works that access these data should allow the access to
-				them with no cost.</p>
-			<p class="tool_desc">Sometimes Users will be able to update,
-				modify, and insert new data into the platform through the Website,
-				Application and any kind of artefact part of the WeLive environment.
-				This new data will become part of the public domain as it is the
-				data they are working with. If you intend to publish data in other
-				sites as social networks or third parties websites, please refer to
-				their own privacy policy before publishing anything. We do not pay
-				any reward for the data published by users. We inform you that
-				TECNALIA and the partners from WeLive consortium may revise all data
-				published by users and remove them when they consider that data are
-				wrong or they violate site goals.</p>
-			<p class="tool_desc">If you intend to retain some rights on your
-				data or obtain any reward for them, please do not publish in our
-				site.</p>
-
-
-			<p class="tool_tit">6. DATA ACCURANCY</p>
-
-			<p class="tool_desc">Data is provided "as is" provided by the
-				data sources. TECNALIA and partners from WeLive consortium are not
-				responsible for the accuracy of the data or any damage and direct or
-				indirect costs, caused by the use of this information.</p>
-
-			<p class="tool_tit">7. THIRD PARTIES</p>
-
-			<p class="tool_desc">Sometimes the user can access some other
-				sites and social networks, external to TECNALIA and partners from
-				WeLive Consortium and managed by third parties, from the Website or
-				from some of the Applications. TECNALIA and partners from WeLive
-				consortium are not responsible for the privacy policy of those
-				sites.</p>
-			<p class="tool_desc">TheIf you use your social network account to
-				access our Website or to use the Application, TECNALIA and partners
-				from WeLive consortium will not collect any other information than
-				needed to manage the account and the access to it.</p>
-			<p class="tool_desc">If you publish any information on social
-				networks, through the Application or Website, please note that the
-				data will be subject to the privacy policy and to the terms and
-				conditions of that social network.</p>
-
-
-			<p class="tool_tit">8. PROPERTY OF THE APPLICATION</p>
-
-			<p class="tool_desc">The Website, Application and any other
-				WeLive artefact is property of its authors. The authors grant a
-				non-exclusive and revocable license to copy, install and use the
-				Application in the user devices and to use the Service at no cost.
-				This license does not give to the User any right on the Application
-				property which it will remain on the authors.</p>
-
-			<p class="tool_tit">9. AVAILABILITY</p>
-
-			<p class="tool_desc">TECNALIA and partners from WeLive consortium
-				do not acquire any commitment on the availability of the Website,
-				Applications or the information. In any case they will put all their
-				effort to avoid or minimize any interruption of the Service, trying
-				to maximize uptime. Service provider will inform of any scheduled
-				service interruption in a suitable way and it will try to minimize
-				downtime.</p>
-			<p class="tool_desc">TECNALIA and partners form WeLive consortium
-				are not responsible for the damage and direct or indirect costs
-				caused for the service unavailability.</p>
-
-			<p class="tool_tit">10. Legal Protection</p>
-
-			<p class="tool_desc">We grant to the user a non-exclusive and
-				revocable license to install, copy and use the Application in your
-				devices and to use the Service at no cost.</p>
-			<p class="tool_desc">You agree that you will not use the
-				application to:</p>
-
-			<ul>
-				<li>interfere or manipulate the Service;</li>
-				<li>modify data maliciously;</li>
-				<li>collect data of the users of the application;</li>
-				<li>threaten, disturb, extort to other users;</li>
-				<li>Interfere third parties services;</li>
-				<li>affect third parties copyrights.</li>
-			</ul>
-
-			<p class="tool_desc">The Application is provided "as is" and you
-				use it under your own responsibility. TECNALIA and partners from
-				WeLive consortium disclaims liability for errors, malfunctions in
-				your terminal, interruptions to other applications, data loss and
-				unavailability, if you use the Application.</p>
+                <p class="tool_tit">11. KIELIVERSIOT</p>
+                <p class="tool_desc">Nämä WeLive - käyttöehdot on alunperin kirjoitettu englanniksi ja sen jälkeen käännetty eri kielille, jotta
+                    käyttäjien olisi helpompi tutustua niihin. Voit tutustua myös Ehtojen muihin kieliversioihin vaihtamalla
+                    Sovelluksen kieliasetuksia. Mikäli käännetyt (ei enlanninkieliset) käyttöehdot ovat millään tavalla ristiriitaisia
+                    vastaavan englanninkielisen version kanssa, englanninkielisessä versiossa määriteltyjä ehtoja tulee soveltaa
+                    ensisijaisesti. </p>
 
 		</div>
 	</div>
