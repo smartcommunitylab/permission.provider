@@ -102,16 +102,16 @@ input[type=checkbox] {
 					</div>
 					<div class="form-group relativepos">
 						<label for="pilot" class="pull-left"><fmt:message bundle="${res}" key="extinfo_pilot" />
-							<span><fmt:message bundle="${res}" key="extinfo_required_field" /></span>
-						</label>
+<%-- 							<span><fmt:message bundle="${res}" key="extinfo_required_field" /></span>
+ --%>						</label>
 						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_city_title" />">
 						<form:errors path="pilot" cssClass="error pull-left"></form:errors>
 						<form:select id="pilot_city_sel" path="pilot" cssClass="form-control" onChange="updateLang(this.value);">
 							<%-- <form:option value=""></form:option> --%>
-							<form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
 							<form:option value="Bilbao"><fmt:message bundle="${res}" key="extinfo_pilot_bilbao" /></form:option>
 							<form:option value="Novisad"><fmt:message bundle="${res}" key="extinfo_pilot_novisad" /></form:option>
 							<form:option value="Uusimaa"><fmt:message bundle="${res}" key="extinfo_pilot_helsinki" /></form:option>
+                            <form:option value="Trento"><fmt:message bundle="${res}" key="extinfo_pilot_trento" /></form:option>
 						</form:select>
 					</div>
 					<div class="form-group">
@@ -125,10 +125,10 @@ input[type=checkbox] {
 					</div>
 					<div class="form-group">
 						<label for="surname" class="pull-left"><fmt:message bundle="${res}" key="extinfo_surname" />
-						<span>
+<%-- 						<span>
 							<fmt:message bundle="${res}" key="extinfo_required_field" />
 						</span>
-						</label>
+ --%>						</label>
 						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
