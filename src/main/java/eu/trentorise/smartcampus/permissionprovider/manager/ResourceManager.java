@@ -797,6 +797,16 @@ public class ResourceManager {
 		return Collections.emptyList();
 	}
 
+	
+	/**
+	 * read the resource that the client app may request permissions for
+	 * @return
+	 */
+	public List<Resource> getAllAvailableResources() {
+		// check all the resources
+		return resourceRepository.findAll();
+	}
+	
 	private static class ServiceKey {
 		String id;
 		String service;

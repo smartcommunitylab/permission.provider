@@ -16,7 +16,12 @@
 
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,8 +40,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
+import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
 import eu.trentorise.smartcampus.permissionprovider.model.BasicClientInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.Permission;
+import eu.trentorise.smartcampus.permissionprovider.model.PermissionData;
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.Scope;
+import eu.trentorise.smartcampus.permissionprovider.model.Scope.ACCESS_TYPE;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -56,7 +68,9 @@ public class ResourceAccessController {
 	private ResourceServerTokenServices resourceServerTokenServices;
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
-	
+	@Autowired
+	private ResourceManager resourceManager;
+
 	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
 
 	/**
@@ -92,7 +106,7 @@ public class ResourceAccessController {
 	 * @return
 	 */
 	@RequestMapping("/resources/clientinfo")
-	public @ResponseBody BasicClientInfo getCLientInfo(@RequestHeader("Authorization") String token, HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody BasicClientInfo getClientInfo(@RequestHeader("Authorization") String token, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
@@ -115,6 +129,41 @@ public class ResourceAccessController {
 			return null;
 		}
 	}	
+	
+	@RequestMapping("/resources/permissions")
+	public @ResponseBody PermissionData getServicePermissions(HttpServletRequest request, HttpServletResponse response) {
+		PermissionData result = new PermissionData();
+		result.setPermissions(new LinkedList<Permission>());
+		
+		Map<String,List<Scope>> map = new HashMap<String, List<Scope>>();
+		List<Resource> resources = resourceManager.getAllAvailableResources();
+		for (Resource r : resources) {
+			String id = r.getService().getServiceId();
+			List<Scope> list = map.get(id);
+			if (list == null) {
+				list = new LinkedList<Scope>();
+				map.put(id, list);
+			}
+			Scope s = new Scope();
+			s.setId(r.getResourceUri());
+			s.setDescription(r.getDescription());
+			s.setAccess_type(ACCESS_TYPE.fromAuthority(r.getAuthority()));
+			list.add(s);
+		}
+		
+		List<Service> serviceObjects = resourceManager.getServiceObjects();
+		for (Service s : serviceObjects) {
+			Permission permission = new Permission();
+			permission.setName(s.getName());
+			permission.setDescription(s.getDescription());
+			permission.setScopes(map.get(s.getId()));
+			result.getPermissions().add(permission);
+		}
+		
+		return result;
+	}
+
+	
 	private static class ResourceFilterHelper extends OAuth2AuthenticationProcessingFilter {
 		public String parseTokenFromRequest(HttpServletRequest request) {
 			return parseToken(request);
