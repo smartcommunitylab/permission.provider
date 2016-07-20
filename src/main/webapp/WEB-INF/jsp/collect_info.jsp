@@ -1,4 +1,4 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
 <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
@@ -96,14 +96,14 @@ input[type=checkbox] {
 			 <div class="error"><fmt:message bundle="${res}" key="${genericError}" /></div>
 			</c:if>
 			<div role="form">
-				<form:form method="POST" modelAttribute="info" action="/aac/collect-info">
+				<form:form method="POST" modelAttribute="info" acceptCharset="UTF-8" action="/aac/collect-info">
 					<div class="button-row">
 						<input type="submit" name="save" value="<fmt:message bundle="${res}" key="extinfo_save" />" class="btn btn-default" />
 					</div>
 					<div class="form-group relativepos">
 						<label for="pilot" class="pull-left"><fmt:message bundle="${res}" key="extinfo_pilot" />
-<%-- 							<span><fmt:message bundle="${res}" key="extinfo_required_field" /></span>
- --%>						</label>
+							<span><fmt:message bundle="${res}" key="extinfo_required_field" /></span>
+						</label>
 						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_city_title" />">
 						<form:errors path="pilot" cssClass="error pull-left"></form:errors>
 						<form:select id="pilot_city_sel" path="pilot" cssClass="form-control" onChange="updateLang(this.value);">
@@ -125,10 +125,10 @@ input[type=checkbox] {
 					</div>
 					<div class="form-group">
 						<label for="surname" class="pull-left"><fmt:message bundle="${res}" key="extinfo_surname" />
-<%-- 						<span>
+						<span>
 							<fmt:message bundle="${res}" key="extinfo_required_field" />
 						</span>
- --%>						</label>
+						</label>
 						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
