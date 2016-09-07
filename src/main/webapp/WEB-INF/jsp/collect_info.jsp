@@ -73,7 +73,7 @@ input[type=checkbox] {
 </head>
 <body>
 	<div class="container">
-		<fmt:message bundle="${res}" key="language_label" /> : 
+		<%-- <fmt:message bundle="${res}" key="language_label" /> :  --%>
         <a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
         <a id="itlang" href="javascript:changeLang('it')">Italiano</a>&nbsp;|&nbsp;
         <a href="javascript:changeLang('es')">Espa&ntilde;ol</a>&nbsp;|&nbsp;

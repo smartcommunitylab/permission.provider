@@ -996,4 +996,7 @@ public class ResourceManager {
 		return s;
 	}
 
+	public Resource getResource(String resourceId) {
+		return resourceRepository.findByResourceUri(resourceId);
+	}
 }

@@ -16,9 +16,9 @@
 
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,20 +35,27 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
+import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
 import eu.trentorise.smartcampus.permissionprovider.model.BasicClientInfo;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientModel;
 import eu.trentorise.smartcampus.permissionprovider.model.Permission;
 import eu.trentorise.smartcampus.permissionprovider.model.PermissionData;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope.ACCESS_TYPE;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceParameterModel;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -70,6 +77,9 @@ public class ResourceAccessController {
 	private ClientDetailsRepository clientDetailsRepository;
 	@Autowired
 	private ResourceManager resourceManager;
+	@Autowired
+	private ClientDetailsManager clientDetailsManager;
+	
 
 	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
 
@@ -129,6 +139,80 @@ public class ResourceAccessController {
 			return null;
 		}
 	}	
+	
+	/**
+	 * Get information about the client handling the specified token.
+	 * @param token
+	 * @param resourceUri
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping("/resources/clientspec")
+	public @ResponseBody ClientModel getClientSpec(@RequestHeader("Authorization") String token, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
+			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
+			String clientId = auth.getAuthorizationRequest().getClientId();
+			if (clientId != null) {
+				ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+				if (client != null) {
+					ClientModel model = ClientModel.fromClient(client);
+//					Set<String> scopes = model.getScopes();
+//					for (String scope: scopes) {
+//						Resource r = resourceManager.getResource(scope);
+//						if (r != null) {
+//							
+//						}
+//					}
+					List<ResourceParameter> params = resourceManager.getOwnResourceParameters(clientId);
+					if (params != null) {
+						model.setOwnParameters(new HashSet<ServiceParameterModel>());
+						for (ResourceParameter rp : params) {
+							ServiceParameterModel spm = new ServiceParameterModel();
+							spm.setName(rp.getParameter());
+							spm.setService(rp.getService().getServiceName());
+							spm.setValue(rp.getValue());
+							spm.setVisibility(rp.getVisibility());
+							model.getOwnParameters().add(spm);
+						}
+					}
+					return model;
+				}
+			}
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+			
+		} catch (AuthenticationException e) {
+			logger.error("Error getting information about client: "+e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+	}		
+	
+	@RequestMapping(value = "/resources/clientspec", method=RequestMethod.POST)
+	public @ResponseBody ClientModel createClientSpec(@RequestHeader("Authorization") String token, @RequestBody ClientModel model, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
+			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
+			String clientId = auth.getAuthorizationRequest().getClientId();
+			if (clientId != null) {
+				try {
+					clientDetailsManager.createNew(model, clientDetailsRepository.findByClientId(clientId).getDeveloperId());
+				} catch (Exception e) {
+					logger.error("Error creating client: "+e.getMessage());
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				}
+				return model;
+			}
+		} catch (AuthenticationException e) {
+			logger.error("Error getting information about client: "+e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;
+	}
+
 	
 	@RequestMapping("/resources/permissions")
 	public @ResponseBody PermissionData getServicePermissions(HttpServletRequest request, HttpServletResponse response) {
