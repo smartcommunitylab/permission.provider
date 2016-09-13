@@ -216,7 +216,7 @@
 
 		<resourceMapping id="communicator.register.user"
 			name="Push notification configuration for the app '{capp}'." uri="communicator.register.user.{capp}"
-			authority="ROLE_USER" accessibleByOthers="false" approvalRequired="false">
+			authority="ROLE_ANY" accessibleByOthers="false" approvalRequired="false">
 			<description>Manage user push notification configuration for the app '{capp}'.</description>
 		</resourceMapping>
 
