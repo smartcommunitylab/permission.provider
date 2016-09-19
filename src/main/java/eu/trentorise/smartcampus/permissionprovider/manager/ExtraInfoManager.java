@@ -75,7 +75,7 @@ public class ExtraInfoManager {
 				if(info.getPilot() != null) {
 					Map<String,Object> logMap = new HashMap<String, Object>();
 					logMap.put("userid", ""+userId);
-					logMap.put("Pilot", info.getPilot());
+					logMap.put("pilot", info.getPilot());
 					logger.log(WeLiveLogger.USER_EXTRA_INFO, logMap);
 				}
 			}

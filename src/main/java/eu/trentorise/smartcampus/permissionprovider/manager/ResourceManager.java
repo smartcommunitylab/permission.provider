@@ -1099,4 +1099,7 @@ public class ResourceManager {
 		return permissions;
 	}
 
+	public Resource getResource(String resourceId) {
+		return resourceRepository.findByResourceUri(resourceId);
+	}
 }

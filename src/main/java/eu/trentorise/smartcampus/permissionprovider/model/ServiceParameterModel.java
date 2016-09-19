@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012-2013 Trento RISE
+ * Copyright 2015 Fondazione Bruno Kessler
  * 
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,48 +13,45 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
-package eu.trentorise.smartcampus.profile.model;
+package eu.trentorise.smartcampus.permissionprovider.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
 
-@XmlRootElement(name = "BasicProfile")
-public class BasicProfile {
-	
+/**
+ * @author raman
+ *
+ */
+public class ServiceParameterModel {
+
 	private String name;
-	private String surname;
+	private String value;
+	private String service;
+	private RESOURCE_VISIBILITY visibility;
 	
-	private String socialId;
-	private String userId;
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getSurname() {
-		return surname;
+	public String getValue() {
+		return value;
 	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
+	public void setValue(String value) {
+		this.value = value;
 	}
-
-	public String getSocialId() {
-		return socialId;
+	public String getService() {
+		return service;
 	}
-
-	public void setSocialId(String socialId) {
-		this.socialId = socialId;
+	public void setService(String service) {
+		this.service = service;
 	}
-
-	public String getUserId() {
-		return userId;
+	public RESOURCE_VISIBILITY getVisibility() {
+		return visibility;
 	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setVisibility(RESOURCE_VISIBILITY visibility) {
+		this.visibility = visibility;
 	}
+	
+	
 }

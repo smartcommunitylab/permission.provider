@@ -38,6 +38,9 @@ import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientModel;
+import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceParameterModel;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
@@ -52,13 +55,13 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
 public class ClientDetailsManager {
 
 	/** GRANT TYPE: CLIENT CRIDENTIALS FLOW */
-	private static final String GT_CLIENT_CREDENTIALS = "client_credentials";
+	public static final String GT_CLIENT_CREDENTIALS = "client_credentials";
 	/** GRANT TYPE: IMPLICIT FLOW */
-	private static final String GT_IMPLICIT = "implicit";
+	public static final String GT_IMPLICIT = "implicit";
 	/** GRANT TYPE: AUTHORIZATION GRANT FLOW */
-	private static final String GT_AUTHORIZATION_CODE = "authorization_code";
+	public static final String GT_AUTHORIZATION_CODE = "authorization_code";
 	/** GRANT TYPE: REFRESH TOKEN */
-	private static final String GT_REFRESH_TOKEN = "refresh_token";
+	public static final String GT_REFRESH_TOKEN = "refresh_token";
 	private Log log = LogFactory.getLog(getClass());
 
 	@Autowired
@@ -364,6 +367,29 @@ public class ClientDetailsManager {
 			throw new IllegalArgumentException("internal error");
 		}
 		
+	}
+	
+	public ClientAppBasic createNew(ClientModel model, Long userId) throws Exception {
+		ClientAppBasic data = new ClientAppBasic();
+		data.setName(model.getName());
+		data = create(data, userId);
+		update(data.getClientId(), data);
+		ClientDetailsEntity client = clientDetailsRepository.findByClientId(data.getClientId());
+		if (model.getScopes() != null) {
+			for (String s : model.getScopes()) {
+				Resource r = resourceRepository.findByResourceUri(s);
+				if (r != null) {
+					// check can use
+				}
+			}
+		}
+		if (model.getOwnParameters() != null) {
+			for (ServiceParameterModel spm : model.getOwnParameters()) {
+				// save parameter
+			}
+		}
+		return data;
+
 	}
 	
 	public ClientAppBasic get(String clientId) {
