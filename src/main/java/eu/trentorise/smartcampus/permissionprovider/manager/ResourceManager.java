@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
@@ -55,7 +56,9 @@ import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceDeclaratio
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.ResourceMapping;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Services;
+import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
+import eu.trentorise.smartcampus.permissionprovider.model.Permissions;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
@@ -75,6 +78,12 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ServiceRepository
 public class ResourceManager {
 
 	private static Log logger = LogFactory.getLog(ResourceManager.class);
+	
+	private static final Integer RA_NONE = 0;
+	private static final Integer RA_APPROVED = 1;
+	private static final Integer RA_REJECTED = 2;
+	private static final Integer RA_PENDING = 3;
+	
 	@Autowired
 	private ResourceStorage resourceStorage;
 	@Autowired
@@ -994,6 +1003,100 @@ public class ResourceManager {
 		}
 		updateService(s, ownerId);
 		return s;
+	}
+	
+	/**
+	 * Create {@link Permissions} descriptors from the client app data.
+	 * @param clientId
+	 * @param clientDetails
+	 * @param serviceId 
+	 * @return
+	 */
+	public Permissions buildPermissions(ClientDetailsEntity clientDetails, String serviceId, Long userId) {
+		Permissions permissions = new Permissions();
+		permissions.setService(getServiceObject(serviceId));
+		Map<String, List<ResourceParameter>> ownResources = new HashMap<String, List<ResourceParameter>>();
+		// read resource parameters owned by the client and create
+		// 'parameter-values' map
+		List<ResourceParameter> resourceParameters = getOwnResourceParameters(clientDetails.getClientId());
+		if (resourceParameters != null) {
+			for (ResourceParameter resourceParameter : resourceParameters) {
+				List<ResourceParameter> sublist = ownResources.get(resourceParameter.getParameter());
+				if (sublist == null) {
+					sublist = new ArrayList<ResourceParameter>();
+					ownResources.put(resourceParameter.getParameter(), sublist);
+				}
+				sublist.add(resourceParameter);
+			}
+		}
+		permissions.setOwnResources(ownResources);
+		// read all available resources and assign permission status
+		Map<String, List<Resource>> otherResourcesMap = new HashMap<String, List<Resource>>();
+		// map resources selected by the client
+		Map<String, Boolean> selectedResources = new HashMap<String, Boolean>();
+		// map resource approval state
+		Map<String, Integer> resourceApprovals = new HashMap<String, Integer>();
+		Set<String> set = clientDetails.getResourceIds();
+		if (set == null)
+			set = Collections.emptySet();
+
+		List<Resource> otherResources = getAvailableResources(clientDetails.getClientId(), userId);
+		// read approval status for the resources that require approval
+		// explicitly
+		ClientAppInfo info = ClientAppInfo.convert(clientDetails.getAdditionalInformation());
+		if (info.getResourceApprovals() == null)
+			info.setResourceApprovals(Collections.<String, Boolean> emptyMap());
+
+		if (otherResources != null) {
+			for (Resource resource : otherResources) {
+				String rId = resource.getResourceId().toString();
+				List<Resource> sublist = otherResourcesMap.get(resource.getResourceType());
+				if (sublist == null) {
+					sublist = new ArrayList<Resource>();
+					otherResourcesMap.put(resource.getResourceType(), sublist);
+				}
+				sublist.add(resource);
+				selectedResources.put(rId, set.contains(rId) || info.getResourceApprovals().containsKey(rId));
+				// set the resource approval status
+				if (selectedResources.containsKey(rId) && selectedResources.get(rId)) {
+					// the resource is approved if it is in the client resource
+					// Ids
+					if (set.contains(rId))
+						resourceApprovals.put(rId, RA_APPROVED);
+					// if resource is not in the resource approvals map, then it
+					// is rejected
+					else if (!info.getResourceApprovals().get(rId))
+						resourceApprovals.put(rId, RA_REJECTED);
+					// resource is waiting for approval
+					else
+						resourceApprovals.put(rId, RA_PENDING);
+				} else {
+					resourceApprovals.put(rId, RA_NONE);
+				}
+			}
+		}
+		Map<String, List<Resource>> serviceMap = new TreeMap<String, List<Resource>>();
+		serviceMap.put("__", new ArrayList<Resource>());
+		for (ResourceMapping rm : permissions.getService().getResourceMapping()) {
+			List<Resource> list = otherResourcesMap.get(rm.getId());
+			if (list != null) {
+				for (Resource r : list) {
+					String key = r.getResourceParameter() == null ? "__"
+							: (r.getResourceParameter().getParameter() + "__" + r.getResourceParameter().getValue());
+					List<Resource> targetList = serviceMap.get(key);
+					if (targetList == null) {
+						targetList = new ArrayList<Resource>();
+						serviceMap.put(key, targetList);
+					}
+					targetList.add(r);
+				}
+			}
+		}
+
+		permissions.setResourceApprovals(resourceApprovals);
+		permissions.setSelectedResources(selectedResources);
+		permissions.setAvailableResources(serviceMap);
+		return permissions;
 	}
 
 }
