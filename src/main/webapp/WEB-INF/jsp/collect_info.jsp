@@ -125,11 +125,7 @@ input[type=checkbox] {
 					</div>
 					<div class="form-group">
 						<label for="surname" class="pull-left"><fmt:message bundle="${res}" key="extinfo_surname" />
-						<span>
-							<fmt:message bundle="${res}" key="extinfo_required_field" />
-						</span>
 						</label>
-						<form:errors path="surname" cssClass="error pull-left"></form:errors>
 						<form:input path="surname" cssClass="form-control" />
 					</div>
 					<div class="form-group">
@@ -202,6 +198,7 @@ input[type=checkbox] {
                             <form:option value="Citizen"><fmt:message bundle="${res}" key="extinfo_role_citizen" /></form:option>
                             <form:option value="Academy"><fmt:message bundle="${res}" key="extinfo_role_academy" /></form:option>
                             <form:option value="Business"><fmt:message bundle="${res}" key="extinfo_role_business" /></form:option>
+                            <form:option value="Entrepreneur"><fmt:message bundle="${res}" key="extinfo_role_entrepreneur" /></form:option>
                         </form:select>
                     </div>
 					<%-- <div class="form-group" style="text-align:left;">
@@ -230,7 +227,29 @@ input[type=checkbox] {
                         <div><label><form:checkbox id="ck_sel_lang" path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
                         <div><label><form:checkbox id="ck_eng_lang" path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
                     </div>
-                    <!-- </div> -->    
+                    
+                    <div class="form-group relativepos">
+                        <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" /> </label>
+                        <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
+                        <form:errors path="status" cssClass="error pull-left"></form:errors>
+                        <form:select path="status" cssClass="form-control">
+                            <form:option value=""></form:option>
+                            <form:option value="Student"><fmt:message bundle="${res}" key="extinfo_status_student" /></form:option>
+                            <form:option value="Unemployed"><fmt:message bundle="${res}" key="extinfo_status_unemployed" /></form:option>
+                            <form:option value="Employed by third party"><fmt:message bundle="${res}" key="extinfo_status_employed" /></form:option>
+                            <form:option value="Self-employed / Entrepreneur"><fmt:message bundle="${res}" key="extinfo_status_entrepreneur" /></form:option>
+                            <form:option value="Retired"><fmt:message bundle="${res}" key="extinfo_status_retired" /></form:option>
+                            <form:option value="Other"><fmt:message bundle="${res}" key="extinfo_status_other" /></form:option>
+                        </form:select>
+                    </div>
+                    
+                    <div class="form-group relativepos">
+                    	<div><label>
+                    	 <form:errors path="adult" cssClass="error pull-right"></form:errors>
+                    	<form:checkbox path="adult" /><fmt:message bundle="${res}" key="extinfo_adult_declare" />
+                    	</label></div>
+                    </div>
+                    	    
 					<div class="button-row">
 						<input type="submit" name="save" value="<fmt:message bundle="${res}" key="extinfo_save" />"
 							class="btn btn-default" /> 

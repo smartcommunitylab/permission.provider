@@ -133,10 +133,15 @@ public class ExtraInfoManager {
 		map.put("country", info.getCountry());
 		map.put("city", info.getCity());
 		map.put("address", info.getAddress());
+		
 		if (info.getLanguage() != null) map.put("languages", info.getLanguage());
 		if (info.getKeywords() != null) {
 			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
 		}
+		
+		map.put("status", info.getStatus());
+		map.put("isAdult", info.isAdult());
+		
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));

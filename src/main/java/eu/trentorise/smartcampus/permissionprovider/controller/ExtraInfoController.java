@@ -79,6 +79,7 @@ public class ExtraInfoController extends AbstractController {
 			@ModelAttribute("info") @Valid ExtraInfoBean info,
 			BindingResult result, Model model, HttpServletRequest req,
 			HttpServletResponse res) {
+		
 		if (result.hasErrors()) {
 			return "collect_info";
 		} else {

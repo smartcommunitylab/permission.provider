@@ -2,6 +2,8 @@ package eu.trentorise.smartcampus.permissionprovider.beans;
 
 import java.util.Date;
 
+import javax.validation.constraints.AssertTrue;
+
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,7 +13,6 @@ public class ExtraInfoBean {
 	@NotEmpty
 	private String name;
 
-	@NotEmpty
 	private String surname;
 
 	@NotEmpty
@@ -23,9 +24,12 @@ public class ExtraInfoBean {
 
 	private String keywords;
 
-//	@NotEmpty
-//	@Pattern(regexp = "M|F|^$", message = "Not valid value")
-//	@Size(max = 1, message = "Not valid value")
+	@NotEmpty
+	private String status;
+
+	// @NotEmpty
+	// @Pattern(regexp = "M|F|^$", message = "Not valid value")
+	// @Size(max = 1, message = "Not valid value")
 	private String gender;
 
 	private String address;
@@ -38,8 +42,10 @@ public class ExtraInfoBean {
 	private String[] language;
 	private String zip, city, country;
 	private boolean developer;
-	
-	
+
+	@AssertTrue
+	private boolean adult;
+
 	public String getName() {
 		return name;
 	}
@@ -104,7 +110,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param pilot the pilot to set
+	 * @param pilot
+	 *            the pilot to set
 	 */
 	public void setPilot(String pilot) {
 		this.pilot = pilot;
@@ -118,7 +125,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param language the language to set
+	 * @param language
+	 *            the language to set
 	 */
 	public void setLanguage(String[] language) {
 		this.language = language;
@@ -132,7 +140,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param zip the zip to set
+	 * @param zip
+	 *            the zip to set
 	 */
 	public void setZip(String zip) {
 		this.zip = zip;
@@ -146,7 +155,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param city the city to set
+	 * @param city
+	 *            the city to set
 	 */
 	public void setCity(String city) {
 		this.city = city;
@@ -160,7 +170,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param country the country to set
+	 * @param country
+	 *            the country to set
 	 */
 	public void setCountry(String country) {
 		this.country = country;
@@ -174,7 +185,8 @@ public class ExtraInfoBean {
 	}
 
 	/**
-	 * @param developer the developer to set
+	 * @param developer
+	 *            the developer to set
 	 */
 	public void setDeveloper(boolean developer) {
 		this.developer = developer;
@@ -186,6 +198,22 @@ public class ExtraInfoBean {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public boolean isAdult() {
+		return adult;
+	}
+
+	public void setAdult(boolean adult) {
+		this.adult = adult;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }
