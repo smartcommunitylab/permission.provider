@@ -158,6 +158,20 @@ input[type=checkbox] {
                             <form:option value="F"><fmt:message bundle="${res}" key="extinfo_gender_f" /></form:option>
                         </form:select>
                     </div>
+                    <div class="form-group relativepos">
+                        <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" /> </label>
+                        <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
+                        <form:errors path="status" cssClass="error pull-left"></form:errors>
+                        <form:select path="status" cssClass="form-control">
+                            <form:option value=""></form:option>
+                            <form:option value="Student"><fmt:message bundle="${res}" key="extinfo_status_student" /></form:option>
+                            <form:option value="Unemployed"><fmt:message bundle="${res}" key="extinfo_status_unemployed" /></form:option>
+                            <form:option value="Employed by third party"><fmt:message bundle="${res}" key="extinfo_status_employed" /></form:option>
+                            <form:option value="Self-employed / Entrepreneur"><fmt:message bundle="${res}" key="extinfo_status_entrepreneur" /></form:option>
+                            <form:option value="Retired"><fmt:message bundle="${res}" key="extinfo_status_retired" /></form:option>
+                            <form:option value="Other"><fmt:message bundle="${res}" key="extinfo_status_other" /></form:option>
+                        </form:select>
+                    </div>
 					<div class="form-group">
 						<label for="address" class="pull-left"><fmt:message bundle="${res}" key="extinfo_address" /> </label>
 						<form:errors path="address" cssClass="error pull-left"></form:errors>
@@ -226,21 +240,6 @@ input[type=checkbox] {
                         <div><label><form:checkbox id="ck_ser_lang" path="language" value="Serbian" /><fmt:message bundle="${res}" key="extinfo_lang_rs" /></label></div>  
                         <div><label><form:checkbox id="ck_sel_lang" path="language" value="SerbianLatin" /><fmt:message bundle="${res}" key="extinfo_lang_rsl" /></label></div>  
                         <div><label><form:checkbox id="ck_eng_lang" path="language" value="English" /><fmt:message bundle="${res}" key="extinfo_lang_en" /></label></div>  
-                    </div>
-                    
-                    <div class="form-group relativepos">
-                        <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" /> </label>
-                        <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
-                        <form:errors path="status" cssClass="error pull-left"></form:errors>
-                        <form:select path="status" cssClass="form-control">
-                            <form:option value=""></form:option>
-                            <form:option value="Student"><fmt:message bundle="${res}" key="extinfo_status_student" /></form:option>
-                            <form:option value="Unemployed"><fmt:message bundle="${res}" key="extinfo_status_unemployed" /></form:option>
-                            <form:option value="Employed by third party"><fmt:message bundle="${res}" key="extinfo_status_employed" /></form:option>
-                            <form:option value="Self-employed / Entrepreneur"><fmt:message bundle="${res}" key="extinfo_status_entrepreneur" /></form:option>
-                            <form:option value="Retired"><fmt:message bundle="${res}" key="extinfo_status_retired" /></form:option>
-                            <form:option value="Other"><fmt:message bundle="${res}" key="extinfo_status_other" /></form:option>
-                        </form:select>
                     </div>
                     
                     <div class="form-group relativepos">
