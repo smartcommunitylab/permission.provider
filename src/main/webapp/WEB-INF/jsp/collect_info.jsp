@@ -154,6 +154,7 @@ input[type=checkbox] {
                         </label>
                         <form:errors path="gender" cssClass="error pull-left"></form:errors>
                         <form:select path="gender" cssClass="form-control">
+                            <form:option value=""></form:option>
                             <form:option value="M"><fmt:message bundle="${res}" key="extinfo_gender_m" /></form:option>
                             <form:option value="F"><fmt:message bundle="${res}" key="extinfo_gender_f" /></form:option>
                         </form:select>
