@@ -47,6 +47,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -422,7 +423,7 @@ public class AuthController extends AbstractController {
 	 * 
 	 * @param token
 	 */
-	@RequestMapping("/eauth/revoke/{token}")
+	@RequestMapping(method = RequestMethod.DELETE, value= "/eauth/revoke/{token}")
 	public @ResponseBody
 	String revokeToken(@PathVariable String token) {
 		OAuth2AccessToken accessTokenObj = tokenStore.readAccessToken(token);

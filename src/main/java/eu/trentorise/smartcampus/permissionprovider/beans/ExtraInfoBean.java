@@ -24,7 +24,6 @@ public class ExtraInfoBean {
 
 	private String keywords;
 
-	@NotEmpty
 	private String status;
 
 	// @NotEmpty
