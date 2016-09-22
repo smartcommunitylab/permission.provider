@@ -143,7 +143,7 @@ input[type=checkbox] {
 					<div class="form-group" style="clear: both;">
 						<div class="input-group" id="datetimepicker1">
 							<input type='text' class="form-control" id="birthdate"
-								name="birthdate" placeholder="30/01/1970" /> <span
+								name="birthdate" placeholder="dd/mm/yyyy" /> <span
 								class="input-group-addon"> <span
 								class="glyphicon glyphicon-calendar"></span>
 							</span>
