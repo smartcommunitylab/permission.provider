@@ -167,8 +167,8 @@ input[type=checkbox] {
                             <form:option value=""></form:option>
                             <form:option value="Student"><fmt:message bundle="${res}" key="extinfo_status_student" /></form:option>
                             <form:option value="Unemployed"><fmt:message bundle="${res}" key="extinfo_status_unemployed" /></form:option>
-                            <form:option value="Employed by third party"><fmt:message bundle="${res}" key="extinfo_status_employed" /></form:option>
-                            <form:option value="Self-employed / Entrepreneur"><fmt:message bundle="${res}" key="extinfo_status_entrepreneur" /></form:option>
+                            <form:option value="Employedbythirdparty"><fmt:message bundle="${res}" key="extinfo_status_employed" /></form:option>
+                            <form:option value="Selfemployedentrepreneur"><fmt:message bundle="${res}" key="extinfo_status_entrepreneur" /></form:option>
                             <form:option value="Retired"><fmt:message bundle="${res}" key="extinfo_status_retired" /></form:option>
                             <form:option value="Other"><fmt:message bundle="${res}" key="extinfo_status_other" /></form:option>
                         </form:select>
