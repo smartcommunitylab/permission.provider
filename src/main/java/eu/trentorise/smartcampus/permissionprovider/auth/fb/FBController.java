@@ -25,8 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.ctc.wstx.util.StringUtil;
 
 /**
  * FB controller connects to google and retrieve user data.
@@ -102,15 +105,21 @@ public class FBController {
 				response.setStatus(HttpServletResponse.SC_OK);
 				request.getSession().setAttribute(
 						FBAuthHelper.SESSION_FB_CHECK, "true");
-				return String
-						.format("redirect:/eauth/facebook?target=%s&id=%s&email=%s&first_name=%s&last_name=%s",
+				String res = String
+						.format("redirect:/eauth/facebook?"
+								+ "target=%s"
+								+ "&id=%s"
+								+ "&first_name=%s"
+								+ "&last_name=%s",
 								URLEncoder.encode((String) request.getSession()
 										.getAttribute("redirect"), "UTF8"),
 								userInfo.getId(),
-								userInfo.getEmail(), 
 								userInfo.getFirst_name(),
 								userInfo.getLast_name());
-
+				if (StringUtils.hasText(userInfo.getEmail())) {
+					res += "&email="+userInfo.getEmail();
+				}
+				return res;
 			} catch (IOException e) {
 				logger.error("IOException .. Problem in reading user data.", e);
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
