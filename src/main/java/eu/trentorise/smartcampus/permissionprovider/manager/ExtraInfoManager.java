@@ -63,7 +63,6 @@ public class ExtraInfoManager {
 			ExtraInfo entity = createEntity(info);
 //			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
 			entity.setUser(load);
-			infoRepo.save(entity);
 			
 			if (!StringUtils.hasText(load.email())) {
 				addEmail(load, info.getEmail());
@@ -71,6 +70,7 @@ public class ExtraInfoManager {
 			
 			if (info != null) {
 				sendAddUser(info, userId);
+				infoRepo.save(entity);
 			
 				if(info.getPilot() != null) {
 					Map<String,Object> logMap = new HashMap<String, Object>();
@@ -185,7 +185,10 @@ public class ExtraInfoManager {
 			String response = EntityUtils.toString(resp.getEntity(),"UTF-8");
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				Map<String,Object> respMap = new ObjectMapper().readValue(response, HashMap.class);
-				if (respMap != null && StringUtils.hasText((String)respMap.get("exception"))) {
+				if (respMap != null
+						&& ( StringUtils.hasText((String)respMap.get("exception")) 
+								|| Boolean.TRUE.equals(respMap.get("error")))) 
+				{
 					throw new RemoteException((String)respMap.get("exception"));
 				}
 				return response;
