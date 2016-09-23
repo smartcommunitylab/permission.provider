@@ -121,15 +121,14 @@ public class ExtraInfoManager {
 			map.put("isMale", !"F".equals(info.getGender()));	
 		}
 		
-		Calendar c = Calendar.getInstance();
 		if (info.getBirthdate() != null) {
+			Calendar c = Calendar.getInstance();
 			c.setTime(info.getBirthdate());
-		} else {
-			c.setTimeInMillis(0L);
-		}
-		map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
-		map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
-		map.put("birthdayYear",c.get(Calendar.YEAR));
+			map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
+			map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
+			map.put("birthdayYear",c.get(Calendar.YEAR));
+		} 
+		
 		map.put("isDeveloper", info.isDeveloper());
 		map.put("role", StringUtils.hasText(info.getRole()) ? info.getRole() : "Citizen");
 		map.put("zipCode", info.getZip());
