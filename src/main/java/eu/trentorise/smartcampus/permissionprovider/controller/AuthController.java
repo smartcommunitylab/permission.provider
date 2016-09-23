@@ -29,10 +29,13 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,6 +49,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,6 +62,7 @@ import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
+import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
@@ -66,12 +71,15 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Controller
 public class AuthController extends AbstractController {
 
+	private static Log normalLogger = LogFactory.getLog(AuthController.class);
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private ProviderServiceAdapter providerServiceAdapter;
 	@Autowired
 	private AttributesAdapter attributesAdapter;
+	@Autowired
+	private AutoJdbcTokenStore autoJdbcTokenStore;
 	@Value("${mode.testing}")
 	private boolean testMode;
 	@Value("${mode.collectInfo:false}")
@@ -87,7 +95,10 @@ public class AuthController extends AbstractController {
 
 	@Autowired
 	private WeLiveLogger logger;
-	
+
+	@Value("${api.token}")
+	private String token;
+
 	/**
 	 * Redirect to the login type selection page
 	 * 
@@ -98,8 +109,7 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/admin")
 	public ModelAndView admin(HttpServletRequest req) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter
-				.getWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req, "/admin");
 		req.getSession().setAttribute("redirect", target);
@@ -116,8 +126,7 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/dev")
 	public ModelAndView developer(HttpServletRequest req) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter
-				.getWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req, "/dev");
 		req.getSession().setAttribute("redirect", target);
@@ -134,8 +143,7 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/sso")
 	public ModelAndView sso(HttpServletRequest req) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter
-				.getWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req, "/sso");
 		req.getSession().setAttribute("redirect", target);
@@ -152,8 +160,7 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/cas")
 	public ModelAndView cas(HttpServletRequest req) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter
-				.getWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		model.put("authorities", authorities);
 		String target = prepareRedirect(req, "/cas/loginsuccess");
 		req.getSession().setAttribute("redirect", target);
@@ -163,9 +170,9 @@ public class AuthController extends AbstractController {
 	@RequestMapping("/eauth/start")
 	public ModelAndView reAuthorise(HttpServletRequest req) {
 		Map<String, Object> model = new HashMap<String, Object>();
-	
+
 		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
-		String clientId = (String)req.getSession().getAttribute("client_id");
+		String clientId = (String) req.getSession().getAttribute("client_id");
 		if (clientId != null) {
 			Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
 
@@ -174,10 +181,9 @@ public class AuthController extends AbstractController {
 			for (String idp : all) {
 				if (authorities.containsKey(idp) && idps.contains(idp))
 					resultAuthorities.put(idp, authorities.get(idp));
-			}			
+			}
 			if (resultAuthorities.size() == 1) {
-				return new ModelAndView("redirect:/eauth/"
-						+ resultAuthorities.keySet().iterator().next());
+				return new ModelAndView("redirect:/eauth/" + resultAuthorities.keySet().iterator().next());
 			}
 			model.put("authorities", resultAuthorities);
 		} else {
@@ -187,8 +193,7 @@ public class AuthController extends AbstractController {
 		return new ModelAndView("authorities", model);
 
 	}
-	
-	
+
 	/**
 	 * Entry point for resource access authorization request. Redirects to the
 	 * login page. In addition to standard OAuth parameters, it is possible to
@@ -200,13 +205,10 @@ public class AuthController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/eauth/authorize")
-	public ModelAndView authorise(
-			HttpServletRequest req,
-			@RequestParam(value = "authorities", required = false) String loginAuthorities)
-			throws Exception {
+	public ModelAndView authorise(HttpServletRequest req,
+			@RequestParam(value = "authorities", required = false) String loginAuthorities) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
-		Map<String, String> authorities = attributesAdapter
-				.getWebAuthorityUrls();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 
 		String clientId = req.getParameter("client_id");
 		if (clientId == null || clientId.isEmpty()) {
@@ -217,8 +219,7 @@ public class AuthController extends AbstractController {
 
 		Set<String> all = null;
 		if (loginAuthorities != null && !loginAuthorities.isEmpty()) {
-			all = new HashSet<String>(
-					Arrays.asList(loginAuthorities.split(",")));
+			all = new HashSet<String>(Arrays.asList(loginAuthorities.split(",")));
 		} else {
 			all = new HashSet<String>(authorities.keySet());
 		}
@@ -239,15 +240,14 @@ public class AuthController extends AbstractController {
 
 		Authentication old = SecurityContextHolder.getContext().getAuthentication();
 		if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
-			String authorityUrl = (String)old.getDetails();
+			String authorityUrl = (String) old.getDetails();
 			if (resultAuthorities.containsKey(authorityUrl)) {
-				return new ModelAndView("redirect:/eauth/"	+ authorityUrl);
+				return new ModelAndView("redirect:/eauth/" + authorityUrl);
 			}
 		}
-		
+
 		if (resultAuthorities.size() == 1) {
-			return new ModelAndView("redirect:/eauth/"
-					+ resultAuthorities.keySet().iterator().next());
+			return new ModelAndView("redirect:/eauth/" + resultAuthorities.keySet().iterator().next());
 		}
 		model.put("authorities", resultAuthorities);
 
@@ -265,8 +265,8 @@ public class AuthController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/eauth/authorize/{authority}")
-	public ModelAndView authoriseWithAuthority(@PathVariable String authority,
-			HttpServletRequest req) throws Exception {
+	public ModelAndView authoriseWithAuthority(@PathVariable String authority, HttpServletRequest req)
+			throws Exception {
 		String clientId = req.getParameter("client_id");
 		if (clientId == null || clientId.isEmpty()) {
 			Map<String, Object> model = new HashMap<String, Object>();
@@ -294,11 +294,8 @@ public class AuthController extends AbstractController {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	protected String prepareRedirect(HttpServletRequest req, String path)
-			throws UnsupportedEncodingException {
-		String target = path
-				+ (req.getQueryString() == null ? "" : "?"
-						+ req.getQueryString());
+	protected String prepareRedirect(HttpServletRequest req, String path) throws UnsupportedEncodingException {
+		String target = path + (req.getQueryString() == null ? "" : "?" + req.getQueryString());
 		return target;
 	}
 
@@ -317,13 +314,11 @@ public class AuthController extends AbstractController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/eauth/{authorityUrl}")
-	public ModelAndView forward(@PathVariable String authorityUrl,
-			@RequestParam(required = false) String target,
+	public ModelAndView forward(@PathVariable String authorityUrl, @RequestParam(required = false) String target,
 			HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
+
 		List<GrantedAuthority> list = Collections
-				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority(
-						"ROLE_USER"));
+				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
 		String nTarget = (String) req.getSession().getAttribute("redirect");
 		if (nTarget == null)
@@ -331,8 +326,7 @@ public class AuthController extends AbstractController {
 
 		String clientId = (String) req.getSession().getAttribute("client_id");
 		if (clientId != null) {
-			Set<String> idps = clientDetailsAdapter
-					.getIdentityProviders(clientId);
+			Set<String> idps = clientDetailsAdapter.getIdentityProviders(clientId);
 			if (!idps.contains(authorityUrl)) {
 				Map<String, Object> model = new HashMap<String, Object>();
 				model.put("message", "incorrect identity provider for the app");
@@ -342,10 +336,7 @@ public class AuthController extends AbstractController {
 
 		// HOOK for testing
 		if (testMode && target == null) {
-			target = "/eauth/"
-					+ authorityUrl
-					+ "?target="
-					+ URLEncoder.encode(nTarget, "UTF8")
+			target = "/eauth/" + authorityUrl + "?target=" + URLEncoder.encode(nTarget, "UTF8")
 					+ "&OIDC_CLAIM_email=my@mail&OIDC_CLAIM_given_name=name&OIDC_CLAIM_family_name=surname";
 		} else {
 
@@ -356,14 +347,14 @@ public class AuthController extends AbstractController {
 			Authentication old = SecurityContextHolder.getContext().getAuthentication();
 			if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
 				if (!authorityUrl.equals(old.getDetails())) {
-		            new SecurityContextLogoutHandler().logout(req, res, old);
-			        SecurityContextHolder.getContext().setAuthentication(null);
+					new SecurityContextLogoutHandler().logout(req, res, old);
+					SecurityContextHolder.getContext().setAuthentication(null);
 
 					req.getSession().setAttribute("redirect", target);
 					req.getSession().setAttribute("client_id", clientId);
-			        
-					return new ModelAndView("redirect:/eauth/"+authorityUrl);
-//					return new ModelAndView("redirect:/logout");
+
+					return new ModelAndView("redirect:/eauth/" + authorityUrl);
+					// return new ModelAndView("redirect:/logout");
 				}
 			}
 
@@ -378,18 +369,17 @@ public class AuthController extends AbstractController {
 			}
 
 			if (clientId != null) {
-				Map<String,Object> logMap = new HashMap<String, Object>();
+				Map<String, Object> logMap = new HashMap<String, Object>();
 				ClientAppBasic clientAppBasic = clientDetailsAdapter.get(clientId);
-				logMap.put("userid", ""+userEntity.getId());
-				logMap.put("clientapp", ""+clientAppBasic.getName());
+				logMap.put("userid", "" + userEntity.getId());
+				logMap.put("clientapp", "" + clientAppBasic.getName());
 				logger.log(WeLiveLogger.USER_CLIENT_AUTHORIZATION, logMap);
 
 			}
-			
+
 			UserDetails user = new User(userEntity.getId().toString(), "", list);
 
-			AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(
-					user, null, list);
+			AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(user, null, list);
 			a.setDetails(authorityUrl);
 
 			SecurityContextHolder.getContext().setAuthentication(a);
@@ -423,9 +413,8 @@ public class AuthController extends AbstractController {
 	 * 
 	 * @param token
 	 */
-	@RequestMapping(method = RequestMethod.DELETE, value= "/eauth/revoke/{token}")
-	public @ResponseBody
-	String revokeToken(@PathVariable String token) {
+	@RequestMapping(method = RequestMethod.DELETE, value = "/eauth/revoke/{token}")
+	public @ResponseBody String revokeToken(@PathVariable String token) {
 		OAuth2AccessToken accessTokenObj = tokenStore.readAccessToken(token);
 		if (accessTokenObj != null) {
 			if (accessTokenObj.getRefreshToken() != null) {
@@ -434,6 +423,36 @@ public class AuthController extends AbstractController {
 			tokenStore.removeAccessToken(accessTokenObj);
 		}
 		return "";
+	}
+
+	/**
+	 * Revoke the access token using clientId and userId.
+	 * @param token
+	 */
+	@RequestMapping(method = RequestMethod.DELETE, value = "/eauth/revoke/{clientId}/{userId}")
+	public @ResponseBody String revokeToken(@RequestHeader("Authorization") String token, @PathVariable String clientId,
+			@PathVariable String userId, HttpServletRequest req, HttpServletResponse res) {
+
+		try {
+			if (token == null || !token.matches(getAPICredentials())) {
+				res.setStatus(HttpStatus.UNAUTHORIZED.value());
+				return null;
+			}
+
+			autoJdbcTokenStore.deleteAccessTokenUsingClientIdUserId(clientId, userId);
+		
+		} catch (Exception e) {
+			normalLogger.error(e.getMessage());
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return null;
+	}
+
+	/**
+	 * @return
+	 */
+	private String getAPICredentials() {
+		return "Basic " + token;
 	}
 
 }

@@ -18,6 +18,10 @@ package eu.trentorise.smartcampus.permissionprovider.oauth;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -45,11 +49,16 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 	private static final String DEFAULT_CREATE_AT_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS oauth_access_token (token_id VARCHAR(256),  token BLOB, authentication_id VARCHAR(256), user_name VARCHAR(256), client_id VARCHAR(256), authentication BLOB, refresh_token VARCHAR(256));";
 
 	private static final String DEFAULT_SELECT_ACCESS_TOKEN_FROM_REFRESH_TOKEN = "select token_id, token from oauth_access_token where refresh_token = ?";
+	private static final String DEFAULT_SELECT_CLIENT_ID_FROM_ACCESS_TOKEN = "select cd.* from oauth_access_token at, oauth_client_details cd where at.user_name = ? and at.client_id = cd.client_id";
+	private static final String DEFAULT_DELETE_TOKEN_FROM_ACCESS_TOKEN = "delete from oauth_access_token where client_id = ? and user_name = ?";
 	
 	private String createRefreshTokenStatement = DEFAULT_CREATE_RT_TABLE_STATEMENT;
 	private String createAccessTokenStatement = DEFAULT_CREATE_AT_TABLE_STATEMENT;
 
 	private String selectAccessTokenFromRefreshTokenSql = DEFAULT_SELECT_ACCESS_TOKEN_FROM_REFRESH_TOKEN;
+	private String selectClientIdFromAccessTokenSql = DEFAULT_SELECT_CLIENT_ID_FROM_ACCESS_TOKEN;
+	private String deleteAccessTokenUsingClientIdAndUserId = DEFAULT_DELETE_TOKEN_FROM_ACCESS_TOKEN;
+	
 	
 	/**
 	 * @param dataSource
@@ -100,5 +109,37 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 		}
 		
 		return accessToken;
+	}
+	
+	public List<Map<String, Object>> findClientIdsByUserName(String userName) {
+		
+		List<Map<String, Object>> clientIds = new ArrayList<Map<String, Object>>();
+		
+		try {
+			clientIds = jdbcTemplate.queryForList(selectClientIdFromAccessTokenSql, userName);
+		}
+		catch (EmptyResultDataAccessException e) {
+			if (logger.isInfoEnabled()) {
+				logger.debug("Failed to find access token for refresh " + userName);
+			}
+		}
+		catch (IllegalArgumentException e) {
+			logger.error("Could not extract access token for refresh " + userName);
+		}
+		
+		return clientIds;
+	}
+	
+	public void deleteAccessTokenUsingClientIdUserId(String clientId, String userId) {
+		
+		try {
+			jdbcTemplate.update(deleteAccessTokenUsingClientIdAndUserId, clientId, userId);
+		} catch(EmptyResultDataAccessException e) {
+			if (logger.isInfoEnabled()) {
+				logger.debug("Failed to find access token for client_id " + clientId + " and user_name " + userId);
+			}
+		} catch (IllegalArgumentException e) {
+			logger.debug("Failed to find access token for client_id " + clientId + " and user_name " + userId);
+		}
 	}
 }
