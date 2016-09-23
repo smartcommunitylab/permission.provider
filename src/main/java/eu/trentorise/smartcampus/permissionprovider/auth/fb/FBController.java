@@ -29,8 +29,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.ctc.wstx.util.StringUtil;
-
 /**
  * FB controller connects to google and retrieve user data.
  * 
