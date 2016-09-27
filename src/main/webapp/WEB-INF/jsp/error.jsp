@@ -33,6 +33,7 @@
 	<img class="logo" src="/aac/img/welive-logo.png" alt="WeLive" />
 	<div class="clear"></div>
 	<div class="authorities">
+		<p><fmt:message bundle="${res}" key="error_error" /> info@dev.welive.eu</p>
 	</div>
 	
 	<!--
