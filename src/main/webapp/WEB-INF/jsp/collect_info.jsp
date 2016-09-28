@@ -203,8 +203,9 @@ input[type=checkbox] {
 						<label for="keywords" class="pull-left"><fmt:message bundle="${res}" key="extinfo_tags" /></label>
 						<img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_keys_title" />">
 						<form:errors path="keywords" cssClass="error pull-left"></form:errors>
-						<form:input path="keywords" cssClass="form-control" />
-					</div>
+						<form:input id="preferences" path="keywords" cssClass="form-control" />
+						<script>document.getElementById('preferences').placeholder = "<fmt:message bundle="${res}" key='extinfo_placeholder_tags'/>";</script>
+				</div>
                     <div class="form-group relativepos">
                         <label for="role" class="pull-left"><fmt:message bundle="${res}" key="extinfo_role" /> </label>
                         <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
