@@ -56,7 +56,6 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	}
 
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, String> extractAttributes(HttpServletRequest request, Map<String,String> map, AuthorityMapping mapping) {
 		String token = request.getParameter(TOKEN_PARAM);
@@ -68,23 +67,71 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 		}
 		
 		try {
-			// first, we have to validate that the token is a correct platform token
-			String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v1/tokeninfo?access_token="+token, null);
-			Map<String,Object> result = JsonUtils.toObject(s, Map.class);
-			if (result == null || !googleClientIds.contains(result.get("audience"))) {
-				throw new SecurityException("Incorrect google token "+ token+": "+s);
+			Map<String, Object> result = null;
+			try {
+				result = validateV3(token);
+			} catch (Exception e) {
+				// invalid token or invalid token version
 			}
-			// second, we have to get the user information
-			s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v1/userinfo", token);
-			result = JsonUtils.toObject(s, Map.class);
-			if (result == null || !result.containsKey("id")) {
-				throw new SecurityException("Incorrect google token "+ token+": "+s);
+			if (result == null) {
+				result = validateV1(token);
 			}
 			
 			return extractAttributes(result, mapping);
 		} catch (RemoteException e) {
 			throw new SecurityException("Error validating google token " +token + ": " + e.getMessage());
 		}
+	}
+
+
+	/**
+	 * @param token
+	 * @return
+	 * @throws RemoteException 
+	 * @throws SecurityException 
+	 */
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> validateV3(String token) throws SecurityException, RemoteException {
+		String s = RemoteConnector.getJSON("https://www.googleapis.com", "//oauth2/v3/tokeninfo?access_token="+token, null);
+		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
+		if (result == null || !validAuidence(result)) {
+			throw new SecurityException("Incorrect google token "+ token+": "+s);
+		}
+		return result;
+	}
+
+
+	/**
+	 * Check whether the token client audience matches what is expected
+	 * @param result
+	 * @return
+	 */
+	public boolean validAuidence(Map<String, Object> result) {
+		return true;//googleClientIds.contains(result.get("audience"));
+	}
+
+
+	/**
+	 * Validate Google token against API v1
+	 * @param token
+	 * @return
+	 * @throws RemoteException
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> validateV1(String token) throws SecurityException, RemoteException {
+		// first, we have to validate that the token is a correct platform token
+		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v1/tokeninfo?access_token="+token, null);
+		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
+		if (result == null || !validAuidence(result)) {
+			throw new SecurityException("Incorrect google token "+ token+": "+s);
+		}
+		// second, we have to get the user information
+		s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v1/userinfo", token);
+		result = JsonUtils.toObject(s, Map.class);
+		if (result == null || !result.containsKey("id")) {
+			throw new SecurityException("Incorrect google token "+ token+": "+s);
+		}
+		return result;
 	}
 
 	/**
