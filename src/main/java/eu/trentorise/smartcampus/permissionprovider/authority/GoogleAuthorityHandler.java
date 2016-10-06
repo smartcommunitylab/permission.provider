@@ -92,7 +92,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> validateV3(String token) throws SecurityException, RemoteException {
-		String s = RemoteConnector.getJSON("https://www.googleapis.com", "//oauth2/v3/tokeninfo?access_token="+token, null);
+		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v3/tokeninfo?id_token="+token, null);
 		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
 		if (result == null || !validAuidence(result) || !result.containsKey("sub")) {
 			throw new SecurityException("Incorrect google token "+ token+": "+s);
