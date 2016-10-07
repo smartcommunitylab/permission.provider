@@ -170,7 +170,8 @@
 		class="eu.trentorise.smartcampus.permissionprovider.oauth.NonRemovingTokenServices">
 		<property name="tokenStore" ref="tokenStore" />
 		<property name="supportRefreshToken" value="true" />
-		<property name="clientDetailsService" ref="clientDetails" />
+    <property name="reuseRefreshToken" value="true" />
+				<property name="clientDetailsService" ref="clientDetails" />
 	</bean>
 
     <bean id="userApprovalHandler" class="eu.trentorise.smartcampus.permissionprovider.oauth.UserApprovalHandler">

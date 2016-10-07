@@ -16,11 +16,18 @@
 
 package eu.trentorise.smartcampus.permissionprovider.oauth;
 
+import java.util.Date;
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.common.DefaultExpiringOAuth2RefreshToken;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -93,11 +100,67 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 
 	@Transactional(isolation=Isolation.SERIALIZABLE)
 	public OAuth2AccessToken createAccessToken(OAuth2Authentication authentication) throws AuthenticationException {
-		OAuth2AccessToken res = super.createAccessToken(authentication);
-		traceUserLogger.info(String.format("'type':'new','user':'%s','token':'%s'", authentication.getName(), res.getValue()));
-		return res;
+		OAuth2AccessToken existingAccessToken = localtokenStore.getAccessToken(authentication);
+		OAuth2RefreshToken refreshToken = null;
+		if (existingAccessToken != null) {
+			if (existingAccessToken.isExpired()) {
+				if (existingAccessToken.getRefreshToken() != null) {
+					refreshToken = existingAccessToken.getRefreshToken();
+					// The token store could remove the refresh token when the access token is removed, but we want to
+					// be sure...
+					localtokenStore.removeRefreshToken(refreshToken);
+				}
+				localtokenStore.removeAccessToken(existingAccessToken);
+			}
+			else {
+				return existingAccessToken;
+			}
+		}
+
+		// Only create a new refresh token if there wasn't an existing one associated with an expired access token.
+		// Clients might be holding existing refresh tokens, so we re-use it in the case that the old access token
+		// expired.
+		if (refreshToken == null) {
+			refreshToken = createRefreshToken(authentication);
+		}
+		// But the refresh token itself might need to be re-issued if it has expired.
+		else if (refreshToken instanceof ExpiringOAuth2RefreshToken) {
+			ExpiringOAuth2RefreshToken expiring = (ExpiringOAuth2RefreshToken) refreshToken;
+			if (isExpired(expiring)) {
+				refreshToken = createRefreshToken(authentication);
+			}
+		}
+
+		OAuth2AccessToken accessToken = createAccessToken(authentication, refreshToken);
+		localtokenStore.storeAccessToken(accessToken, authentication);
+		if (refreshToken != null) {
+			localtokenStore.storeRefreshToken(refreshToken, authentication);
+		}
+		traceUserLogger.info(String.format("'type':'new','user':'%s','token':'%s'", authentication.getName(), accessToken.getValue()));
+		return accessToken;
+	}
+	
+	private ExpiringOAuth2RefreshToken createRefreshToken(OAuth2Authentication authentication) {
+		if (!isSupportRefreshToken(authentication.getAuthorizationRequest())) {
+			return null;
+		}
+		int validitySeconds = getRefreshTokenValiditySeconds(authentication.getAuthorizationRequest());
+		ExpiringOAuth2RefreshToken refreshToken = new DefaultExpiringOAuth2RefreshToken(UUID.randomUUID().toString(),
+				new Date(System.currentTimeMillis() + (validitySeconds * 1000L)));
+		return refreshToken;
 	}
 
+	private OAuth2AccessToken createAccessToken(OAuth2Authentication authentication, OAuth2RefreshToken refreshToken) {
+		DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken(UUID.randomUUID().toString());
+		int validitySeconds = getAccessTokenValiditySeconds(authentication.getAuthorizationRequest());
+		if (validitySeconds > 0) {
+			token.setExpiration(new Date(System.currentTimeMillis() + (validitySeconds * 1000L)));
+		}
+		token.setRefreshToken(refreshToken);
+		token.setScope(authentication.getAuthorizationRequest().getScope());
+
+		return token;
+	}
 	@Override
 	public void setTokenStore(TokenStore tokenStore) {
 		super.setTokenStore(tokenStore);
@@ -111,5 +174,11 @@ public class NonRemovingTokenServices extends DefaultTokenServices {
 	public void setTokenThreshold(int tokenThreshold) {
 		this.tokenThreshold = tokenThreshold;
 	}
+	
+	@Override
+	protected boolean isExpired(OAuth2RefreshToken refreshToken) {
+		return false;
+	}
+	
 	
 }
