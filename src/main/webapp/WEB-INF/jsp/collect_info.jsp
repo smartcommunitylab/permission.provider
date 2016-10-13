@@ -161,7 +161,6 @@ input[type=checkbox] {
                     </div>
                     <div class="form-group relativepos">
                         <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" /> </label>
-                        <img class="tooltip-img" src="https://dev.welive.eu/Essential-core-material-theme/images/portlet/help.png" data-toggle="tooltip" title="<fmt:message bundle="${res}" key="tooltip_role_title" />">
                         <form:errors path="status" cssClass="error pull-left"></form:errors>
                         <form:select path="status" cssClass="form-control">
                             <form:option value=""></form:option>
