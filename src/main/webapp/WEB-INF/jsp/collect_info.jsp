@@ -160,7 +160,7 @@ input[type=checkbox] {
                         </form:select>
                     </div>
                     <div class="form-group relativepos">
-                        <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" /> </label>
+                        <label for="status" class="pull-left"><fmt:message bundle="${res}" key="extinfo_work_status" />? </label>
                         <form:errors path="status" cssClass="error pull-left"></form:errors>
                         <form:select path="status" cssClass="form-control">
                             <form:option value=""></form:option>
