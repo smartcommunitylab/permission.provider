@@ -19,7 +19,6 @@ package eu.trentorise.smartcampus.permissionprovider.oauth;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +51,11 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 	private static final String DEFAULT_SELECT_CLIENT_ID_FROM_ACCESS_TOKEN = "select cd.* from oauth_access_token at, oauth_client_details cd where at.user_name = ? and at.client_id = cd.client_id";
 	private static final String DEFAULT_DELETE_TOKEN_FROM_ACCESS_TOKEN = "delete from oauth_access_token where client_id = ? and user_name = ?";
 	
+	// cascade=true
+	// cascade=false
+	private static final String DEFAULT_DELETE_REFRESH_TOKENS = "delete from oauth_refresh_token where token_id IN (select token_id from oauth_access_token where user_name = ?)";
+	private static final String DEFAULT_DELETE_OAUTH_ACCESS_TOKENS = "delete from oauth_access_token where user_name = ?";
+	
 	private String createRefreshTokenStatement = DEFAULT_CREATE_RT_TABLE_STATEMENT;
 	private String createAccessTokenStatement = DEFAULT_CREATE_AT_TABLE_STATEMENT;
 
@@ -59,6 +63,9 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 	private String selectClientIdFromAccessTokenSql = DEFAULT_SELECT_CLIENT_ID_FROM_ACCESS_TOKEN;
 	private String deleteAccessTokenUsingClientIdAndUserId = DEFAULT_DELETE_TOKEN_FROM_ACCESS_TOKEN;
 	
+	private String deleteClientDetailsForUserId = DEFAULT_DELETE_CLIENT_DETAILS_FOR_USER;
+	private String deleteRefreshTokenForUserId = DEFAULT_DELETE_REFRESH_TOKENS;
+	private String deleteOauthAccessTokenForUserId = DEFAULT_DELETE_OAUTH_ACCESS_TOKENS;
 	
 	/**
 	 * @param dataSource
@@ -140,6 +147,25 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 			}
 		} catch (IllegalArgumentException e) {
 			logger.debug("Failed to find access token for client_id " + clientId + " and user_name " + userId);
+		}
+	}
+
+	public void deleteUserInfo(Boolean cascade, Long userId) {
+		try {
+			if (cascade != null && cascade) { // delete oauth_client_details
+				jdbcTemplate.update(deleteClientDetailsForUserId, userId);
+			}
+			// delete refresh_tokens.
+			jdbcTemplate.update(deleteRefreshTokenForUserId, userId);
+			// delete oauth_access_tokens.
+			jdbcTemplate.update(deleteOauthAccessTokenForUserId, userId);
+			
+		} catch (EmptyResultDataAccessException e) {
+			if (logger.isInfoEnabled()) {
+				logger.debug("Failed to delete data for user_id " + userId);
+			}
+		} catch (IllegalArgumentException e) {
+			logger.debug("Failed to delete data for user_id" + userId);
 		}
 	}
 }

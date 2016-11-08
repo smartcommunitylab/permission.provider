@@ -62,11 +62,13 @@ import eu.trentorise.smartcampus.permissionprovider.model.Permissions;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
+import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceStorage;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ServiceRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.UserRepositoryImpl;
 
 /**
  * Class used to operate resource model.
@@ -94,6 +96,10 @@ public class ResourceManager {
 	private ClientDetailsRepository clientDetailsRepository;
 	@Autowired
 	private ServiceRepository serviceRepository;
+	@Autowired
+	private UserRepositoryImpl userRepositoryImpl;
+	@Autowired
+	private AutoJdbcTokenStore autoJdbcTokenStore;
 	
 	@PostConstruct 
 	public void init() throws ResourceException {
@@ -1101,5 +1107,14 @@ public class ResourceManager {
 
 	public Resource getResource(String resourceId) {
 		return resourceRepository.findByResourceUri(resourceId);
+	}
+
+	public void deleteUserData(Boolean cascade, Long userId) throws Exception {
+		autoJdbcTokenStore.deleteUserInfo(cascade, Long.valueOf(userId));
+		// delete user/attributes/extraInfo.
+			logger.error("cannot delete user/attributes/extraInfo with id: " + userId);
+			throw new Exception("cannot delete user/attributes/extraInfo with id: " + userId);
+		}
+
 	}
 }

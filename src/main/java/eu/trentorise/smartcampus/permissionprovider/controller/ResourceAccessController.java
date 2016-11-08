@@ -546,6 +546,45 @@ public class ResourceAccessController extends AbstractController {
 		}
 	}
 
+	@RequestMapping(method = RequestMethod.DELETE, value = "/user/me")
+	public @ResponseBody String deleteUser(@RequestHeader("Authorization") String token,
+			@RequestParam(required = false) Boolean cascade, HttpServletRequest req, HttpServletResponse res) {
+
+		try {
+			Long userId = getUserId();
+			if (userId == null) {
+				res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				return null;
+			}
+			resourceManager.deleteUserData(cascade, userId);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return null;
+	}
+
+	@RequestMapping(method = RequestMethod.DELETE, value = "/user/{ccUserId}")
+	public @ResponseBody String deleteUserDataByUserId(@RequestHeader("Authorization") String token,
+			@PathVariable Long ccUserId, @RequestParam(required = false) Boolean cascade, HttpServletRequest req,
+			HttpServletResponse res) {
+
+		try {
+			if (token == null || !token.matches(getAPICredentials())) {
+				res.setStatus(HttpStatus.UNAUTHORIZED.value());
+				return null;
+			}
+			resourceManager.deleteUserData(cascade, ccUserId);
+
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+
+		return null;
+
+	}
+
 	/**
 	 * @return
 	 */

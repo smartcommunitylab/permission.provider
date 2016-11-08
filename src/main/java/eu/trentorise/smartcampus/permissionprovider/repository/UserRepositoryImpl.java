@@ -24,6 +24,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
+import eu.trentorise.smartcampus.permissionprovider.model.ExtraInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 
 /**
@@ -38,6 +39,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
 	@Autowired
 	private AttributeRepository attributeRepository;
+	
+	@Autowired
+	private ExtraInfoRepository extraInfoRepository;
 
 	@Override
 	public List<User> getUsersByAttributes(List<Attribute> list) {
@@ -51,6 +55,20 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 			}
 		}
 		return new ArrayList<User>(userMap.values());
+	}
+	
+	public boolean deleteUserAttributesExInfo(Long userId) {
+		User user = userRepository.findOne(userId);
+		if (user != null) {
+			ExtraInfo exInfo = extraInfoRepository.findByUser(user);
+			if (exInfo != null)
+			extraInfoRepository.delete(exInfo);
+			
+			userRepository.delete(user);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
