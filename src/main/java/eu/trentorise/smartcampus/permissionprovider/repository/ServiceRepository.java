@@ -31,4 +31,5 @@ import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 public interface ServiceRepository extends JpaRepository<ServiceDescriptor, String> {
 
 	public List<ServiceDescriptor> findByOwnerId(String ownerId);
+	public ServiceDescriptor findByServiceName(String serviceName);
 }

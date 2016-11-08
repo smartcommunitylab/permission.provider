@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,6 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter;
@@ -52,32 +54,24 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.trentorise.smartcampus.permissionprovider.common.Utils;
-import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
+import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
-import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
 import eu.trentorise.smartcampus.permissionprovider.model.BasicClientInfo;
-import eu.trentorise.smartcampus.permissionprovider.model.Client;
-import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
-import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientModel;
 import eu.trentorise.smartcampus.permissionprovider.model.Permission;
 import eu.trentorise.smartcampus.permissionprovider.model.PermissionData;
-import eu.trentorise.smartcampus.permissionprovider.model.Permissions;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
-import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope.ACCESS_TYPE;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceParameterModel;
+import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
-import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceServices;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
-import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
 
 /**
  * Controller for remote check the access to the resource
@@ -89,8 +83,6 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepositor
 public class ResourceAccessController extends AbstractController {
 
 	private static Log logger = LogFactory.getLog(ResourceAccessController.class);
-	@Autowired
-	private ResourceServices resourceServices;
 	@Autowired
 	private ResourceServerTokenServices resourceServerTokenServices;
 	@Autowired
@@ -107,142 +99,6 @@ public class ResourceAccessController extends AbstractController {
 
 	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
 
-	/** create API **/
-	@Autowired
-	private ClientDetailsManager clientDetailsAdapter;
-	@Autowired
-	private ResourceRepository resourceRepository;
-	@Autowired
-	private AttributesAdapter attributesAdapter;
-	/** GRANT TYPE: CLIENT CRIDENTIALS FLOW */
-	private static final String GT_CLIENT_CREDENTIALS = "client_credentials";
-	/** GRANT TYPE: IMPLICIT FLOW */
-	private static final String GT_IMPLICIT = "implicit";
-	/** GRANT TYPE: AUTHORIZATION GRANT FLOW */
-	private static final String GT_AUTHORIZATION_CODE = "authorization_code";
-	/** GRANT TYPE: REFRESH TOKEN */
-	private static final String GT_REFRESH_TOKEN = "refresh_token";
-
-	@RequestMapping(method = RequestMethod.POST, value = "/create/client/permissions/services")
-	public @ResponseBody Response createClientServicesPermissions(@RequestBody Client client) {
-
-		Response response = new Response();
-		response.setResponseCode(RESPONSE.OK);
-
-		try {
-			Long userId = getUserId();
-
-			// step1 (saveEmpty).
-			ClientAppBasic appData = client.getClientAppBasic();
-			Permissions permissions = client.getPermissions();
-			List<String> serviceIds = client.getServiceIds();
-
-			ClientDetailsEntity clientDetails = new ClientDetailsEntity();
-
-			if (!StringUtils.hasText(appData.getName())) {
-				throw new IllegalArgumentException("An app name cannot be empty");
-			}
-
-			for (ClientDetailsEntity cde : clientDetailsRepository.findAll()) {
-				if (ClientAppInfo.convert(cde.getAdditionalInformation()).getName().equals(appData.getName())) {
-					throw new IllegalArgumentException("An app with the same name already exists");
-				}
-			}
-
-			clientDetails.setClientId(appData.getClientId());
-			clientDetails.setAuthorities("ROLE_CLIENT");
-			clientDetails.setAuthorizedGrantTypes(GT_CLIENT_CREDENTIALS);
-			clientDetails.setDeveloperId(userId);
-			clientDetails.setClientSecret(appData.getClientSecret());
-			clientDetails.setClientSecretMobile(appData.getClientSecretMobile());
-
-			ClientAppInfo info = new ClientAppInfo();
-			info.setName(appData.getName());
-			info.setNativeAppsAccess(appData.isNativeAppsAccess());
-			info.setNativeAppSignatures(Utils.normalizeValues(appData.getNativeAppSignatures()));
-			Set<String> types = new HashSet<String>();
-			if (appData.isBrowserAccess()) {
-				types.add(GT_IMPLICIT);
-			} else {
-				types.remove(GT_IMPLICIT);
-			}
-			if (appData.isServerSideAccess() || appData.isNativeAppsAccess()) {
-				types.add(GT_AUTHORIZATION_CODE);
-				types.add(GT_REFRESH_TOKEN);
-			} else {
-				types.remove(GT_AUTHORIZATION_CODE);
-				types.remove(GT_REFRESH_TOKEN);
-			}
-			clientDetails.setAuthorizedGrantTypes(StringUtils.collectionToCommaDelimitedString(types));
-			if (info.getIdentityProviders() == null) {
-				info.setIdentityProviders(new HashMap<String, Integer>());
-			}
-
-			for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
-				if (appData.getIdentityProviders().get(key)) {
-					Integer value = info.getIdentityProviders().get(key);
-					AuthorityMapping a = attributesAdapter.getAuthority(key);
-					if (value == null || value == ClientAppInfo.UNKNOWN) {
-						info.getIdentityProviders().put(key,
-								a.isPublic() ? ClientAppInfo.APPROVED : ClientAppInfo.REQUESTED);
-					}
-				} else {
-					info.getIdentityProviders().remove(key);
-				}
-			}
-
-			if (info.getResourceApprovals() == null) {
-				info.setResourceApprovals(new HashMap<String, Boolean>());
-			}
-
-			Collection<String> resourceIds = new HashSet<String>(clientDetails.getResourceIds());
-			Collection<String> scopes = new HashSet<String>(clientDetails.getScope());
-
-			for (String r : permissions.getSelectedResources().keySet()) {
-				Resource resource = resourceRepository.findOne(Long.parseLong(r));
-				// if not checked, remove from permissions and from pending
-				// requests
-				if (!permissions.getSelectedResources().get(r)) {
-					info.getResourceApprovals().remove(r);
-					resourceIds.remove(r);
-					scopes.remove(resource.getResourceUri());
-					// if checked but requires approval, check whether
-					// - is the resource of the same client, so add
-					// automatically
-					// - already approved (i.e., included in client resourceIds)
-					// - already requested (i.e., included in additional info
-					// approval requests map)
-				} else if (resource.getClientId() != null && !appData.getClientId().equals(resource.getClientId())
-						&& resource.isApprovalRequired()) {
-					if (!resourceIds.contains(r) && !info.getResourceApprovals().containsKey(r)) {
-						info.getResourceApprovals().put(r, true);
-					}
-					// if approval is not required, include directly in client
-					// resource ids
-				} else {
-					resourceIds.add(r);
-					scopes.add(resource.getResourceUri());
-				}
-			}
-			clientDetails.setResourceIds(StringUtils.collectionToCommaDelimitedString(resourceIds));
-			clientDetails.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
-			clientDetails.setAdditionalInformation(info.toJson());
-
-			clientDetailsRepository.save(clientDetails);
-
-			// build permissions for each service.
-			for (String serviceId : serviceIds) {
-				resourceManager.buildPermissions(clientDetails, serviceId, userId);
-			}
-
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			response.setResponseCode(RESPONSE.ERROR);
-			response.setErrorMessage(e.getMessage());
-		}
-
-		return response;
-	}
 
 	/**
 	 * Check the access to the specified resource using the client app token
@@ -317,6 +173,7 @@ public class ResourceAccessController extends AbstractController {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/resources/clientinfo/oauth")
 	public @ResponseBody List<BasicClientInfo> getClientOAuthInfo(@RequestHeader("Authorization") String token,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -332,7 +189,7 @@ public class ResourceAccessController extends AbstractController {
 				List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
 				// loop through client_id and create info obj for each client_id
 				// and add to list.
-				for (Map oAuth2AccessTokenMap : oAuthTokens) {
+				for (Map<String,Object> oAuth2AccessTokenMap : oAuthTokens) {
 					if (oAuth2AccessTokenMap.containsKey("client_id")) {
 						String json = (String) oAuth2AccessTokenMap.get("additional_information");
 						Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
@@ -376,6 +233,7 @@ public class ResourceAccessController extends AbstractController {
 	 * @param request
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/resources/clientinfo/oauth/{userId}")
 	public @ResponseBody List<BasicClientInfo> getClientOAuthInfoByUserName(
 			@RequestHeader("Authorization") String token, @PathVariable String userId, HttpServletRequest request,
@@ -393,7 +251,7 @@ public class ResourceAccessController extends AbstractController {
 				// collection.
 				List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
 				// loop through client_id and create info obj per client_id.
-				for (Map oAuth2AccessTokenMap : oAuthTokens) {
+				for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
 					if (oAuth2AccessTokenMap.containsKey("client_id")) {
 						String json = (String) oAuth2AccessTokenMap.get("additional_information");
 						Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
@@ -489,17 +347,69 @@ public class ResourceAccessController extends AbstractController {
 			String clientId = auth.getAuthorizationRequest().getClientId();
 			if (clientId != null) {
 				try {
-					clientDetailsManager.createNew(model,
+					model = clientDetailsManager.createNewFromModel(model,
 							clientDetailsRepository.findByClientId(clientId).getDeveloperId());
 				} catch (Exception e) {
 					logger.error("Error creating client: " + e.getMessage());
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+					Response r = new Response();
+					r.setErrorMessage(e.getMessage());
+					r.setResponseCode(RESPONSE.ERROR);
+					try {
+						response.getWriter().print(JsonUtils.toJSON(r));
+					} catch (IOException e1) {
+					}
+					return null;
 				}
 				return model;
 			}
 		} catch (AuthenticationException e) {
-			logger.error("Error getting information about client: " + e.getMessage());
+			logger.error("Error creating client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
+		}
+
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;
+	}
+	@RequestMapping(value = "/resources/clientspec", method = RequestMethod.PUT)
+	public @ResponseBody ClientModel updateClientSpec(@RequestHeader("Authorization") String token,
+			@RequestBody ClientModel model, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
+			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
+			String clientId = auth.getAuthorizationRequest().getClientId();
+			if (clientId != null) {
+				ClientDetailsEntity ownerClient = clientDetailsRepository.findByClientId(clientId);
+				ClientDetailsEntity updatedClient = clientDetailsRepository.findByClientId(model.getClientId());
+				if (ownerClient == null || updatedClient == null) throw new BadCredentialsException("No client found");
+				
+				if (!ownerClient.getDeveloperId().equals(updatedClient.getDeveloperId())) {
+					throw new BadCredentialsException("Not authorized"); 
+				}
+				try {
+					model = clientDetailsManager.updateFromModel(model,
+							clientDetailsRepository.findByClientId(clientId).getDeveloperId());
+				} catch (Exception e) {
+					logger.error("Error creating client: " + e.getMessage());
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+					Response r = new Response();
+					r.setErrorMessage(e.getMessage());
+					r.setResponseCode(RESPONSE.ERROR);
+					try {
+						response.getWriter().print(JsonUtils.toJSON(r));
+					} catch (IOException e1) {
+					}
+					return null;
+				}
+				return model;
+			}
+		} catch (AuthenticationException e) {
+			logger.error("Error creating client: " + e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return null;
 		}
 
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
