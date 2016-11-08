@@ -1112,6 +1112,7 @@ public class ResourceManager {
 	public void deleteUserData(Boolean cascade, Long userId) throws Exception {
 		autoJdbcTokenStore.deleteUserInfo(cascade, Long.valueOf(userId));
 		// delete user/attributes/extraInfo.
+		if (!userRepositoryImpl.deleteUserAttributesExInfo(userId)) {
 			logger.error("cannot delete user/attributes/extraInfo with id: " + userId);
 			throw new Exception("cannot delete user/attributes/extraInfo with id: " + userId);
 		}

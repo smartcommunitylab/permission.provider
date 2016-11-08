@@ -52,6 +52,7 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 	private static final String DEFAULT_DELETE_TOKEN_FROM_ACCESS_TOKEN = "delete from oauth_access_token where client_id = ? and user_name = ?";
 	
 	// cascade=true
+	private static final String DEFAULT_DELETE_CLIENT_DETAILS_FOR_USER = "delete from oauth_client_details where client_id IN (select client_id from oauth_access_token at where at.user_name = ?)";
 	// cascade=false
 	private static final String DEFAULT_DELETE_REFRESH_TOKENS = "delete from oauth_refresh_token where token_id IN (select token_id from oauth_access_token where user_name = ?)";
 	private static final String DEFAULT_DELETE_OAUTH_ACCESS_TOKENS = "delete from oauth_access_token where user_name = ?";
