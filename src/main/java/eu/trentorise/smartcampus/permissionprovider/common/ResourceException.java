@@ -20,7 +20,7 @@ package eu.trentorise.smartcampus.permissionprovider.common;
  * @author raman
  *
  */
-public class ResourceException extends Exception {
+public class ResourceException extends RuntimeException {
 	private static final long serialVersionUID = -3713058847321448029L;
 
 	public ResourceException() {

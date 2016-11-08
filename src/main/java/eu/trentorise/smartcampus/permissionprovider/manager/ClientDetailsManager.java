@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import eu.trentorise.smartcampus.permissionprovider.Config.RESOURCE_VISIBILITY;
+import eu.trentorise.smartcampus.permissionprovider.common.ResourceException;
 import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
@@ -40,10 +42,13 @@ import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientModel;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
+import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
+import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceParameterModel;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceParameterRepository;
 import eu.trentorise.smartcampus.permissionprovider.repository.ResourceRepository;
+import eu.trentorise.smartcampus.permissionprovider.repository.ServiceRepository;
 
 /**
  * Support for the management of client app registration details
@@ -69,9 +74,13 @@ public class ClientDetailsManager {
 	@Autowired
 	private ResourceRepository resourceRepository;
 	@Autowired
-	private ResourceParameterRepository resourceParameterRepository;
+	private ResourceManager resourceManager;
+	@Autowired
+	private ServiceRepository serviceRepository;
 	@Autowired
 	private AttributesAdapter attributesAdapter;
+	@Autowired
+	private ResourceParameterRepository resourceParameterRepository;
 	/**
 	 * Generate new value to be used as clientId (String)
 	 * @return
@@ -207,7 +216,7 @@ public class ClientDetailsManager {
 			}
 			
 			for (String key : attributesAdapter.getAuthorityUrls().keySet()) {
-				if (data.getIdentityProviders().get(key)) {
+				if (data.getIdentityProviders().containsKey(key) && data.getIdentityProviders().get(key)) {
 					Integer value = info.getIdentityProviders().get(key);
 					AuthorityMapping a = attributesAdapter.getAuthority(key);
 					if (value == null || value == ClientAppInfo.UNKNOWN) {
@@ -309,7 +318,7 @@ public class ClientDetailsManager {
 	 * @return {@link ClientAppBasic} descriptor of the created Client
 	 * @throws Exception 
 	 */
-	public ClientAppBasic create(ClientAppBasic appData, Long userId) throws Exception {
+	public ClientAppBasic create(ClientAppBasic appData, Long userId) {
 		ClientDetailsEntity entity = new ClientDetailsEntity();
 		ClientAppInfo info = new ClientAppInfo();
 		if (!StringUtils.hasText(appData.getName())) {
@@ -321,7 +330,11 @@ public class ClientDetailsManager {
 				throw new IllegalArgumentException("An app with the same name already exists");
 			}
 		}
-		entity.setAdditionalInformation(info.toJson());
+		try {
+			entity.setAdditionalInformation(info.toJson());
+		} catch (Exception e) {
+			throw new ResourceException(e.getMessage());
+		}
 		entity.setClientId(generateClientId());
 		entity.setAuthorities(defaultAuthorities());
 		entity.setAuthorizedGrantTypes(defaultGrantTypes());
@@ -369,27 +382,104 @@ public class ClientDetailsManager {
 		
 	}
 	
-	public ClientAppBasic createNew(ClientModel model, Long userId) throws Exception {
+	public ClientModel createNewFromModel(ClientModel model, Long userId)  {
 		ClientAppBasic data = new ClientAppBasic();
 		data.setName(model.getName());
 		data = create(data, userId);
+		model2basic(model, data);
+
+		return fullUpdate(model, userId, data);
+	}
+	public ClientModel updateFromModel(ClientModel model, Long userId) {
+		ClientAppBasic data = get(model.getClientId());
+		model2basic(model, data);
+		return fullUpdate(model, userId, data);
+	}
+	
+	private ClientModel fullUpdate(ClientModel model, Long userId, ClientAppBasic data) throws ResourceException {
 		update(data.getClientId(), data);
 		ClientDetailsEntity client = clientDetailsRepository.findByClientId(data.getClientId());
-		if (model.getScopes() != null) {
-			for (String s : model.getScopes()) {
-				Resource r = resourceRepository.findByResourceUri(s);
-				if (r != null) {
-					// check can use
+		ClientAppInfo info = ClientAppInfo.convert(client.getAdditionalInformation());
+		if (model.getOwnParameters() != null) {
+			for (ServiceParameterModel spm : model.getOwnParameters()) {
+				ResourceParameter param = new ResourceParameter();
+				ServiceDescriptor sd = serviceRepository.findByServiceName(spm.getService());
+				param.setService(sd);
+				param.setClientId(client.getClientId());
+				param.setParameter(spm.getName());
+				param.setVisibility(spm.getVisibility());
+				param.setValue(spm.getValue());
+				ResourceParameter old = resourceParameterRepository.findByServiceAndParameterAndValue(sd, param.getParameter(), param.getValue());
+				if (old == null) {
+					resourceManager.storeResourceParameter(param, sd.getServiceId());
 				}
 			}
 		}
-		if (model.getOwnParameters() != null) {
-			for (ServiceParameterModel spm : model.getOwnParameters()) {
-				// save parameter
+		
+		if (model.getScopes() != null) {
+			Set<String> scopes = new HashSet<String>();
+			Set<String> resourceIds = new HashSet<String>();
+			
+			for (String s : model.getScopes()) {
+				Resource r = resourceRepository.findByResourceUri(s);
+				if (r != null) {
+					// if not the smae client id resouce (e.g., public or defined by another client id)
+					if (!client.getClientId().equals(r.getClientId())) {
+						// should be the same client
+						if (r.getVisibility().equals(RESOURCE_VISIBILITY.CLIENT_APP)) {
+							throw new ResourceException("Unauthorized resource use: same client only access allowed");
+						}
+						// should be the same developer
+						else if (r.getVisibility().equals(RESOURCE_VISIBILITY.DEVELOPER)) {
+							ClientDetailsEntity ownerClient = clientDetailsRepository.findByClientId(r.getClientId());
+							Long owner = ownerClient.getDeveloperId();
+							if (!owner.equals(userId)) {
+								throw new ResourceException("Unauthorized resource use: same user only access allowed");
+							}
+							scopes.add(s);
+							resourceIds.add(r.getResourceId().toString());
+							// public: check possibility to request and approval
+						} else {
+							if (!r.isAccessibleByOthers()) {
+								throw new ResourceException("Unauthorized resource use: not accessible by other");
+							}
+							if (r.isApprovalRequired()) {
+								if (!client.getResourceIds().contains(r.getResourceId().toString()) && ! info.getResourceApprovals().containsKey(r)) {
+									info.getResourceApprovals().put(r.getResourceId().toString(), true);
+								}
+							} else {
+								resourceIds.add(r.getResourceId().toString());
+								scopes.add(s);
+							}
+						}
+					} else {
+						resourceIds.add(r.getResourceId().toString());
+						scopes.add(s);
+					}
+				}
 			}
+			client.setScope(StringUtils.collectionToCommaDelimitedString(scopes));
+			client.setResourceIds(StringUtils.collectionToCommaDelimitedString(resourceIds));
+			model.setScopes(scopes);
 		}
-		return data;
-
+		model.setClientId(client.getClientId());
+		model.setClientSecret(client.getClientSecret());
+		model.setClientSecretMobile(client.getClientSecretMobile());
+		
+		return model;
+	}
+	private void model2basic(ClientModel model, ClientAppBasic data) {
+		data.setName(model.getName());
+		data.setBrowserAccess(model.isBrowserAccess());
+		data.setNativeAppsAccess(model.isNativeAppsAccess());
+		data.setServerSideAccess(model.isServerSideAccess());
+		data.setGrantedTypes(model.getGrantedTypes());
+		data.setRedirectUris(StringUtils.collectionToCommaDelimitedString(model.getRedirectUris()));
+		data.setNativeAppSignatures(model.getNativeAppSignatures());
+		data.setIdentityProviders(new HashMap<String, Boolean>());
+		for (String provider : model.getIdentityProviders()) {
+			data.getIdentityProviders().put(provider, true);
+		}
 	}
 	
 	public ClientAppBasic get(String clientId) {
