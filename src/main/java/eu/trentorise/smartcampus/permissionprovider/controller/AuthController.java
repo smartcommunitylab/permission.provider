@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
@@ -98,7 +100,51 @@ public class AuthController extends AbstractController {
 
 	@Value("${api.token}")
 	private String token;
+	
+	@Value("${swagger.server}")
+	private String swaggerServerUri;
+	
+	/**
+	 * welive login
+	 * 
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/login/welive-login")
+	public ModelAndView weliveLogin(HttpServletRequest req, String username, String password) throws Exception {
 
+		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, String> header = new HashMap<String, String>();
+		header.put("Authorization", getAPICredentials());
+		
+		// call post swagger.
+		try {
+			String response = Utils.callPOST(
+					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + password, null,
+					header);
+			JSONObject responseJSON = new JSONObject(response);
+			if (!responseJSON.getBoolean("error")) {
+				return new ModelAndView("redirect:/eauth/welive?username=" + username);
+			} else {
+				throw new Exception(response);
+			}
+
+		} catch (Exception e) {
+			// false.
+			// redirect it back to authority page
+			// take the authorities from session. if not present take all
+			Map<String, String> authorities = req.getSession().getAttribute("authorities") == null
+					? attributesAdapter.getWebAuthorityUrls()
+					: (Map<String, String>) req.getSession().getAttribute("authorities");
+			// add an error message
+			req.getSession().setAttribute("error", "true");
+			model.put("authorities", authorities);
+			return new ModelAndView("authorities", model);
+
+		}
+	}
+	
 	/**
 	 * Redirect to the login type selection page
 	 * 
@@ -246,8 +292,13 @@ public class AuthController extends AbstractController {
 			}
 		}
 
+		req.getSession().setAttribute("authorities", resultAuthorities);
+		
 		if (resultAuthorities.size() == 1) {
-			return new ModelAndView("redirect:/eauth/" + resultAuthorities.keySet().iterator().next());
+			String a = resultAuthorities.keySet().iterator().next();
+			if (!"welive".equals(a)) {
+				return new ModelAndView("redirect:/eauth/" + a);				
+			}
 		}
 		model.put("authorities", resultAuthorities);
 
@@ -284,7 +335,17 @@ public class AuthController extends AbstractController {
 		req.getSession().setAttribute("redirect", target);
 		req.getSession().setAttribute("client_id", clientId);
 
-		return new ModelAndView("redirect:/eauth/" + authority);
+		if (!"welive".equals(authority)) {
+			return new ModelAndView("redirect:/eauth/" + authority);				
+		}
+
+		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
+		Map<String, String> resultAuthorities = Collections.singletonMap("welive", authorities.get("welive"));
+		req.getSession().setAttribute("authorities", resultAuthorities);
+	
+		model.put("authorities", resultAuthorities);
+		return new ModelAndView("authorities", model);
 	}
 
 	/**
@@ -454,5 +515,5 @@ public class AuthController extends AbstractController {
 	private String getAPICredentials() {
 		return "Basic " + token;
 	}
-
+	
 }

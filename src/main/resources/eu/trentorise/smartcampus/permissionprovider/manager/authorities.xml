@@ -32,7 +32,7 @@
       <attributes alias="eu.trentorise.smartcampus.surname">OIDC_CLAIM_family_name</attributes>
       <identifyingAttributes>OIDC_CLAIM_email</identifyingAttributes>
   </authorityMapping>
-  <authorityMapping name="welive" url="welive" public="true">
+  <authorityMapping name="welive" url="welive" public="true"  useParams="true">
     <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
     <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
     <attributes>email</attributes>

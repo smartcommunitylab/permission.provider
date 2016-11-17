@@ -18,8 +18,8 @@
 <%@page import="java.util.Map"%>
 <%@page contentType="text/html" pageEncoding="UTF8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setBundle basename="resources.internal" var="res"/>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<fmt:setBundle basename="resources.internal" var="res" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,12 +30,21 @@
 <title>Error</title>
 </head>
 <body>
+	<%@ page language="java" import="java.util.*"%>
+	<%@ page import="java.util.ResourceBundle"%>
+	<%
+		ResourceBundle resource = ResourceBundle.getBundle("commoncore");
+		String email = resource.getString("support.email");
+	%>
 	<img class="logo" src="/aac/img/welive-logo.png" alt="WeLive" />
 	<div class="clear"></div>
 	<div class="authorities">
-		<p><fmt:message bundle="${res}" key="error_error" /> info@dev.welive.eu</p>
+		<p>
+			<fmt:message bundle="${res}" key="error_error" />
+			<%=email%>
+		</p>
 	</div>
-	
+
 	<!--
     Failed URL: ${url}
     Exception:  ${exception.message}

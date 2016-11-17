@@ -52,11 +52,11 @@
     <sec:authentication-manager alias="authenticationManager">
 	    <sec:authentication-provider 
 	      user-service-ref="clientDetailsUserService" />
-	    <sec:authentication-provider ref="casAuthenticationProvider" />
+	   <!--  <sec:authentication-provider ref="casAuthenticationProvider" /> -->
     </sec:authentication-manager>
     
-    <!-- EXTERNAL CAS INTEGRATION -->
-    <import resource="cas.xml"/>    
+   <!-- EXTERNAL CAS INTEGRATION -->
+   <!-- <import resource="cas.xml"/>     -->
     
 	<sec:http pattern="/oauth/token" create-session="stateless"
 		authentication-manager-ref="authenticationManager">
@@ -212,9 +212,9 @@
               <entry key="anonymous">
                   <bean id="anonymousAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AnonymousAuthorityHandler"/>
               </entry>
-              <entry key="welive">
-                  <bean id="casAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.CASAuthorityHandler"/>
-              </entry>
+<!--               <entry key="welive"> -->
+<!--                   <bean id="casAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.CASAuthorityHandler"/> -->
+<!--               </entry> -->
          </map>
 	    </constructor-arg>
 	</bean>

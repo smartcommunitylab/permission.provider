@@ -16,11 +16,11 @@
 
 --%>
 <%@page import="java.util.Map"%>
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<fmt:setBundle basename="resources.internal" var="res"/>
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<fmt:setBundle basename="resources.internal" var="res" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,14 +31,37 @@
 <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="../css/font-awesome.min.css" rel="stylesheet">
 <link href="../css/docs.css" rel="stylesheet" type="text/css">
-<link href="../css/bootstrap-social.css" rel="stylesheet" type="text/css">
+<link href="../css/bootstrap-social.css" rel="stylesheet"
+	type="text/css">
 <title>WeLive AAC</title>
 <style type="text/css">
+.button-row {
+	margin-top: 10px;
+}
+
+/** input within button-row class**/
+.button-row input:hover {
+	background-color: #b6bd00;
+	color: white;
+	text-transform: uppercase
+}
+
+.button-row input {
+	background-color: #b6bd00;
+	color: white;
+	text-transform: uppercase
+}
+
+.button {
+	background-color: #b6bd00;
+	color: white;
+	text-transform: uppercase
+}
+
 a.link {
-	color: #555;
 	display: inline-block;
 	font-family: "Roboto", sans-serif;
-	font-size: 1.1em;
+	/*font-size: 1.1em;*/
 	padding: 0px 3px;
 	text-decoration: none;
 	width: auto
@@ -52,24 +75,47 @@ a.link {
 	background-repeat: no-repeat;
 	opacity: 1;
 }
+
+.footer a.link {
+	color: #555;
+}
+
 .langSelect {
 	align: center;
 	heght: 30px;
 	font-size: 14px;
 	margin-top: 5px;
 }
+
+.row img {
+	margin-bottom: 10px
+}
+
+.form-group input {
+	border-radius: 6px;
+	margin-bottom: 10px
+}
 </style>
+
 <script type="text/javascript">
-  function changeLang(lang) {
-	  var str = window.location.href;
-	  str = str.replace(/\&language=[^\&]{2}/g,'');
-      str = str.replace(/\?language=[^\&]{2}/g,'');
-	  if (str.indexOf('?')>0) window.location.href = str +'&language='+lang;
-	  else window.location.href = str +'?language='+lang;
-  }
+	function changeLang(lang) {
+		var str = window.location.href;
+		str = str.replace(/\&language=[^\&]{2}/g, '');
+		str = str.replace(/\?language=[^\&]{2}/g, '');
+		if (str.indexOf('?') > 0)
+			window.location.href = str + '&language=' + lang;
+		else
+			window.location.href = str + '?language=' + lang;
+	}
 </script>
 </head>
 <body>
+	<%@ page language="java" import="java.util.*"%>
+	<%@ page import="java.util.ResourceBundle"%>
+	<%
+		ResourceBundle resource = ResourceBundle.getBundle("commoncore");
+		String serverRedirect = resource.getString("default.redirect.url");
+	%>
 	<div class="langSelect">
 		<%-- <fmt:message bundle="${res}" key="language_label" /> :  --%>
 		<a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
@@ -80,54 +126,141 @@ a.link {
 		<a href="javascript:changeLang('fi')">Suomi</a>
 		<%-- Current Locale : ${pageContext.response.locale} --%>
 	</div>
+	<div class="clear"></div>
+	<%
+		Map<String, String> authorities = (Map<String, String>) request.getAttribute("authorities");
+	out.println(authorities);
+		/* 	if (request.getSession().getAttribute("error") != null) {
+				out.print("invalid username/password");
+			} */
+	%>
+
 	<div class="row">
-		<img class="logo-centered"  src="../img/welive-logo.png" alt="WeLive" />
+		<img class="logo-centered" src="../img/welive-logo.png" alt="WeLive" />
+		<%
+			if (authorities.containsKey("welive")) {
+		%>
 		<div id="my-big-authtitle" class="col-md-offset-1 col-md-10">
-			<h3><fmt:message bundle="${res}" key="authorities_ecosystem_text" /></h3>
+			<label> <fmt:message bundle="${res}"
+					key="authorities_access_text" />
+			</label>
 		</div>
 		<div id="my-small-authtitle" class="col-xs-offset-1 col-xs-10">
-			<h3><fmt:message bundle="${res}" key="authorities_ecosystem_text" /></h3>
+			<label> <fmt:message bundle="${res}"
+					key="authorities_access_text" />
+			</label>
 		</div>
+		<%
+			}
+		%>
 	</div>
 	<div class="clear"></div>
-	<div class="authorities">
-		<p><fmt:message bundle="${res}" key="authorities_select" /></p>
-		<ul class="pprovider">
-			<%
-				Map<String, String> authorities = (Map<String, String>) request
-						.getAttribute("authorities");
-			%>
-            <% if(authorities.containsKey("google")) { %>
-            <li>
-                <a  class="btn btn-block btn-social btn-google" href="<%=request.getContextPath()%>/eauth/google">
-                    <span class="fa fa-google"></span> GOOGLE
-                </a>
-            </li>
-            <% authorities.remove("google");} %>
-            <% if(authorities.containsKey("facebook")) { %>
-            <li>
-                <a class="btn btn-block btn-social btn-facebook" href="<%=request.getContextPath()%>/eauth/facebook">
-                    <span class="fa fa-facebook"></span> FACEBOOK
-                </a>
-            </li>
-            <% authorities.remove("facebook");} %>
-			<%
-				for (String s : authorities.keySet()) {
-			%>
-	        <li>
-         		<a href="<%=request.getContextPath()%>/eauth/<%=s%>"><%=s.toUpperCase()%></a>
-			</li>
-			<% } %>
-		</ul>
+
+	<%
+		if (!authorities.isEmpty()) {
+
+			if (authorities.containsKey("welive")) {
+	%>
+
+	<div role="form">
+		<form:form method="POST" acceptCharset="UTF-8"
+			action="/aac/login/welive-login">
+			<div class="form-group">
+				<input id="username" type="text" name="username"
+					placeholder="insert your email" />
+				<script>
+					document.getElementById('username').placeholder = "<fmt:message bundle="${res}" key='authorities_username_ptext'/>";
+				</script>
+				<div>
+					<input id="password" type="password" name="password"
+						placeholder="password" />
+					<script>
+						document.getElementById('password').placeholder = "<fmt:message bundle="${res}" key='authorities_password_ptext'/>";
+					</script>
+				</div>
+				<a class="link"
+					href=<%=serverRedirect
+								+ "web/guest/overlay?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_58_struts_action=%2Flogin%2Fforgot_password"%>
+					"
+					target="_blank"><fmt:message bundle="${res}"
+						key="authorities_forgot_pass_text" />?</a>
+				<div class="button-row">
+					<input type="submit" name="login"
+						value="<fmt:message bundle="${res}" key="authorities_welive_login_button_text" />"
+						class="btn btn-default" />
+				</div>
+				<%
+					if (request.getSession().getAttribute("error") != null) {
+				%>
+				<div>
+					<label> <fmt:message bundle="${res}"
+							key="authorities_access_denied_text" />
+					</label>
+				</div>
+				<%
+					}
+				%>
+			</div>
+		</form:form>
 	</div>
+	<%
+		}
+	%>
+	<%
+		if (authorities.containsKey("google") || authorities.containsKey("facebook")) {
+	%>
+	<div class="authorities">
+
+		<%if (authorities.containsKey("welive")) { %>
+		<p>
+			<fmt:message bundle="${res}" key="authorities_select" />
+		</p>
+		<% } else { %>
+		<p>
+			<fmt:message bundle="${res}" key="authorities_select_without_welive" />
+		</p>
+		<% } %>
+
+		<div class="row">
+			<div class="col">
+				<%
+					if (authorities.containsKey("google")) {
+				%>
+				<a class="btn btn-google"
+					href="<%=request.getContextPath()%>/eauth/google">GOOGLE</a>
+				<%
+					}
+				%>
+				<%
+					if (authorities.containsKey("facebook")) {
+				%>
+				<a class="btn btn-facebook"
+					href="<%=request.getContextPath()%>/eauth/facebook">FACEBOOK </a>
+				<%
+					}
+				%>
+			</div>
+		</div>
+
+	</div>
+	<%
+		}
+	%>
+	<%
+		}
+	%>
 
 	<footer class="footer">
-		<div class="container">
-			<p>
-				<a class="link"
-					href="https://dev.welive.eu/?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"
-					target="_blank"><fmt:message bundle="${res}" key="authorities_signup" /></a>
-			</p>
+		<div class="row">
+			<div class="col">
+				<a class="link" target="_blank"><fmt:message bundle="${res}"
+						key="authorities_register_text" />?</a> <a
+					class="button btn btn-default"
+					href=<%=serverRedirect
+					+ "?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"%>><fmt:message
+						bundle="${res}" key="authorities_register_button_text" /></a>
+
+			</div>
 		</div>
 	</footer>
 </body>
