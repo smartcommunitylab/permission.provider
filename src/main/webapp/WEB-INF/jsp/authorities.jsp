@@ -129,8 +129,9 @@ a.link {
 	<div class="clear"></div>
 	<%
 		Map<String, String> authorities = (Map<String, String>) request.getAttribute("authorities");
-	out.println(authorities);
-		/* 	if (request.getSession().getAttribute("error") != null) {
+		/*
+		out.println(authorities);
+		if (request.getSession().getAttribute("error") != null) {
 				out.print("invalid username/password");
 			} */
 	%>
@@ -211,15 +212,21 @@ a.link {
 	%>
 	<div class="authorities">
 
-		<%if (authorities.containsKey("welive")) { %>
+		<%
+			if (authorities.containsKey("welive")) {
+		%>
 		<p>
 			<fmt:message bundle="${res}" key="authorities_select" />
 		</p>
-		<% } else { %>
+		<%
+			} else {
+		%>
 		<p>
 			<fmt:message bundle="${res}" key="authorities_select_without_welive" />
 		</p>
-		<% } %>
+		<%
+			}
+		%>
 
 		<div class="row">
 			<div class="col">
