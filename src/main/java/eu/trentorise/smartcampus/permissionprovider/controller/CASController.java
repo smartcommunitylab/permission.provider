@@ -95,7 +95,7 @@ public class CASController extends AbstractController {
 				if (service == null) {
 					logger.error("CAS login error: no service URL specified");
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-					return new ModelAndView("cas_error");
+					return new ModelAndView("error");
 				}
 			}
 			
