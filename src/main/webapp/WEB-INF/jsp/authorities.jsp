@@ -106,6 +106,7 @@ a.link {
 			window.location.href = str + '&language=' + lang;
 		else
 			window.location.href = str + '?language=' + lang;
+
 	}
 </script>
 </head>
@@ -129,6 +130,20 @@ a.link {
 	<div class="clear"></div>
 	<%
 		Map<String, String> authorities = (Map<String, String>) request.getAttribute("authorities");
+		Map<String, String> langMap = new HashMap<String, String>();
+		langMap.put("en", "en_GB");
+		langMap.put("it", "it_IT");
+		langMap.put("es", "es_ES");
+		langMap.put("sr", "sr_RS");
+		langMap.put("sh", "sr_RS_latin");
+		langMap.put("fi", "fi_FI");
+		String lang = request.getParameter("language");
+		if (langMap.containsKey(lang)) {
+			lang = langMap.get(lang);
+		} else {
+			lang = langMap.get("en");
+		}
+
 		/*
 		out.println(authorities);
 		if (request.getSession().getAttribute("error") != null) {
@@ -184,7 +199,7 @@ a.link {
 								+ "web/guest/overlay?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_58_struts_action=%2Flogin%2Fforgot_password"%>
 					"
 					target="_blank"><fmt:message bundle="${res}"
-						key="authorities_forgot_pass_text" />?</a>
+						key="authorities_forgot_pass_text" /></a>
 				<div class="button-row">
 					<input type="submit" name="login"
 						value="<fmt:message bundle="${res}" key="authorities_welive_login_button_text" />"
@@ -261,10 +276,10 @@ a.link {
 		<div class="row">
 			<div class="col">
 				<a class="link" target="_blank"><fmt:message bundle="${res}"
-						key="authorities_register_text" />?</a> <a
+						key="authorities_register_text" /></a> <a
 					class="button btn btn-default"
-					href=<%=serverRedirect
-					+ "?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"%>><fmt:message
+					href=<%=serverRedirect + "/" + lang
+					+ "/?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"%>><fmt:message
 						bundle="${res}" key="authorities_register_button_text" /></a>
 
 			</div>
