@@ -196,7 +196,7 @@ a.link {
 				</div>
 				<a class="link"
 					href=<%=serverRedirect
-								+ "web/guest/overlay?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_58_struts_action=%2Flogin%2Fforgot_password"%>
+								+ "/web/guest/overlay?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&_58_struts_action=%2Flogin%2Fforgot_password"%>
 					"
 					target="_blank"><fmt:message bundle="${res}"
 						key="authorities_forgot_pass_text" /></a>
