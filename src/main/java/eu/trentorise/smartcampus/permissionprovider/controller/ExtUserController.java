@@ -41,6 +41,9 @@ public class ExtUserController extends AbstractController {
 	
 	@RequestMapping(value="/create", method = RequestMethod.POST)
 	public @ResponseBody String createuser(@RequestHeader("Authorization") String token,  @RequestBody ExtUser user, HttpServletRequest req, HttpServletResponse res) {
+		
+		logger.info(user);
+		
 		if (token == null || !token.matches(getAPICredentials())) {
 			res.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return "";
