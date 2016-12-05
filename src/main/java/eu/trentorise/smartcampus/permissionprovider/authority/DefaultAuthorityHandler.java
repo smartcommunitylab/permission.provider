@@ -44,7 +44,7 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 		Map<String, String> attrs = new HashMap<String, String>();
 		for (String key : mapping.getIdentifyingAttributes()) {
 			Object value = readAttribute(request, key, testMode ? true
-					: mapping.isUseParams());
+					: mapping.isUseParams(), map);
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -54,7 +54,7 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 			String key = (attribute.getAlias() != null && !attribute.getAlias()
 					.isEmpty()) ? attribute.getAlias() : attribute.getValue();
 			Object value = readAttribute(request, attribute.getValue(),
-					testMode ? true : mapping.isUseParams());
+					testMode ? true : mapping.isUseParams(), map);
 			if (value != null) {
 				attrs.put(key, value.toString());
 			}
@@ -71,19 +71,28 @@ public class DefaultAuthorityHandler implements AuthorityHandler {
 	 *            whether to extract parameter instead of attribute
 	 * @return
 	 */
-	private Object readAttribute(HttpServletRequest request, String key,
-			boolean useParams) {
+	private Object readAttribute(HttpServletRequest request, String key, boolean useParams, Map<String, String> map) {
+		Object value = null;
+
 		if (request == null) {
-			return null;
+			return map.get(key);
+
 		}
+
 		if (useParams) {
-			return request.getParameter(key);
+			value = request.getParameter(key);
+		} else {
+			value = request.getAttribute(key);
+			if (value == null || value.toString().isEmpty()) {
+				value = request.getHeader(key);
+			}
 		}
-		Object param = request.getAttribute(key);
-		if (param == null || param.toString().isEmpty()) {
-			param = request.getHeader(key);
+
+		if (value == null && map != null && map.containsKey(key)) {
+			value = map.get(key);
 		}
-		return param;
+
+		return value;
 	}
 
 }
