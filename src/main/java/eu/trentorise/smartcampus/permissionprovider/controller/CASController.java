@@ -18,7 +18,13 @@ package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXB;
@@ -30,13 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,8 +56,8 @@ import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
- * Controller for performing the basic operations over the 
- * client apps.
+ * Controller for performing the basic operations over the client apps.
+ * 
  * @author raman
  *
  */
@@ -64,82 +66,175 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 public class CASController extends AbstractController {
 
 	private Log logger = LogFactory.getLog(getClass());
-	
+
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private TicketManager ticketManager;
 
 	private static ObjectFactory factory = new ObjectFactory();
-
 	
+	ConcurrentHashMap<String, String> stateMap = null;
+	
+	@Value("${welive.cas.callback.slo}")
+	private String callBackSingleLogoutUrl;
+
 	/**
-	 * After the user authenticated redirect to the requested service URL with the ticket.
+	 * After the user authenticated redirect to the requested service URL with
+	 * the ticket.
+	 * 
 	 * @return
 	 */
 	@RequestMapping("/cas/login")
 	public ModelAndView casLogin(HttpServletRequest req, HttpServletResponse res, @RequestParam String service) {
-		req.getSession().setAttribute("_service", service);
+		
+		/** 1. extract service and logout url of client. **/
+		String[] sessionParams = service.split("&LogoutUrl=");
+		req.getSession().setAttribute("_service", sessionParams[0]);
+		
+		/** 2. create/update stateMap<stateKey, logoutUrl>. **/
+		if (req.getSession().getAttribute("stateMap") != null) {
+			stateMap = (java.util.concurrent.ConcurrentHashMap <String, String>) req.getSession().getAttribute("stateMap");
+		} else {
+			stateMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
+			req.getSession().setAttribute("stateMap", stateMap);
+		}
+		
+		/** 3. update stateMap<stateKey, logoutUrl>. **/
+		stateMap.put(UUID.randomUUID().toString(), sessionParams[1]); // logout url.
+
+		/** 4. redirect back to client homepage. **/
 		return new ModelAndView("redirect:/cas/loginsuccess");
 	}
 
 	/**
-	 * After the user authenticated redirect to the requested service URL with the ticket.
+	 * Singe log out.
+	 * @param req
+	 * @param res
+	 * @param redirectUrl
+	 * @return
+	 */
+	@RequestMapping("/cas/singleLogout")
+	public ModelAndView singleLogout(HttpServletRequest req, HttpServletResponse res, @RequestParam String redirectUrl) {
+		
+		/** 1. put redirectUrl in session. **/
+		req.getSession().setAttribute("redirectUrl", redirectUrl);
+		 
+		/** 2. determine and make redirect to other SPs in session. **/
+		if (req.getSession().getAttribute("stateMap") != null) {
+			stateMap = (java.util.concurrent.ConcurrentHashMap<String, String>) req.getSession().getAttribute("stateMap");
+			Map.Entry<String,String> entry= stateMap.entrySet().iterator().next();
+		    String key= entry.getKey();
+			String value=entry.getValue();
+			return new ModelAndView("redirect:" + value + "?stateKey=" + key + "&callback=" + callBackSingleLogoutUrl );
+		}
+		
+		/** 3. make redirectUrl to other SPs passing as params (callBackUrl, stateKey). **/
+		return new ModelAndView("redirect:" + redirectUrl);
+	}
+	
+	/**
+	 * Single logout callback.
+	 * @param req
+	 * @param res
+	 * @param stateKey
+	 * @return
+	 */
+	@RequestMapping("/cas/singleLogout/callback")
+	public ModelAndView singleLogoutcallback(HttpServletRequest req, HttpServletResponse res, @RequestParam String stateKey) {
+
+		String redirectUrl = (String) req.getSession().getAttribute("redirectUrl");
+		
+		/** 1. remove stateKey from stateMap(sign of successful logout at clientside). **/
+		if (req.getSession().getAttribute("stateMap") != null) {
+			stateMap = (java.util.concurrent.ConcurrentHashMap<String, String>) req.getSession().getAttribute("stateMap");
+			stateMap.remove(stateKey);
+			stateMap.clear();
+		}
+		
+		/** 2. proceed with next logout. **/
+		if (!stateMap.isEmpty()) {
+			Map.Entry<String,String> entry= stateMap.entrySet().iterator().next();
+		    String key= entry.getKey();
+			String value=entry.getValue();
+			return new ModelAndView("redirect:" + value + "?stateKey=" + key + "&callback=" + callBackSingleLogoutUrl );
+		} else {
+			// clear local session.
+			req.removeAttribute("service");
+			req.getSession().invalidate();
+		}
+			
+		/** 3 redirect back to caller at the end. **/
+		return new ModelAndView("redirect:" + redirectUrl);
+	}
+
+	/**
+	 * After the user authenticated redirect to the requested service URL with
+	 * the ticket.
+	 * 
 	 * @return
 	 */
 	@RequestMapping("/cas/loginsuccess")
-	public ModelAndView casLoginsuccess(HttpServletRequest req, HttpServletResponse res, @RequestParam(required=false) String service) {
+	public ModelAndView casLoginsuccess(HttpServletRequest req, HttpServletResponse res,
+			@RequestParam(required = false) String service) {
 		try {
 			if (service == null) {
-				service = (String)req.getSession().getAttribute("_service");
+				service = (String) req.getSession().getAttribute("_service");
 				if (service == null) {
 					logger.error("CAS login error: no service URL specified");
 					res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 					return new ModelAndView("error");
 				}
 			}
-			
+
 			checkService(req, res, service);
-			User user =  userRepository.findOne(getUserId());
+			User user = userRepository.findOne(getUserId());
 			String ticket = ticketManager.getTicket(user.getId().toString(), service);
-			return new ModelAndView("redirect:"+service+"?ticket="+ticket);
+			return new ModelAndView("redirect:" + service + "?ticket=" + ticket);
 		} catch (CASException e) {
-			logger.error("CAS login error: "+e.getMessage());
+			logger.error("CAS login error: " + e.getMessage());
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return new ModelAndView("redirect:"+service);
+			return new ModelAndView("redirect:" + service);
 		}
 	}
-	
+
 	/**
 	 * Retrieve the with the user data: currently on the username is added.
+	 * 
 	 * @return
 	 */
 	@RequestMapping("/cas/serviceValidate")
-	public @ResponseBody String validateService(HttpServletRequest req, HttpServletResponse res, @RequestParam String service, @RequestParam String ticket) {
+	public @ResponseBody String validateService(HttpServletRequest req, HttpServletResponse res,
+			@RequestParam String service, @RequestParam String ticket) {
 		try {
 			res.setContentType("application/xml");
-			checkService(req, res, service);
-			Ticket obj = ticketManager.checkTicket(service, ticket);
+			String[] sessionParams = service.split("&LogoutUrl=");
+			// checkService(req, res, service);
+			checkService(req, res, sessionParams[0]);
+			// Ticket obj = ticketManager.checkTicket(service, ticket);
+			Ticket obj = ticketManager.checkTicket(sessionParams[0], ticket);
 			User user = userRepository.findOne(Long.parseLong(obj.getId()));
-			return generateSuccess(user, obj.isFromNewLogin());//new ModelAndView("redirect:"+service);
+			return generateSuccess(user, obj.isFromNewLogin());// new
+																// ModelAndView("redirect:"+service);
 		} catch (CASException e) {
-			logger.error("CAS login error: "+e.getMessage());
+			logger.error("CAS login error: " + e.getMessage());
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			try {
-				return generateFailure(e.getCode().toString(),e.getMessage());
+				return generateFailure(e.getCode().toString(), e.getMessage());
 			} catch (Exception e1) {
-				logger.error("CAS login error: "+e.getMessage());
+				logger.error("CAS login error: " + e.getMessage());
 				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return null;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("CAS login error: "+e.getMessage());
+			logger.error("CAS login error: " + e.getMessage());
 			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return null;
 		}
-		
+
 	}
+
 	/**
 	 * @param req
 	 * @param res
@@ -148,62 +243,64 @@ public class CASController extends AbstractController {
 	 */
 	private void checkService(HttpServletRequest req, HttpServletResponse res, String service) throws CASException {
 		try {
-//			URI url = 
+			// URI url =
 			URI.create(service);
-//			if (!"https".equals(url.getScheme())) throw new CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Non HTTPS callback");
+			// if (!"https".equals(url.getScheme())) throw new
+			// CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Non HTTPS
+			// callback");
 		} catch (Exception e) {
-			logger.error("Incorrect service URL : "+service);
+			logger.error("Incorrect service URL : " + service);
 			throw new CASException(ERROR_CODE.INVALID_PROXY_CALLBACK, "Invalid callback address");
 		}
 	}
-	
+
 	private static String generateSuccess(User user, boolean isNew) throws Exception {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ServiceResponseType value = factory.createServiceResponseType();
-		
+
 		AuthenticationSuccessType success = factory.createAuthenticationSuccessType();
-		success.setUser(""+user.email());
-//		AttributesType attrs = factory.createAttributesType();
-//		attrs.setIsFromNewLogin(isNew);
-//		attrs.getAny().add(createElement("name", user.getName()));
-//		attrs.getAny().add(createElement("surname", user.getSurname()));
-//		if (user.getAttributeEntities() != null) {
-//			for(Attribute a : user.getAttributeEntities()) {
-//				attrs.getAny().add(createElement(a.getKey(), a.getValue()));
-//			} 
-//		}
-//		success.setAttributes(attrs);
+		success.setUser("" + user.email());
+		// AttributesType attrs = factory.createAttributesType();
+		// attrs.setIsFromNewLogin(isNew);
+		// attrs.getAny().add(createElement("name", user.getName()));
+		// attrs.getAny().add(createElement("surname", user.getSurname()));
+		// if (user.getAttributeEntities() != null) {
+		// for(Attribute a : user.getAttributeEntities()) {
+		// attrs.getAny().add(createElement(a.getKey(), a.getValue()));
+		// }
+		// }
+		// success.setAttributes(attrs);
 		value.setAuthenticationSuccess(success);
-		
+
 		JAXBElement<ServiceResponseType> createServiceResponse = factory.createServiceResponse(value);
-				
+
 		JAXB.marshal(createServiceResponse, os);
 		return os.toString();
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static JAXBElement<Object> createElement(String key, String value) {
-		return new JAXBElement(new QName("http://www.yale.edu/tp/cas",key, "cas"), String.class,value == null ? "" : value);
+		return new JAXBElement(new QName("http://www.yale.edu/tp/cas", key, "cas"), String.class,
+				value == null ? "" : value);
 	}
-	
 
 	/**
 	 * @param string
 	 * @return
-	 * @throws JAXBException 
+	 * @throws JAXBException
 	 */
 	private static String generateFailure(String code, String codeValue) throws Exception {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		ServiceResponseType value = factory.createServiceResponseType();
-		
+
 		AuthenticationFailureType failure = factory.createAuthenticationFailureType();
 		failure.setValue(codeValue);
 		failure.setCode(code);
 		value.setAuthenticationFailure(failure);
 		JAXBElement<ServiceResponseType> createServiceResponse = factory.createServiceResponse(value);
-		
+
 		JAXB.marshal(createServiceResponse, os);
 
-		return os.toString();	
+		return os.toString();
 	}
 }
