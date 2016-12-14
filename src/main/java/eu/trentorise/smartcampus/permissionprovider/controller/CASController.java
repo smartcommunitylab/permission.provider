@@ -149,7 +149,7 @@ public class CASController extends AbstractController {
 		if (req.getSession().getAttribute("stateMap") != null) {
 			stateMap = (java.util.concurrent.ConcurrentHashMap<String, String>) req.getSession().getAttribute("stateMap");
 			stateMap.remove(stateKey);
-			stateMap.clear();
+//			stateMap.clear();
 		}
 		
 		/** 2. proceed with next logout. **/
@@ -160,7 +160,6 @@ public class CASController extends AbstractController {
 			return new ModelAndView("redirect:" + value + "?stateKey=" + key + "&callback=" + callBackSingleLogoutUrl );
 		} else {
 			// clear local session.
-			req.removeAttribute("service");
 			req.getSession().invalidate();
 		}
 			
