@@ -27,10 +27,14 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.JdbcTokenStore;
+
+import eu.trentorise.smartcampus.permissionprovider.model.Response;
+import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 
 /**
  * Token store with DB tables creation on startup.
@@ -151,7 +155,7 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 		}
 	}
 
-	public void deleteUserInfo(Boolean cascade, Long userId) {
+	public void deleteUserInfo(Boolean cascade, Long userId, Response result) {
 		try {
 			if (cascade != null && cascade) { // delete oauth_client_details
 				jdbcTemplate.update(deleteClientDetailsForUserId, userId);
@@ -161,12 +165,14 @@ public class AutoJdbcTokenStore extends JdbcTokenStore implements ExtTokenStore 
 			// delete oauth_access_tokens.
 			jdbcTemplate.update(deleteOauthAccessTokenForUserId, userId);
 			
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
+			// 424 - Action failed because some resource associated to the user can not be deleted.
 			if (logger.isInfoEnabled()) {
 				logger.debug("Failed to delete data for user_id " + userId);
+				result.setErrorMessage("Action failed because some resource associated to the user can not be deleted.");
+				result.setResponseCode(RESPONSE.ERROR);
+				result.setCode(HttpStatus.FAILED_DEPENDENCY.value());
 			}
-		} catch (IllegalArgumentException e) {
-			logger.debug("Failed to delete data for user_id" + userId);
 		}
 	}
 }

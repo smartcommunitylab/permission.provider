@@ -18,13 +18,10 @@ package eu.trentorise.smartcampus.permissionprovider.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXB;
@@ -34,9 +31,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.opensaml.saml2.core.LogoutRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +49,9 @@ import eu.trentorise.smartcampus.permissionprovider.cas.CASException;
 import eu.trentorise.smartcampus.permissionprovider.cas.CASException.ERROR_CODE;
 import eu.trentorise.smartcampus.permissionprovider.cas.TicketManager;
 import eu.trentorise.smartcampus.permissionprovider.cas.TicketManager.Ticket;
+import eu.trentorise.smartcampus.permissionprovider.common.Utils;
+import eu.trentorise.smartcampus.permissionprovider.model.AuthProtocolType;
+import eu.trentorise.smartcampus.permissionprovider.model.SingleSignoutData;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
@@ -73,9 +73,9 @@ public class CASController extends AbstractController {
 	private TicketManager ticketManager;
 
 	private static ObjectFactory factory = new ObjectFactory();
-	
-	ConcurrentHashMap<String, String> stateMap = null;
-	
+
+	ConcurrentHashMap<String, SingleSignoutData> stateMap = null;
+
 	@Value("${welive.cas.callback.slo}")
 	private String callBackSingleLogoutUrl;
 
@@ -85,86 +85,109 @@ public class CASController extends AbstractController {
 	 * 
 	 * @return
 	 */
+	// @RequestMapping("/cas/login")
+	// public ModelAndView casLogin(HttpServletRequest req, HttpServletResponse
+	// res, @RequestParam String service) {
+	//
+	// /** 1. extract service and logout url of client. **/
+	// String[] sessionParams = service.split("&LogoutUrl=");
+	// req.getSession().setAttribute("_service", sessionParams[0]);
+	//
+	// /** 2. create/update stateMap<stateKey, logoutUrl>. **/
+	// if (req.getSession().getAttribute("stateMap") != null) {
+	// stateMap = (java.util.concurrent.ConcurrentHashMap <String, String>)
+	// req.getSession().getAttribute("stateMap");
+	// } else {
+	// stateMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
+	// req.getSession().setAttribute("stateMap", stateMap);
+	// }
+	//
+	// /** 3. update stateMap<stateKey, logoutUrl>. **/
+	// stateMap.put(UUID.randomUUID().toString(), sessionParams[1]); // logout
+	// url.
+	//
+	// /** 4. redirect back to client homepage. **/
+	// return new ModelAndView("redirect:/cas/loginsuccess");
+	// }
+
 	@RequestMapping("/cas/login")
 	public ModelAndView casLogin(HttpServletRequest req, HttpServletResponse res, @RequestParam String service) {
-		
-		/** 1. extract service and logout url of client. **/
-		String[] sessionParams = service.split("&LogoutUrl=");
-		req.getSession().setAttribute("_service", sessionParams[0]);
-		
-		/** 2. create/update stateMap<stateKey, logoutUrl>. **/
-		if (req.getSession().getAttribute("stateMap") != null) {
-			stateMap = (java.util.concurrent.ConcurrentHashMap <String, String>) req.getSession().getAttribute("stateMap");
-		} else {
-			stateMap = new java.util.concurrent.ConcurrentHashMap<String, String>();
-			req.getSession().setAttribute("stateMap", stateMap);
-		}
-		
-		/** 3. update stateMap<stateKey, logoutUrl>. **/
-		stateMap.put(UUID.randomUUID().toString(), sessionParams[1]); // logout url.
 
-		/** 4. redirect back to client homepage. **/
+		/** 1. extract service and logout url of client. **/
+		req.getSession().setAttribute("_service", service);
+
+		/** 2. redirect back to client homepage. **/
 		return new ModelAndView("redirect:/cas/loginsuccess");
 	}
 
-	/**
-	 * Singe log out.
-	 * @param req
-	 * @param res
-	 * @param redirectUrl
-	 * @return
-	 */
-	@RequestMapping("/cas/singleLogout")
-	public ModelAndView singleLogout(HttpServletRequest req, HttpServletResponse res, @RequestParam String redirectUrl) {
-		
-		/** 1. put redirectUrl in session. **/
-		req.getSession().setAttribute("redirectUrl", redirectUrl);
-		 
-		/** 2. determine and make redirect to other SPs in session. **/
-		if (req.getSession().getAttribute("stateMap") != null) {
-			stateMap = (java.util.concurrent.ConcurrentHashMap<String, String>) req.getSession().getAttribute("stateMap");
-			Map.Entry<String,String> entry= stateMap.entrySet().iterator().next();
-		    String key= entry.getKey();
-			String value=entry.getValue();
-			return new ModelAndView("redirect:" + value + "?stateKey=" + key + "&callback=" + callBackSingleLogoutUrl );
-		}
-		
-		/** 3. make redirectUrl to other SPs passing as params (callBackUrl, stateKey). **/
-		return new ModelAndView("redirect:" + redirectUrl);
-	}
-	
-	/**
-	 * Single logout callback.
-	 * @param req
-	 * @param res
-	 * @param stateKey
-	 * @return
-	 */
-	@RequestMapping("/cas/singleLogout/callback")
-	public ModelAndView singleLogoutcallback(HttpServletRequest req, HttpServletResponse res, @RequestParam String stateKey) {
+	@RequestMapping("/cas/logout")
+	public ModelAndView singleLogout(HttpServletRequest req, HttpServletResponse res,
+			@RequestParam(required = false) String service, @RequestParam(required = false) String RelayState)
+			throws Exception {
 
-		String redirectUrl = (String) req.getSession().getAttribute("redirectUrl");
+		SingleSignoutData temp = null;
 		
-		/** 1. remove stateKey from stateMap(sign of successful logout at clientside). **/
-		if (req.getSession().getAttribute("stateMap") != null) {
-			stateMap = (java.util.concurrent.ConcurrentHashMap<String, String>) req.getSession().getAttribute("stateMap");
-			stateMap.remove(stateKey);
-//			stateMap.clear();
-		}
-		
-		/** 2. proceed with next logout. **/
-		if (!stateMap.isEmpty()) {
-			Map.Entry<String,String> entry= stateMap.entrySet().iterator().next();
-		    String key= entry.getKey();
-			String value=entry.getValue();
-			return new ModelAndView("redirect:" + value + "?stateKey=" + key + "&callback=" + callBackSingleLogoutUrl );
-		} else {
-			// clear local session.
-			req.getSession().invalidate();
-		}
+		/** 1. determine and make redirect to other SPs in session. **/
+		if (req.getSession().getAttribute("stateMap") != null && RelayState == null) {
+
+			req.getSession().setAttribute("redirectUrl", service);
 			
-		/** 3 redirect back to caller at the end. **/
-		return new ModelAndView("redirect:" + redirectUrl);
+			stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
+					.getAttribute("stateMap");
+
+			Map.Entry<String, SingleSignoutData> entry = stateMap.entrySet().iterator().next();
+			String key = entry.getKey();
+			SingleSignoutData singleSignoutData = entry.getValue();
+			String ticket = singleSignoutData.getSessionIdentifier();
+
+			// generate SAML logout request.
+			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
+
+			return new ModelAndView("redirect:" + singleSignoutData.getRedirectUrl() + "?RelayState=" + key
+					+ "&SAMLRequest=" + Utils.encodeRequestMessage(logoutRequest));
+
+		}
+
+		/** 2. if its callback response with RelayState, do the cleaning **/
+		if (RelayState != null && !RelayState.isEmpty()) {
+			
+			// 1. remove it from local session.
+			if (req.getSession().getAttribute("stateMap") != null) {
+
+				stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
+						.getAttribute("stateMap");
+				
+				// copy SSOData in temp.
+				temp = stateMap.get(RelayState);
+				
+				// remove
+				stateMap.remove(RelayState);
+			}
+			
+			// 2. proceed with next logout. **/
+			if (!stateMap.isEmpty()) {
+				
+				Map.Entry<String, SingleSignoutData> entry = stateMap.entrySet().iterator().next();
+				String key = entry.getKey();
+				SingleSignoutData nextSSOData = entry.getValue();
+				LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", nextSSOData.getSessionIdentifier());
+				
+				return new ModelAndView("redirect:" + nextSSOData.getRedirectUrl() + "?RelayState=" + key
+						+ "&SAMLRequest=" + Utils.encodeRequestMessage(logoutRequest));
+
+			} else {
+				String redirectUrl = (String) req.getSession().getAttribute("redirectUrl");
+				// clear local session.
+				req.getSession().invalidate();
+				return new ModelAndView("redirect:" + redirectUrl);
+
+			}
+		}
+		/**
+		 * 3. make redirectUrl to other SPs passing as params (callBackUrl,
+		 * stateKey).
+		 **/
+		return new ModelAndView("redirect:" + service);
 	}
 
 	/**
@@ -189,7 +212,27 @@ public class CASController extends AbstractController {
 			checkService(req, res, service);
 			User user = userRepository.findOne(getUserId());
 			String ticket = ticketManager.getTicket(user.getId().toString(), service);
+
+			/** 1. create/update stateMap<stateKey, SingleSignoutData>. **/
+			if (req.getSession().getAttribute("stateMap") != null) {
+				stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
+						.getAttribute("stateMap");
+			} else {
+				stateMap = new java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>();
+				req.getSession().setAttribute("stateMap", stateMap);
+			}
+
+			/**
+			 * save in session a serialized object, key-> {protocol,
+			 * sessionIndex[ticket|token], service[in case of OAUTH read from
+			 * configuration]}.
+			 **/
+			SingleSignoutData ssData = new SingleSignoutData(AuthProtocolType.CAS.toString(), ticket, service);
+			/** 3. update stateMap<stateKey, logoutUrl>. **/
+			stateMap.put(UUID.randomUUID().toString(), ssData); // logout url.
+
 			return new ModelAndView("redirect:" + service + "?ticket=" + ticket);
+
 		} catch (CASException e) {
 			logger.error("CAS login error: " + e.getMessage());
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

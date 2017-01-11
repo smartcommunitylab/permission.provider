@@ -32,6 +32,7 @@ import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -40,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +63,9 @@ import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.Permissions;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
+import eu.trentorise.smartcampus.permissionprovider.model.Response;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
+import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
 import eu.trentorise.smartcampus.permissionprovider.oauth.ResourceStorage;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
@@ -1109,12 +1113,15 @@ public class ResourceManager {
 		return resourceRepository.findByResourceUri(resourceId);
 	}
 
-	public void deleteUserData(Boolean cascade, Long userId) throws Exception {
-		autoJdbcTokenStore.deleteUserInfo(cascade, Long.valueOf(userId));
+	public void deleteUserData(Boolean cascade, Long userId, Response result, HttpServletResponse res) throws Exception {
+		autoJdbcTokenStore.deleteUserInfo(cascade, Long.valueOf(userId), result);
 		// delete user/attributes/extraInfo.
 		if (!userRepositoryImpl.deleteUserAttributesExInfo(userId)) {
-			logger.error("cannot delete user/attributes/extraInfo with id: " + userId);
-			throw new Exception("cannot delete user/attributes/extraInfo with id: " + userId);
+			// 404 - Action failed because the ccUserID does not exist into the DB.
+			result.setErrorMessage("Action failed because the ccUserID does not exist into the DB.");
+			result.setResponseCode(RESPONSE.ERROR);
+			result.setCode(HttpStatus.SC_NOT_FOUND);
+			res.setStatus(HttpStatus.SC_NOT_FOUND);
 		}
 
 	}

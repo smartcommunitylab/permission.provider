@@ -17,52 +17,74 @@
 package eu.trentorise.smartcampus.permissionprovider.model;
 
 /**
- * ServiceDescriptor response descriptor: response code (OK/ERROR) contained data and optional error message
+ * ServiceDescriptor response descriptor: response code (OK/ERROR) contained
+ * data and optional error message
+ * 
  * @author raman
  *
  */
 public class Response {
 
-	public enum RESPONSE {OK,ERROR};
-	
+	public enum RESPONSE {
+		OK, ERROR
+	};
+
 	private Object data;
 	private RESPONSE responseCode;
 	private String errorMessage;
+	private int code;
+
 	/**
 	 * @return the data
 	 */
 	public Object getData() {
 		return data;
 	}
+
 	/**
-	 * @param data the data to set
+	 * @param data
+	 *            the data to set
 	 */
 	public void setData(Object data) {
 		this.data = data;
 	}
-	
+
 	/**
 	 * @return the responseCode
 	 */
 	public String getResponseCode() {
 		return responseCode.toString();
 	}
+
 	/**
-	 * @param responseCode the responseCode to set
+	 * @param responseCode
+	 *            the responseCode to set
 	 */
 	public void setResponseCode(RESPONSE responseCode) {
 		this.responseCode = responseCode;
 	}
+
 	/**
 	 * @return the errorMessage
 	 */
 	public String getErrorMessage() {
 		return errorMessage;
 	}
+
 	/**
-	 * @param errorMessage the errorMessage to set
+	 * @param errorMessage
+	 *            the errorMessage to set
 	 */
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+
 }

@@ -209,7 +209,7 @@ a.link {
 					if (request.getSession().getAttribute("error") != null) {
 				%>
 				<div>
-					<label> <fmt:message bundle="${res}"
+					<label style="color:red;"> <fmt:message bundle="${res}"
 							key="authorities_access_denied_text" />
 					</label>
 				</div>

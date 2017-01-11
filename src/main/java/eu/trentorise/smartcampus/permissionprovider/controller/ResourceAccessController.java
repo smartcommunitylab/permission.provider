@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,10 +65,10 @@ import eu.trentorise.smartcampus.permissionprovider.model.PermissionData;
 import eu.trentorise.smartcampus.permissionprovider.model.Resource;
 import eu.trentorise.smartcampus.permissionprovider.model.ResourceParameter;
 import eu.trentorise.smartcampus.permissionprovider.model.Response;
+import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope;
 import eu.trentorise.smartcampus.permissionprovider.model.Scope.ACCESS_TYPE;
 import eu.trentorise.smartcampus.permissionprovider.model.ServiceParameterModel;
-import eu.trentorise.smartcampus.permissionprovider.model.Response.RESPONSE;
 import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
 import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepository;
 
@@ -98,7 +97,6 @@ public class ResourceAccessController extends AbstractController {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private static ResourceFilterHelper resourceFilterHelper = new ResourceFilterHelper();
-
 
 	/**
 	 * Check the access to the specified resource using the client app token
@@ -189,7 +187,7 @@ public class ResourceAccessController extends AbstractController {
 				List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
 				// loop through client_id and create info obj for each client_id
 				// and add to list.
-				for (Map<String,Object> oAuth2AccessTokenMap : oAuthTokens) {
+				for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
 					if (oAuth2AccessTokenMap.containsKey("client_id")) {
 						String json = (String) oAuth2AccessTokenMap.get("additional_information");
 						Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
@@ -373,6 +371,7 @@ public class ResourceAccessController extends AbstractController {
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
+
 	@RequestMapping(value = "/resources/clientspec", method = RequestMethod.PUT)
 	public @ResponseBody ClientModel updateClientSpec(@RequestHeader("Authorization") String token,
 			@RequestBody ClientModel model, HttpServletRequest request, HttpServletResponse response) {
@@ -383,10 +382,11 @@ public class ResourceAccessController extends AbstractController {
 			if (clientId != null) {
 				ClientDetailsEntity ownerClient = clientDetailsRepository.findByClientId(clientId);
 				ClientDetailsEntity updatedClient = clientDetailsRepository.findByClientId(model.getClientId());
-				if (ownerClient == null || updatedClient == null) throw new BadCredentialsException("No client found");
-				
+				if (ownerClient == null || updatedClient == null)
+					throw new BadCredentialsException("No client found");
+
 				if (!ownerClient.getDeveloperId().equals(updatedClient.getDeveloperId())) {
-					throw new BadCredentialsException("Not authorized"); 
+					throw new BadCredentialsException("Not authorized");
 				}
 				try {
 					model = clientDetailsManager.updateFromModel(model,
@@ -457,41 +457,68 @@ public class ResourceAccessController extends AbstractController {
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/user/me")
-	public @ResponseBody String deleteUser(@RequestHeader("Authorization") String token,
+	public @ResponseBody Response deleteUser(@RequestHeader("Authorization") String token,
 			@RequestParam(required = false) Boolean cascade, HttpServletRequest req, HttpServletResponse res) {
+
+		Response result = new Response();
+		result.setResponseCode(RESPONSE.OK);
+		result.setCode(HttpStatus.OK.value());
+		result.setErrorMessage("Action completed correctly.");
 
 		try {
 			Long userId = getUserId();
 			if (userId == null) {
-				res.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				return null;
+				result.setErrorMessage("Action failed because the ccUserID does not exist into the DB.");
+				result.setResponseCode(RESPONSE.ERROR);
+				result.setCode(HttpStatus.NOT_FOUND.value());
 			}
-			resourceManager.deleteUserData(cascade, userId);
+			
+			resourceManager.deleteUserData(cascade, userId, result, res);
+			
 		} catch (Exception e) {
+			// 500 - Action failed, no more details are provided
 			logger.error(e.getMessage());
 			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			result.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			result.setErrorMessage("Action failed, no more details are provided");
+			result.setResponseCode(RESPONSE.ERROR);
 		}
-		return null;
+
+		return result;
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/user/{ccUserId}")
-	public @ResponseBody String deleteUserDataByUserId(@RequestHeader("Authorization") String token,
+	public @ResponseBody Response deleteUserDataByUserId(@RequestHeader("Authorization") String token,
 			@PathVariable Long ccUserId, @RequestParam(required = false) Boolean cascade, HttpServletRequest req,
 			HttpServletResponse res) {
 
+		Response result = new Response();
+		result.setResponseCode(RESPONSE.OK);
+		result.setCode(HttpStatus.OK.value());
+		result.setErrorMessage("Action completed correctly.");
+		
 		try {
+			
 			if (token == null || !token.matches(getAPICredentials())) {
-				res.setStatus(HttpStatus.UNAUTHORIZED.value());
-				return null;
+				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				result.setErrorMessage("Action failed, authorization error.");
+				result.setResponseCode(RESPONSE.ERROR);
+				result.setCode(HttpServletResponse.SC_UNAUTHORIZED);
+			} else {
+				resourceManager.deleteUserData(cascade, ccUserId, result, res);
 			}
-			resourceManager.deleteUserData(cascade, ccUserId);
-
+			
+			
 		} catch (Exception e) {
+			// 500 - Action failed, no more details are provided
 			logger.error(e.getMessage());
 			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			result.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			result.setErrorMessage("Action failed, no more details are provided");
+			result.setResponseCode(RESPONSE.ERROR);
 		}
 
-		return null;
+		return result;
 
 	}
 

@@ -31,6 +31,7 @@ public class ClientModel {
 	private String clientSecretMobile;
 	private String name;
 	private Set<String> redirectUris;
+	private String sloUrl;
 	private Set<String> grantedTypes;
 
 	private boolean nativeAppsAccess;
@@ -146,6 +147,16 @@ public class ClientModel {
 
 	public void setOwnParameters(Set<ServiceParameterModel> ownParameters) {
 		this.ownParameters = ownParameters;
+	}
+	
+	
+
+	public String getSloUrl() {
+		return sloUrl;
+	}
+
+	public void setSloUrl(String sloUrl) {
+		this.sloUrl = sloUrl;
 	}
 
 	/**
