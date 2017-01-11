@@ -138,6 +138,7 @@ a.link {
 		langMap.put("sh", "sr_RS_latin");
 		langMap.put("fi", "fi_FI");
 		String lang = request.getParameter("language");
+		if (lang == null && pageContext.getResponse().getLocale() != null) lang = pageContext.getResponse().getLocale().getLanguage();
 		if (langMap.containsKey(lang)) {
 			lang = langMap.get(lang);
 		} else {
