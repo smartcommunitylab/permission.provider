@@ -35,10 +35,9 @@ LOGOUT
 6. Idp(AAC)
 	- idp put redirect url in session as final url to be redirect after underlying handshakes.
 	 determines the other SPs(list of SingleSignOutData) that support SLO to which the end-user received SSO during the current logon session. The IdP then iteratively does the following for each participating SP:
-		- takes the list of SingleSignOutData and call all of them by making redirect specify
+		- takes the list of SingleSignOutData and call all of them by making redirect to the redirect value (present as field inside SingleSignOutData structure)
 			- RelayState (associate each elements in logout list as RelayState)
-			- SAMLRequest=true
-			- redirect value (present as field inside SingleSignOutData structure)
+			- SAMLRequest=<SAML signature>
 		- Sps clear session and redirect a per protocol to AAC /cas/logout with RelayState parameter passed before.
 		- idp is listening to response asynchronously in (/cas/logout) method.
 			- it receives RelayState, understands that SP has cleaned the session.

@@ -15,13 +15,9 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opensaml.saml2.core.LogoutRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,9 +28,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import eu.trentorise.smartcampus.permissionprovider.common.Utils;
-import eu.trentorise.smartcampus.permissionprovider.model.SingleSignoutData;
 
 /**
  * @author raman
@@ -48,9 +41,6 @@ public class LogoutController {
 		
 	@Value("${welive.cas.server}")
 	private String casServer;
-	
-	/** stateMap for holding single signout data. **/
-	ConcurrentHashMap<String, SingleSignoutData> stateMap = null;
 
 	/**
 	 * Logout from CAS protocol.
@@ -63,72 +53,9 @@ public class LogoutController {
 	/**
 	 * Logout from SSO.
 	 * @return
-	 * @throws Exception 
 	 */
 	@RequestMapping("/ssologout")
-	public ModelAndView ssoLogout(HttpServletRequest req, HttpServletResponse res, @RequestParam(required=false) String RelayState,
-			@RequestParam(required=false) String redirect) throws Exception {
-		
-		SingleSignoutData temp = null;
-		
-		/** 1. determine and make redirect to other SPs in session. **/
-		if (req.getSession().getAttribute("stateMap") != null && RelayState == null) {
-
-			req.getSession().setAttribute("redirectUrl", redirect);
-			
-			stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
-					.getAttribute("stateMap");
-
-			Map.Entry<String, SingleSignoutData> entry = stateMap.entrySet().iterator().next();
-			String key = entry.getKey();
-			SingleSignoutData singleSignoutData = entry.getValue();
-//			String ticket = singleSignoutData.getSessionIdentifier();
-
-			// generate SAML logout request.
-//			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
-
-			return new ModelAndView("redirect:" + singleSignoutData.getRedirectUrl() + "?RelayState=" + key
-					+ "&callback=" + "/ssologout");
-
-		}
-
-		/** 2. if its callback response with RelayState, do the cleaning **/
-		if (RelayState != null && !RelayState.isEmpty()) {
-			
-			// 1. remove it from local session.
-			if (req.getSession().getAttribute("stateMap") != null) {
-
-				stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
-						.getAttribute("stateMap");
-				
-				// copy SSOData in temp.
-				temp = stateMap.get(RelayState);
-				
-				// remove
-				stateMap.remove(RelayState);
-			}
-			
-			// 2. proceed with next logout. **/
-			if (!stateMap.isEmpty()) {
-				
-				Map.Entry<String, SingleSignoutData> entry = stateMap.entrySet().iterator().next();
-				String key = entry.getKey();
-				SingleSignoutData nextSSOData = entry.getValue();
-//				LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", nextSSOData.getSessionIdentifier());
-				
-				return new ModelAndView("redirect:" + nextSSOData.getRedirectUrl() + "?RelayState=" + key
-						+ "&callback=" + "/ssologout");
-
-			} else {
-				String redirectUrl = (String) req.getSession().getAttribute("redirectUrl");
-				// clear local session.
-				req.getSession().invalidate();
-				return new ModelAndView("redirect:" + redirectUrl);
-
-			}
-		}
-		
-		
+	public ModelAndView ssoLogout(HttpServletRequest req, HttpServletResponse res, @RequestParam(required=false) String redirect) {
 		return logoutCommon(req, redirect);
 	}
 
