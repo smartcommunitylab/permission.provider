@@ -152,21 +152,24 @@ public class AdminController extends AbstractController{
 			List<ClientDetailsEntity> clients = clientDetailsRepository.findAll();
 			List<IdPData> list = new ArrayList<IdPData>();
 			for (ClientDetailsEntity e : clients) {
-				ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
-				if (info.getIdentityProviders() != null && !info.getIdentityProviders().isEmpty()) {
-					IdPData data = new IdPData();
-					data.setClientId(e.getClientId());
-					data.setName(info.getName());
-					data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
-					data.setIdps(new ArrayList<String>());
-					for (String key : info.getIdentityProviders().keySet()) {
-						Integer value = info.getIdentityProviders().get(key);
-						if (ClientAppInfo.REQUESTED == value) {
-							data.getIdps().add(key);
+				if (userRepository.findOne(e.getDeveloperId()) != null) {
+					ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
+					if (info.getIdentityProviders() != null && !info.getIdentityProviders().isEmpty()) {
+						IdPData data = new IdPData();
+						data.setClientId(e.getClientId());
+						data.setName(info.getName());
+						data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
+						data.setIdps(new ArrayList<String>());
+						for (String key : info.getIdentityProviders().keySet()) {
+							Integer value = info.getIdentityProviders().get(key);
+							if (ClientAppInfo.REQUESTED == value) {
+								data.getIdps().add(key);
+							}
 						}
-					}
-					if (!data.getIdps().isEmpty()) list.add(data);
+						if (!data.getIdps().isEmpty()) list.add(data);
+					}					
 				}
+
 			}
 			result.setData(list);
 		} catch (Exception e) {
