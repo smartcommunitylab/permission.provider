@@ -248,6 +248,7 @@ public class CASController extends AbstractController {
 			 * configuration]}.
 			 **/
 			SingleSignoutData ssData = new SingleSignoutData(AuthProtocolType.CAS.toString(), ticket, service);
+			System.out.print(ssData.toString());
 			/** 3. update stateMap<stateKey, logoutUrl>. **/
 			stateMap.put(UUID.randomUUID().toString(), ssData); // logout url.
 
