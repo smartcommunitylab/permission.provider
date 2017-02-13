@@ -150,6 +150,7 @@ public class CASController extends AbstractController {
 			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
 
 			String redirectUrl = singleSignoutData.getRedirectUrl();
+			System.out.print(singleSignoutData.toString());
 			// check for life-ray.
 			if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 				redirectUrl = lifeRaySeviceToLogout;
@@ -185,6 +186,7 @@ public class CASController extends AbstractController {
 				LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", nextSSOData.getSessionIdentifier());
 				
 				String redirectUrl = nextSSOData.getRedirectUrl();
+				System.out.print(nextSSOData.toString());
 				// check for life-ray.
 				if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 					redirectUrl = lifeRaySeviceToLogout;
