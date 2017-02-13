@@ -133,8 +133,6 @@ public class CASController extends AbstractController {
 
 		SingleSignoutData temp = null;
 		
-		System.out.print("inside cas/logout");
-		
 		/** 1. determine and make redirect to other SPs in session. **/
 		if (req.getSession().getAttribute("stateMap") != null && RelayState == null) {
 
@@ -190,11 +188,10 @@ public class CASController extends AbstractController {
 				LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", nextSSOData.getSessionIdentifier());
 				
 				String redirectUrl = nextSSOData.getRedirectUrl();
-				System.out.print(nextSSOData.toString());
 				// check for life-ray.
 				if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 					redirectUrl = lifeRaySeviceToLogout;
-					System.out.print("Redirect LifeRay Service Logout: " + lifeRayServiceToAvoid + "-> " + redirectUrl);
+					System.out.print("List-Redirect LifeRay Service Logout: " + lifeRayServiceToAvoid + "-> " + redirectUrl);
 				}
 
 				return new ModelAndView("redirect:" + redirectUrl + "?RelayState=" + key
