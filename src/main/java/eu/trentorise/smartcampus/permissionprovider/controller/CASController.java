@@ -133,6 +133,8 @@ public class CASController extends AbstractController {
 
 		SingleSignoutData temp = null;
 		
+		System.out.print("inside cas/logout");
+		
 		/** 1. determine and make redirect to other SPs in session. **/
 		if (req.getSession().getAttribute("stateMap") != null && RelayState == null) {
 
@@ -146,6 +148,8 @@ public class CASController extends AbstractController {
 			SingleSignoutData singleSignoutData = entry.getValue();
 			String ticket = singleSignoutData.getSessionIdentifier();
 
+			System.out.print(singleSignoutData.toString());
+			
 			// generate SAML logout request.
 			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
 
