@@ -146,8 +146,6 @@ public class CASController extends AbstractController {
 			SingleSignoutData singleSignoutData = entry.getValue();
 			String ticket = singleSignoutData.getSessionIdentifier();
 
-			System.out.print(singleSignoutData.toString());
-			
 			// generate SAML logout request.
 			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
 
