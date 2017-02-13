@@ -150,7 +150,6 @@ public class CASController extends AbstractController {
 			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
 
 			String redirectUrl = singleSignoutData.getRedirectUrl();
-			System.out.print(singleSignoutData.toString());
 			// check for life-ray.
 			if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 				redirectUrl = lifeRaySeviceToLogout;
@@ -248,7 +247,6 @@ public class CASController extends AbstractController {
 			 * configuration]}.
 			 **/
 			SingleSignoutData ssData = new SingleSignoutData(AuthProtocolType.CAS.toString(), ticket, service);
-			System.out.print(ssData.toString());
 			/** 3. update stateMap<stateKey, logoutUrl>. **/
 			stateMap.put(UUID.randomUUID().toString(), ssData); // logout url.
 
