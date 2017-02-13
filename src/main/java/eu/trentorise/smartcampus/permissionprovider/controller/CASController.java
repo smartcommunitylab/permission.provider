@@ -78,6 +78,12 @@ public class CASController extends AbstractController {
 
 	@Value("${welive.cas.callback.slo}")
 	private String callBackSingleLogoutUrl;
+	
+	@Value("${liferay.service.to.avoid}")
+	private String lifeRayServiceToAvoid;
+	
+	@Value("${liferay.service.to.logout}")
+	private String lifeRaySeviceToLogout;
 
 	/**
 	 * After the user authenticated redirect to the requested service URL with
@@ -143,7 +149,13 @@ public class CASController extends AbstractController {
 			// generate SAML logout request.
 			LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", ticket);
 
-			return new ModelAndView("redirect:" + singleSignoutData.getRedirectUrl() + "?RelayState=" + key
+			String redirectUrl = singleSignoutData.getRedirectUrl();
+			// check for life-ray.
+			if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
+				redirectUrl = lifeRaySeviceToLogout;
+			}
+			
+			return new ModelAndView("redirect:" + redirectUrl + "?RelayState=" + key
 					+ "&SAMLRequest=" + Utils.encodeRequestMessage(logoutRequest));
 
 		}
@@ -172,7 +184,13 @@ public class CASController extends AbstractController {
 				SingleSignoutData nextSSOData = entry.getValue();
 				LogoutRequest logoutRequest = Utils.genererateLogoutRequest("xxxx", nextSSOData.getSessionIdentifier());
 				
-				return new ModelAndView("redirect:" + nextSSOData.getRedirectUrl() + "?RelayState=" + key
+				String redirectUrl = nextSSOData.getRedirectUrl();
+				// check for life-ray.
+				if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
+					redirectUrl = lifeRaySeviceToLogout;
+				}
+
+				return new ModelAndView("redirect:" + redirectUrl + "?RelayState=" + key
 						+ "&SAMLRequest=" + Utils.encodeRequestMessage(logoutRequest));
 
 			} else {
