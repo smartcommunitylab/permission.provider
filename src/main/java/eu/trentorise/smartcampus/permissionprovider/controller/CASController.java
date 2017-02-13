@@ -153,6 +153,7 @@ public class CASController extends AbstractController {
 			// check for life-ray.
 			if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 				redirectUrl = lifeRaySeviceToLogout;
+				System.out.print("Redirect LifeRay Service Logout: " + lifeRayServiceToAvoid + "-> " + redirectUrl);
 			}
 			
 			return new ModelAndView("redirect:" + redirectUrl + "?RelayState=" + key
@@ -189,6 +190,7 @@ public class CASController extends AbstractController {
 				// check for life-ray.
 				if (redirectUrl.equalsIgnoreCase(lifeRayServiceToAvoid)) {
 					redirectUrl = lifeRaySeviceToLogout;
+					System.out.print("Redirect LifeRay Service Logout: " + lifeRayServiceToAvoid + "-> " + redirectUrl);
 				}
 
 				return new ModelAndView("redirect:" + redirectUrl + "?RelayState=" + key
