@@ -460,19 +460,19 @@ public class ResourceAccessController extends AbstractController {
 	public @ResponseBody Response deleteUser(@RequestHeader("Authorization") String token,
 			@RequestParam(required = false) Boolean cascade, HttpServletRequest req, HttpServletResponse res) {
 
-		Response result = new Response();
+    Long userId = null;
+    Response result = new Response();
 		result.setResponseCode(RESPONSE.OK);
 		result.setCode(HttpStatus.OK.value());
 		result.setErrorMessage("Action completed correctly.");
 
 		try {
-			Long userId = getUserId();
+			userId = getUserId();
 			if (userId == null) {
 				result.setErrorMessage("Action failed because the ccUserID does not exist into the DB.");
 				result.setResponseCode(RESPONSE.ERROR);
 				result.setCode(HttpStatus.NOT_FOUND.value());
 			}
-			
 			resourceManager.deleteUserData(cascade, userId, result, res);
 			
 		} catch (Exception e) {
@@ -482,6 +482,27 @@ public class ResourceAccessController extends AbstractController {
 			result.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 			result.setErrorMessage("Action failed, no more details are provided");
 			result.setResponseCode(RESPONSE.ERROR);
+		}
+
+		} catch (Exception e) {
+			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			result.setErrorMessage("Action failed, authorization error.");
+			result.setResponseCode(RESPONSE.ERROR);
+			result.setCode(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+
+		if (userId != null) {
+			try {
+				resourceManager.deleteUserData(cascade, userId, result, res);
+			} catch (Exception e) {
+				// 500 - Action failed, no more details are provided
+				logger.error(e.getMessage());
+				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				result.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				result.setErrorMessage("Action failed, no more details are provided");
+				result.setResponseCode(RESPONSE.ERROR);
+			}
+
 		}
 
 		return result;
@@ -498,7 +519,7 @@ public class ResourceAccessController extends AbstractController {
 		result.setErrorMessage("Action completed correctly.");
 		
 		try {
-			
+
 			if (token == null || !token.matches(getAPICredentials())) {
 				res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				result.setErrorMessage("Action failed, authorization error.");
@@ -507,8 +528,6 @@ public class ResourceAccessController extends AbstractController {
 			} else {
 				resourceManager.deleteUserData(cascade, ccUserId, result, res);
 			}
-			
-			
 		} catch (Exception e) {
 			// 500 - Action failed, no more details are provided
 			logger.error(e.getMessage());

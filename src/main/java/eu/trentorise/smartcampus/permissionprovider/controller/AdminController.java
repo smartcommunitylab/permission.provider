@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager;
-import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.AdminManager.ROLE;
+import eu.trentorise.smartcampus.permissionprovider.manager.AttributesAdapter;
 import eu.trentorise.smartcampus.permissionprovider.model.ApprovalData;
 import eu.trentorise.smartcampus.permissionprovider.model.Attribute;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
@@ -55,12 +55,13 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
 /**
  * Access to the administration resources.
+ * 
  * @author raman
  *
  */
 @Controller
 @Transactional
-public class AdminController extends AbstractController{
+public class AdminController extends AbstractController {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -72,66 +73,68 @@ public class AdminController extends AbstractController{
 	private AttributesAdapter attributesAdapter;
 	@Autowired
 	private AdminManager adminManager;
-	
+
 	private Log logger = LogFactory.getLog(getClass());
+
 	/**
 	 * Retrieve the with the user data: currently on the username is added.
+	 * 
 	 * @return
 	 */
 	@RequestMapping("/admin")
 	public ModelAndView admin() {
 		User user = userRepository.findOne(getUserId());
 		String authority = getUserAuthority();
-		Map<String,Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<String, Object>();
 
 		Set<Identity> identityAttrs = new HashSet<Identity>();
 		for (Attribute a : user.getAttributeEntities()) {
-			if (a.getAuthority().getName().equals(authority) && 
-				attributesAdapter.isIdentityAttr(a)) 
-			{
+			if (a.getAuthority().getName().equals(authority) && attributesAdapter.isIdentityAttr(a)) {
 				identityAttrs.add(new Identity(authority, a.getKey(), a.getValue()));
 			}
 		}
-		
+
 		try {
 			if (!adminManager.checkAccount(identityAttrs, ROLE.admin)) {
 				model.put("error", "Not authorized");
-				return new ModelAndView("accesserror",model);
-//				return new ModelAndView("redirect:/admin/logout");
+				return new ModelAndView("accesserror", model);
+				// return new ModelAndView("redirect:/admin/logout");
 			}
 		} catch (Exception e) {
 			model.put("error", e.getMessage());
-			logger.error("Problem checking admin account: "+e.getMessage());
+			logger.error("Problem checking admin account: " + e.getMessage());
 			return new ModelAndView("accesserror");
-//			return new ModelAndView("redirect:/admin/logout");
+			// return new ModelAndView("redirect:/admin/logout");
 		}
-		
+
 		String username = getUserName(user);
-		model.put("username",username);
+		model.put("username", username);
 		return new ModelAndView("admin", model);
 	}
-	
+
 	@RequestMapping("/admin/approvals")
 	public @ResponseBody Response getApprovals() {
 		Response result = new Response();
 		result.setResponseCode(RESPONSE.OK);
-		
+
 		try {
 			List<ClientDetailsEntity> clients = clientDetailsRepository.findAll();
 			List<ApprovalData> list = new ArrayList<ApprovalData>();
 			for (ClientDetailsEntity e : clients) {
-				ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
-				if (info.getResourceApprovals() != null && !info.getResourceApprovals().isEmpty()) {
-					ApprovalData data = new ApprovalData();
-					data.setClientId(e.getClientId());
-					data.setName(info.getName());
-					data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
-					data.setResources(new ArrayList<Resource>());
-					for (String rId : info.getResourceApprovals().keySet()) {
-						Resource resource = resourceRepository.findOne(Long.parseLong(rId));
-						data.getResources().add(resource);
+				if (userRepository.findOne(e.getDeveloperId()) != null) {
+					ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
+					if (info.getResourceApprovals() != null && !info.getResourceApprovals().isEmpty()) {
+						ApprovalData data = new ApprovalData();
+						data.setClientId(e.getClientId());
+						data.setName(info.getName());
+						data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
+						data.setResources(new ArrayList<Resource>());
+						for (String rId : info.getResourceApprovals().keySet()) {
+							Resource resource = resourceRepository.findOne(Long.parseLong(rId));
+							data.getResources().add(resource);
+						}
+						list.add(data);
 					}
-					list.add(data);
 				}
 			}
 			result.setData(list);
@@ -147,26 +150,30 @@ public class AdminController extends AbstractController{
 	public @ResponseBody Response getIdPs() {
 		Response result = new Response();
 		result.setResponseCode(RESPONSE.OK);
-		
+
 		try {
 			List<ClientDetailsEntity> clients = clientDetailsRepository.findAll();
 			List<IdPData> list = new ArrayList<IdPData>();
 			for (ClientDetailsEntity e : clients) {
-				ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
-				if (info.getIdentityProviders() != null && !info.getIdentityProviders().isEmpty()) {
-					IdPData data = new IdPData();
-					data.setClientId(e.getClientId());
-					data.setName(info.getName());
-					data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
-					data.setIdps(new ArrayList<String>());
-					for (String key : info.getIdentityProviders().keySet()) {
-						Integer value = info.getIdentityProviders().get(key);
-						if (ClientAppInfo.REQUESTED == value) {
-							data.getIdps().add(key);
+				if (userRepository.findOne(e.getDeveloperId()) != null) {
+					ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
+					if (info.getIdentityProviders() != null && !info.getIdentityProviders().isEmpty()) {
+						IdPData data = new IdPData();
+						data.setClientId(e.getClientId());
+						data.setName(info.getName());
+						data.setOwner(userRepository.findOne(e.getDeveloperId()).toString());
+						data.setIdps(new ArrayList<String>());
+						for (String key : info.getIdentityProviders().keySet()) {
+							Integer value = info.getIdentityProviders().get(key);
+							if (ClientAppInfo.REQUESTED == value) {
+								data.getIdps().add(key);
+							}
 						}
+						if (!data.getIdps().isEmpty())
+							list.add(data);
 					}
-					if (!data.getIdps().isEmpty()) list.add(data);
 				}
+
 			}
 			result.setData(list);
 		} catch (Exception e) {
@@ -176,17 +183,19 @@ public class AdminController extends AbstractController{
 		}
 		return result;
 	}
-	
-	@RequestMapping(value="/admin/approvals/{clientId}", method=RequestMethod.POST)
+
+	@RequestMapping(value = "/admin/approvals/{clientId}", method = RequestMethod.POST)
 	public @ResponseBody Response approve(@PathVariable String clientId) {
 		try {
 			ClientDetailsEntity e = clientDetailsRepository.findByClientId(clientId);
 			ClientAppInfo info = ClientAppInfo.convert(e.getAdditionalInformation());
 			if (!info.getResourceApprovals().isEmpty()) {
 				Set<String> idSet = new HashSet<String>();
-				if (e.getResourceIds() != null) idSet.addAll(e.getResourceIds());
+				if (e.getResourceIds() != null)
+					idSet.addAll(e.getResourceIds());
 				Set<String> uriSet = new HashSet<String>();
-				if (e.getScope() != null) uriSet.addAll(e.getScope());
+				if (e.getScope() != null)
+					uriSet.addAll(e.getScope());
 				for (String rId : info.getResourceApprovals().keySet()) {
 					Resource resource = resourceRepository.findOne(Long.parseLong(rId));
 					idSet.add(rId);
@@ -194,7 +203,7 @@ public class AdminController extends AbstractController{
 				}
 				e.setResourceIds(StringUtils.collectionToCommaDelimitedString(idSet));
 				e.setScope(StringUtils.collectionToCommaDelimitedString(uriSet));
-				info.setResourceApprovals(Collections.<String,Boolean>emptyMap());
+				info.setResourceApprovals(Collections.<String, Boolean> emptyMap());
 				e.setAdditionalInformation(info.toJson());
 				clientDetailsRepository.save(e);
 			}
@@ -207,7 +216,7 @@ public class AdminController extends AbstractController{
 		}
 	}
 
-	@RequestMapping(value="/admin/idps/{clientId}", method=RequestMethod.POST)
+	@RequestMapping(value = "/admin/idps/{clientId}", method = RequestMethod.POST)
 	public @ResponseBody Response approveIdP(@PathVariable String clientId) {
 		try {
 			ClientDetailsEntity e = clientDetailsRepository.findByClientId(clientId);
