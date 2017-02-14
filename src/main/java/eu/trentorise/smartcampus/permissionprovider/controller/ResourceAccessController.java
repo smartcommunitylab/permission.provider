@@ -484,27 +484,6 @@ public class ResourceAccessController extends AbstractController {
 			result.setResponseCode(RESPONSE.ERROR);
 		}
 
-		} catch (Exception e) {
-			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			result.setErrorMessage("Action failed, authorization error.");
-			result.setResponseCode(RESPONSE.ERROR);
-			result.setCode(HttpServletResponse.SC_UNAUTHORIZED);
-		}
-
-		if (userId != null) {
-			try {
-				resourceManager.deleteUserData(cascade, userId, result, res);
-			} catch (Exception e) {
-				// 500 - Action failed, no more details are provided
-				logger.error(e.getMessage());
-				res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				result.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-				result.setErrorMessage("Action failed, no more details are provided");
-				result.setResponseCode(RESPONSE.ERROR);
-			}
-
-		}
-
 		return result;
 	}
 
