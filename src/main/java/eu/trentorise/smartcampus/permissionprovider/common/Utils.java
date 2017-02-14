@@ -16,11 +16,23 @@
 
 package eu.trentorise.smartcampus.permissionprovider.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
 
+import javax.xml.namespace.QName;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -30,7 +42,23 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.joda.time.DateTime;
+import org.opensaml.DefaultBootstrap;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.RequestAbstractType;
+import org.opensaml.saml2.core.SessionIndex;
+import org.opensaml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.saml2.core.impl.NameIDBuilder;
+import org.opensaml.saml2.core.impl.SessionIndexBuilder;
+import org.opensaml.xml.Configuration;
+import org.opensaml.xml.ConfigurationException;
+import org.opensaml.xml.XMLObjectBuilderFactory;
+import org.opensaml.xml.io.Marshaller;
+import org.opensaml.xml.util.XMLHelper;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.network.RemoteException;
@@ -45,6 +73,8 @@ import eu.trentorise.smartcampus.permissionprovider.model.ServiceDescriptor;
  *
  */
 public class Utils {
+
+	private static XMLObjectBuilderFactory builderFactory;
 
 	/**
 	 * Generate set of strings out of specified delimited string. Remove also
@@ -172,6 +202,161 @@ public class Utils {
 		} catch (Exception e) {
 			throw new RemoteException(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Build the logout request
+	 * 
+	 * @param subject
+	 *            name of the user
+	 * @param reason
+	 *            reason for generating logout request.
+	 * @return LogoutRequest object
+	 */
+	public static LogoutRequest buildLogoutRequest(String subject, String sessionIndexId, String reason,
+			String issuerId) {
+		LogoutRequest logoutReq = new org.opensaml.saml2.core.impl.LogoutRequestBuilder().buildObject();
+		logoutReq.setID(UUID.randomUUID().toString());
+
+		DateTime issueInstant = new DateTime();
+		logoutReq.setIssueInstant(issueInstant);
+		logoutReq.setNotOnOrAfter(new DateTime(issueInstant.getMillis() + 5 * 60 * 1000));
+
+		IssuerBuilder issuerBuilder = new IssuerBuilder();
+		Issuer issuer = issuerBuilder.buildObject();
+		issuer.setValue(issuerId);
+		logoutReq.setIssuer(issuer);
+
+		NameID nameId = new NameIDBuilder().buildObject();
+		// nameId.setFormat(SSOConstants.SAML2_NAME_ID_POLICY);
+		nameId.setValue(subject);
+		logoutReq.setNameID(nameId);
+
+		SessionIndex sessionIndex = new SessionIndexBuilder().buildObject();
+		sessionIndex.setSessionIndex(sessionIndexId);
+		logoutReq.getSessionIndexes().add(sessionIndex);
+
+		logoutReq.setReason(reason);
+
+		return logoutReq;
+	}
+
+	public static String encodeRequestMessage(RequestAbstractType requestMessage) {
+
+		String encodedRequestMessage = "";
+		try {
+
+			Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(requestMessage);
+
+			Element authDOM = (Element) marshaller.marshall(requestMessage);
+
+			// Deflater deflater = new Deflater(Deflater.DEFLATED, true);
+			/** BLOCKER: resolved problem with incorrect-header.**/
+			Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION);
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(byteArrayOutputStream, deflater);
+
+			StringWriter rspWrt = new StringWriter();
+			XMLHelper.writeNode(authDOM, rspWrt);
+			deflaterOutputStream.write(rspWrt.toString().getBytes("UTF-8"));
+			deflaterOutputStream.close();
+
+			/* Encoding the compressed message */
+			encodedRequestMessage = Base64.encodeBase64String(byteArrayOutputStream.toByteArray());
+
+			return URLEncoder.encode(encodedRequestMessage, "UTF-8").trim();
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		return encodedRequestMessage;
+
+	}
+
+	public static LogoutRequest genererateLogoutRequest(final String name, final String sessionIndex) throws Exception {
+
+		NameID nameId = Utils.buildSAMLObjectWithDefaultName(NameID.class);
+		nameId.setFormat("urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress");
+		nameId.setValue(name);
+
+		LogoutRequest logoutRequest = buildSAMLObjectWithDefaultName(LogoutRequest.class);
+
+		logoutRequest.setID(UUID.randomUUID().toString());
+
+		logoutRequest.setDestination("xxxxxxx/sso/saml");
+		logoutRequest.setIssueInstant(new DateTime());
+
+		Issuer issuer = buildSAMLObjectWithDefaultName(Issuer.class);
+		issuer.setValue("xxxxx");
+		logoutRequest.setIssuer(issuer);
+
+		SessionIndex sessionIndexElement = buildSAMLObjectWithDefaultName(SessionIndex.class);
+
+		sessionIndexElement.setSessionIndex(sessionIndex);
+		logoutRequest.getSessionIndexes().add(sessionIndexElement);
+
+		logoutRequest.setNameID(nameId);
+		return logoutRequest;
+	}
+
+	public static <T> T buildSAMLObjectWithDefaultName(final Class<T> clazz) throws IllegalArgumentException,
+			IllegalAccessException, NoSuchFieldException, SecurityException, ConfigurationException {
+		XMLObjectBuilderFactory builderFactory = getBuilderFactory();
+
+		QName defaultElementName = (QName) clazz.getDeclaredField("DEFAULT_ELEMENT_NAME").get(null);
+		T object = (T) builderFactory.getBuilder(defaultElementName).buildObject(defaultElementName);
+
+		return object;
+	}
+
+	private static XMLObjectBuilderFactory getBuilderFactory() throws ConfigurationException {
+		if (builderFactory == null) {
+			// OpenSAML 2.3
+			DefaultBootstrap.bootstrap();
+			builderFactory = Configuration.getBuilderFactory();
+		}
+
+		return builderFactory;
+	}
+
+	public static void main(String[] args) {
+		try {
+			// Encode a String into bytes
+			String inputString = "phela nasha.";
+			byte[] input = inputString.getBytes("UTF-8");
+
+			// Compress the bytes
+			byte[] output1 = new byte[input.length];
+			Deflater compresser = new Deflater();
+			compresser.setInput(input);
+			compresser.finish();
+			int compressedDataLength = compresser.deflate(output1);
+			compresser.end();
+
+			byte[] str = Base64.encodeBase64(output1);
+			System.out.println("Deflated String:" + str);
+
+			byte[] output2 = Base64.decodeBase64(str);
+
+			// Decompress the bytes
+			Inflater decompresser = new Inflater();
+			decompresser.setInput(output2);
+			// byte[] result = str.getBytes();
+			int resultLength = decompresser.inflate(str);
+			decompresser.end();
+
+			// Decode the bytes into a String
+			String outputString = new String(str, 0, resultLength, "UTF-8");
+			System.out.println("Deflated String:" + outputString);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DataFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

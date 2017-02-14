@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +65,9 @@ import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ProviderServiceAdapter;
 import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
+import eu.trentorise.smartcampus.permissionprovider.model.AuthProtocolType;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppBasic;
+import eu.trentorise.smartcampus.permissionprovider.model.SingleSignoutData;
 import eu.trentorise.smartcampus.permissionprovider.oauth.AutoJdbcTokenStore;
 import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 
@@ -88,21 +92,18 @@ public class AuthController extends AbstractController {
 	private boolean collectInfoMode;
 	@Autowired
 	private ClientDetailsManager clientDetailsAdapter;
-
 	@Autowired
 	private TokenStore tokenStore;
-
 	@Autowired
 	private ExtraInfoManager infoManager;
-
 	@Autowired
 	private WeLiveLogger logger;
-
 	@Value("${api.token}")
 	private String token;
-	
 	@Value("${swagger.server}")
 	private String swaggerServerUri;
+	/** stateMap for holding single signout data. **/
+	ConcurrentHashMap<String, SingleSignoutData> stateMap = null;
 	
 	/**
 	 * welive login
@@ -284,6 +285,26 @@ public class AuthController extends AbstractController {
 		req.getSession().setAttribute("redirect", target);
 		req.getSession().setAttribute("client_id", clientId);
 
+		/** 1. create/update stateMap<stateKey, SingleSignoutData>. **/
+		if (req.getSession().getAttribute("stateMap") != null) {
+			stateMap = (java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>) req.getSession()
+					.getAttribute("stateMap");
+		} else {
+			stateMap = new java.util.concurrent.ConcurrentHashMap<String, SingleSignoutData>();
+			req.getSession().setAttribute("stateMap", stateMap);
+		}
+
+		/**
+		 * save in session a serialized object, key-> {protocol,
+		 * sessionIndex[ticket|token], service[in case of OAUTH read from
+		 * configuration]}.
+		 **/
+		SingleSignoutData ssData = new SingleSignoutData(AuthProtocolType.OAUTH.toString(), clientId,
+				clientDetailsAdapter.get(clientId).getSloUrl());
+		/** 3. update stateMap<stateKey, SingleSignoutData>. **/
+		stateMap.put(UUID.randomUUID().toString(), ssData); // logout url.
+		
+		
 		Authentication old = SecurityContextHolder.getContext().getAuthentication();
 		if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
 			String authorityUrl = (String) old.getDetails();
@@ -311,7 +332,7 @@ public class AuthController extends AbstractController {
 	 * 
 	 * @param req
 	 * @param authority
-	 *            identity provider alias
+	 * identity provider alias
 	 * @return
 	 * @throws Exception
 	 */

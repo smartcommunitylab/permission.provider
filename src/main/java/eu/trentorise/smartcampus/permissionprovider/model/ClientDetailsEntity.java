@@ -37,6 +37,7 @@ import eu.trentorise.smartcampus.permissionprovider.common.Utils;
 
 /**
  * DB entity storing the client app information
+ * 
  * @author raman
  *
  */
@@ -46,29 +47,31 @@ public class ClientDetailsEntity implements ClientDetails {
 	private static final long serialVersionUID = -286007838648327741L;
 
 	private static final String KEY_APP_SIGNATURES = "app_signature";
-	
+
 	private static ObjectMapper mapper = new ObjectMapper();
 
-	@Column(name = "client_id", unique=true)
+	@Column(name = "client_id", unique = true)
 	private String clientId;
-	
-	@Column(name = "client_secret",nullable = false)
+
+	@Column(name = "client_secret", nullable = false)
 	private String clientSecret;
 
-	@Column(name = "client_secret_mobile",nullable = false)
+	@Column(name = "client_secret_mobile", nullable = false)
 	private String clientSecretMobile;
 
-	@Column(name = "resource_ids",columnDefinition="LONGTEXT")
+	@Column(name = "resource_ids", columnDefinition = "LONGTEXT")
 	private String resourceIds;
-	
-	@Column(name = "scope",columnDefinition="LONGTEXT")
+
+	@Column(name = "scope", columnDefinition = "LONGTEXT")
 	private String scope;
 
 	@Column(name = "authorized_grant_types")
 	private String authorizedGrantTypes;
 
-	@Column(name = "web_server_redirect_uri",columnDefinition="LONGTEXT")
+	@Column(name = "web_server_redirect_uri", columnDefinition = "LONGTEXT")
 	private String redirectUri;
+
+	private String sloUrl;
 
 	@Column(name = "authorities")
 	private String authorities;
@@ -79,7 +82,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Column(name = "refresh_token_validity")
 	private Integer refreshTokenValidity;
 
-	@Column(name = "additional_information",columnDefinition="LONGTEXT")
+	@Column(name = "additional_information", columnDefinition = "LONGTEXT")
 	private String additionalInformation;
 
 	@Id
@@ -88,7 +91,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Column(nullable = false)
 	private Long developerId;
-	
+
 	/**
 	 * @return the clientId
 	 */
@@ -97,28 +100,32 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param clientId the clientId to set
+	 * @param clientId
+	 *            the clientId to set
 	 */
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
 
 	/**
-	 * @param resourceIds the resourceIds to set
+	 * @param resourceIds
+	 *            the resourceIds to set
 	 */
 	public void setResourceIds(String resourceIds) {
 		this.resourceIds = resourceIds;
 	}
 
 	/**
-	 * @param scope the scope to set
+	 * @param scope
+	 *            the scope to set
 	 */
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
 
 	/**
-	 * @param authorizedGrantTypes the authorizedGrantTypes to set
+	 * @param authorizedGrantTypes
+	 *            the authorizedGrantTypes to set
 	 */
 	public void setAuthorizedGrantTypes(String authorizedGrantTypes) {
 		this.authorizedGrantTypes = authorizedGrantTypes;
@@ -132,13 +139,16 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param redirectUri the redirectUri to set
+	 * @param redirectUri
+	 *            the redirectUri to set
 	 */
 	public void setRedirectUri(String redirectUri) {
 		this.redirectUri = redirectUri;
 	}
+
 	/**
-	 * @param authorities the authorities to set
+	 * @param authorities
+	 *            the authorities to set
 	 */
 	public void setAuthorities(String authorities) {
 		this.authorities = authorities;
@@ -152,7 +162,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param accessTokenValidity the accessTokenValidity to set
+	 * @param accessTokenValidity
+	 *            the accessTokenValidity to set
 	 */
 	public void setAccessTokenValidity(Integer accessTokenValidity) {
 		this.accessTokenValidity = accessTokenValidity;
@@ -166,14 +177,16 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param refreshTokenValidity the refreshTokenValidity to set
+	 * @param refreshTokenValidity
+	 *            the refreshTokenValidity to set
 	 */
 	public void setRefreshTokenValidity(Integer refreshTokenValidity) {
 		this.refreshTokenValidity = refreshTokenValidity;
 	}
 
 	/**
-	 * @param clientSecret the clientSecret to set
+	 * @param clientSecret
+	 *            the clientSecret to set
 	 */
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
@@ -188,14 +201,16 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	/**
 	 * 
-	 * @param clientSecretMobile value to set
+	 * @param clientSecretMobile
+	 *            value to set
 	 */
 	public void setClientSecretMobile(String clientSecretMobile) {
 		this.clientSecretMobile = clientSecretMobile;
 	}
 
 	/**
-	 * @param additionalInformation the additionalInformation to set
+	 * @param additionalInformation
+	 *            the additionalInformation to set
 	 */
 	public void setAdditionalInformation(String additionalInformation) {
 		this.additionalInformation = additionalInformation;
@@ -209,7 +224,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param developerId the developerId to set
+	 * @param developerId
+	 *            the developerId to set
 	 */
 	public void setDeveloperId(Long developerId) {
 		this.developerId = developerId;
@@ -223,7 +239,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * @param id the id to set
+	 * @param id
+	 *            the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
@@ -257,7 +274,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public Set<String> getScope() {
 		if (scope != null) {
-			Set<String> set =  Utils.delimitedStringToSet(scope, ",");
+			Set<String> set = Utils.delimitedStringToSet(scope, ",");
 			set.remove("");
 			return set;
 		}
@@ -279,15 +296,15 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 		return Collections.emptySet();
 	}
-	
+
 	public Set<String> getNativeAppSignaturesSet() {
-		Map<String,Object> additionalInfo = getAdditionalInformation();
+		Map<String, Object> additionalInfo = getAdditionalInformation();
 		if (additionalInfo != null && additionalInfo.containsKey(KEY_APP_SIGNATURES)) {
 			return Utils.delimitedStringToSet(additionalInfo.get(KEY_APP_SIGNATURES).toString(), ",");
 		}
 		return Collections.emptySet();
 	}
-	
+
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		if (authorities != null) {
@@ -320,4 +337,13 @@ public class ClientDetailsEntity implements ClientDetails {
 			return null;
 		}
 	}
+
+	public String getSloUrl() {
+		return sloUrl;
+	}
+
+	public void setSloUrl(String sloUrl) {
+		this.sloUrl = sloUrl;
+	}
+
 }

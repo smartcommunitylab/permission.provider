@@ -25,6 +25,12 @@
                 ng-model="app.redirectUris"></td>
         </tr>
         <tr>
+            <th>single logout URL</th>
+            <td>
+            <input type="text" class="form-control"
+                placeholder="specify client service url in case of single logout." ng-model="app.sloUrl" required></td>
+        </tr>
+        <tr>
             <th>Server-side access</th>
             <td><input type="checkbox" ng-model="app.serverSideAccess"></td>
         </tr>

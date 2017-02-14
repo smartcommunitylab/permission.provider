@@ -122,6 +122,7 @@ public class ClientDetailsManager {
 		res.setClientSecret(e.getClientSecret());
 		res.setClientSecretMobile(e.getClientSecretMobile());
 		res.setGrantedTypes(e.getAuthorizedGrantTypes());
+		res.setSloUrl(e.getSloUrl());
 		
 		// approval status
 		res.setIdentityProviderApproval(new HashMap<String, Boolean>());
@@ -229,6 +230,7 @@ public class ClientDetailsManager {
 			
 			client.setAdditionalInformation(info.toJson());
 			client.setRedirectUri(Utils.normalizeValues(data.getRedirectUris()));
+			client.setSloUrl(data.getSloUrl());
 		} catch (Exception e) {
 			log .error("failed to convert an object: "+e.getMessage(), e);
 			return null;
