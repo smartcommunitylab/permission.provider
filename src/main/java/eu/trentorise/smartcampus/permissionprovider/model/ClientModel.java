@@ -169,6 +169,7 @@ public class ClientModel {
 		model.setClientSecret(client.getClientSecret());
 		model.setClientSecretMobile(client.getClientSecretMobile());
 		model.setGrantedTypes(client.getAuthorizedGrantTypes());
+		model.setSloUrl(client.getSloUrl());
 
 		// approval status
 		model.setIdentityProviders(new HashSet<String>());
