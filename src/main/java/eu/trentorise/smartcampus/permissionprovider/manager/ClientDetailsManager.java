@@ -476,9 +476,11 @@ public class ClientDetailsManager {
 		data.setNativeAppsAccess(model.isNativeAppsAccess());
 		data.setServerSideAccess(model.isServerSideAccess());
 		data.setGrantedTypes(model.getGrantedTypes());
+		data.setSloUrl(model.getSloUrl());
 		data.setRedirectUris(StringUtils.collectionToCommaDelimitedString(model.getRedirectUris()));
 		data.setNativeAppSignatures(model.getNativeAppSignatures());
 		data.setIdentityProviders(new HashMap<String, Boolean>());
+		
 		for (String provider : model.getIdentityProviders()) {
 			data.getIdentityProviders().put(provider, true);
 		}
