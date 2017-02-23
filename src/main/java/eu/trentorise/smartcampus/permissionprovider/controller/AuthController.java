@@ -43,11 +43,14 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -104,7 +107,18 @@ public class AuthController extends AbstractController {
 	private String swaggerServerUri;
 	/** stateMap for holding single signout data. **/
 	ConcurrentHashMap<String, SingleSignoutData> stateMap = null;
-	
+
+	/** constants required in access token conversion. **/
+	final String AUD = "aud";
+	final String CLIENT_ID = "client_id";
+	final String EXP = "exp";
+	final String JTI = "jti";
+	final String GRANT_TYPE = "grant_type";
+	final String ATI = "ati";
+	final String SCOPE = OAuth2AccessToken.SCOPE;
+	final String AUTHORITIES = "authorities";
+	final String USERNAME = "user_name";
+
 	/**
 	 * welive login
 	 * 
@@ -118,12 +132,11 @@ public class AuthController extends AbstractController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> header = new HashMap<String, String>();
 		header.put("Authorization", getAPICredentials());
-		
+
 		// call post swagger.
 		try {
 			String response = Utils.callPOST(
-					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + password, null,
-					header);
+					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + password, null, header);
 			JSONObject responseJSON = new JSONObject(response);
 			if (!responseJSON.getBoolean("error")) {
 				return new ModelAndView("redirect:/eauth/welive?username=" + username);
@@ -145,7 +158,7 @@ public class AuthController extends AbstractController {
 
 		}
 	}
-	
+
 	/**
 	 * Redirect to the login type selection page
 	 * 
@@ -303,8 +316,7 @@ public class AuthController extends AbstractController {
 				clientDetailsAdapter.get(clientId).getSloUrl());
 		/** 3. update stateMap<stateKey, SingleSignoutData>. **/
 		stateMap.put(UUID.randomUUID().toString(), ssData); // logout url.
-		
-		
+
 		Authentication old = SecurityContextHolder.getContext().getAuthentication();
 		if (old != null && old instanceof UsernamePasswordAuthenticationToken) {
 			String authorityUrl = (String) old.getDetails();
@@ -314,11 +326,11 @@ public class AuthController extends AbstractController {
 		}
 
 		req.getSession().setAttribute("authorities", resultAuthorities);
-		
+
 		if (resultAuthorities.size() == 1) {
 			String a = resultAuthorities.keySet().iterator().next();
 			if (!"welive".equals(a)) {
-				return new ModelAndView("redirect:/eauth/" + a);				
+				return new ModelAndView("redirect:/eauth/" + a);
 			}
 		}
 		model.put("authorities", resultAuthorities);
@@ -357,14 +369,14 @@ public class AuthController extends AbstractController {
 		req.getSession().setAttribute("client_id", clientId);
 
 		if (!"welive".equals(authority)) {
-			return new ModelAndView("redirect:/eauth/" + authority);				
+			return new ModelAndView("redirect:/eauth/" + authority);
 		}
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter.getWebAuthorityUrls();
 		Map<String, String> resultAuthorities = Collections.singletonMap("welive", authorities.get("welive"));
 		req.getSession().setAttribute("authorities", resultAuthorities);
-	
+
 		model.put("authorities", resultAuthorities);
 		return new ModelAndView("authorities", model);
 	}
@@ -522,12 +534,65 @@ public class AuthController extends AbstractController {
 			}
 
 			autoJdbcTokenStore.deleteAccessTokenUsingClientIdUserId(clientId, userId);
-		
+
 		} catch (Exception e) {
 			normalLogger.error(e.getMessage());
 			res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		return null;
+	}
+
+	/** This end point is created to support token validation w.r.t scope
+	 * following the spring example<https://github.com/spring-projects/spring-security-oauth.git>. With this end point and RemoteTokenService placed in aac client,
+	 * we obtain the overall support to filter operation implemented in starter template project based on token scope in
+	 * a nice way using annotations ..anyRequest().access("#oauth2.hasScope('profile.basicprofile.me')"); **/
+	@RequestMapping(value = "/eauth/check_token")
+	@ResponseBody
+	public Map<String, ?> checkToken(@RequestParam("token") String value) {
+
+		Map<String, ?> response = new HashMap<String, Object>();
+		OAuth2AccessToken accessTokenObj = tokenStore.readAccessToken(value);
+		if (accessTokenObj != null) {
+			OAuth2Authentication authentication = tokenStore.readAuthentication(accessTokenObj.getValue());
+			response = convertAccessToken(accessTokenObj, authentication);
+		}
+		return response;
+	}
+
+	private Map<String, ?> convertAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
+
+		Map<String, Object> response = new HashMap<String, Object>();
+		AuthorizationRequest clientToken = authentication.getAuthorizationRequest();
+
+		if (!authentication.isClientOnly()) {
+			response.put(USERNAME, authentication.getName());
+			if (authentication.getAuthorities() != null && !authentication.getAuthorities().isEmpty()) {
+				response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
+			}
+		} else {
+			if (clientToken.getAuthorities() != null && !clientToken.getAuthorities().isEmpty()) {
+				response.put(AUTHORITIES, AuthorityUtils.authorityListToSet(clientToken.getAuthorities()));
+			}
+		}
+
+		if (token.getScope() != null) {
+			response.put(SCOPE, token.getScope());
+		}
+		if (token.getAdditionalInformation().containsKey(JTI)) {
+			response.put(JTI, token.getAdditionalInformation().get(JTI));
+		}
+
+		if (token.getExpiration() != null) {
+			response.put(EXP, token.getExpiration().getTime() / 1000);
+		}
+
+		response.putAll(token.getAdditionalInformation());
+
+		response.put(CLIENT_ID, clientToken.getClientId());
+		if (clientToken.getResourceIds() != null && !clientToken.getResourceIds().isEmpty()) {
+			response.put(AUD, clientToken.getResourceIds());
+		}
+		return response;
 	}
 
 	/**
@@ -536,5 +601,5 @@ public class AuthController extends AbstractController {
 	private String getAPICredentials() {
 		return "Basic " + token;
 	}
-	
+
 }
