@@ -199,6 +199,7 @@ public class CASController extends AbstractController {
 				String redirectUrl = (String) req.getSession().getAttribute("redirectUrl");
 				// clear local session.
 				req.getSession().invalidate();
+				System.out.print("StateMap cleared");
 				return new ModelAndView("redirect:" + redirectUrl);
 
 			}
