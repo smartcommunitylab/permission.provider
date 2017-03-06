@@ -128,7 +128,8 @@ public class CASController extends AbstractController {
 
 	@RequestMapping("/cas/logout")
 	public ModelAndView singleLogout(HttpServletRequest req, HttpServletResponse res,
-			@RequestParam(required = false) String service, @RequestParam(required = false) String RelayState)
+			@RequestParam(required = false) String service, @RequestParam(required = false) String RelayState,
+			@RequestParam(required = false) String _eventId)
 			throws Exception {
 
 		SingleSignoutData temp = null;
