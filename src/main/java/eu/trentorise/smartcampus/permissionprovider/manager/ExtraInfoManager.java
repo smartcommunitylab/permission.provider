@@ -150,7 +150,7 @@ public class ExtraInfoManager {
 		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
 		} catch (RemoteException e) {
-			System.err.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 		
