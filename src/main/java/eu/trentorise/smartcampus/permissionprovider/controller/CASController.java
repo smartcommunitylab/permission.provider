@@ -76,9 +76,6 @@ public class CASController extends AbstractController {
 
 	ConcurrentHashMap<String, SingleSignoutData> stateMap = null;
 
-	@Value("${welive.cas.callback.slo}")
-	private String callBackSingleLogoutUrl;
-	
 	@Value("${liferay.service.to.avoid}")
 	private String lifeRayServiceToAvoid;
 	
