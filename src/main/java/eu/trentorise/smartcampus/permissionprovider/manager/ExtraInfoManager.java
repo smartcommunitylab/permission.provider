@@ -166,6 +166,7 @@ public class ExtraInfoManager {
 	private static String call(String url, Map<String,Object> body, Map<String,String> headers) throws RemoteException {
 		final HttpResponse resp;
 		final HttpPost post = new HttpPost(url);
+		System.out.println(url);
 
 		post.setHeader("Accept", "application/json");
 		post.setHeader("Content-Type", "application/json");
