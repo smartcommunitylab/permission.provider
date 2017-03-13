@@ -166,7 +166,6 @@ public class ExtraInfoManager {
 	private static String call(String url, Map<String,Object> body, Map<String,String> headers) throws RemoteException {
 		final HttpResponse resp;
 		final HttpPost post = new HttpPost(url);
-		System.out.println(url);
 
 		post.setHeader("Accept", "application/json");
 		post.setHeader("Content-Type", "application/json");
@@ -183,7 +182,8 @@ public class ExtraInfoManager {
 //			}
 			String bodyStr = new ObjectMapper().writeValueAsString(body);
 			StringEntity input = new StringEntity(bodyStr, "UTF-8");
-			
+			System.out.println(url);
+			System.out.println(bodyStr);
 //			input.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
 			input.setContentType("application/json; charset=UTF-8");
 			post.setEntity(input);
