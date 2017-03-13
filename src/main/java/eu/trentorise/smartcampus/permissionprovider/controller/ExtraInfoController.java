@@ -133,11 +133,7 @@ public class ExtraInfoController extends AbstractController {
 	
 	private void saveInfo(ExtraInfoBean info) throws Exception {
 		info.setDeveloper(true);
-		try{
-			infoManager.collectInfoForUser(info, getUserId());
-		} catch(Exception ex){
-			new Exception(ex);
-		}
+		infoManager.collectInfoForUser(info, getUserId());
 		logger.info(String.format("Collected info for user "));
 	}
 	

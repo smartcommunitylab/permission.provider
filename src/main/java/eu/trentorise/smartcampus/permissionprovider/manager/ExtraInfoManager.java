@@ -60,16 +60,16 @@ public class ExtraInfoManager {
 	public void collectInfoForUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
 		User load = userRepo.findOne(userId);
 		if (load != null) {
-			ExtraInfo entity = createEntity(info);
-//			ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
-			entity.setUser(load);
-			
 			if (!StringUtils.hasText(load.email())) {
 				addEmail(load, info.getEmail());
 			}
 			
 			if (info != null) {
 				sendAddUser(info, userId);
+				ExtraInfo entity = createEntity(info);
+//				ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
+				entity.setUser(load);
+				
 				infoRepo.save(entity);
 			
 				if(info.getPilot() != null) {
@@ -141,18 +141,13 @@ public class ExtraInfoManager {
 			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
 		}
 		
-		map.put("status", info.getStatus());
-		map.put("isAdult", info.isAdult());
+//		map.put("status", info.getStatus());
+//		map.put("isAdult", info.isAdult());
 		
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
-		try {
 		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			throw e;
-		}
 		
 	}
 	
