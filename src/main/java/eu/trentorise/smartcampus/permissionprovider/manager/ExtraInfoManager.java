@@ -146,8 +146,14 @@ public class ExtraInfoManager {
 		
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
 //		String postJSON = call("https://dev.welive.eu/api/jsonws/invoke", map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
+		try {
 		String postJSON = call(lumEndpoint, map, Collections.<String,String>singletonMap("Authorization", "Basic " + token));
 		System.err.print(postJSON);
+		} catch (RemoteException e) {
+			System.err.println(e.getStackTrace());
+			throw e;
+		}
+		
 	}
 	
 	private static HttpClient getDefaultHttpClient(HttpParams inParams) {
