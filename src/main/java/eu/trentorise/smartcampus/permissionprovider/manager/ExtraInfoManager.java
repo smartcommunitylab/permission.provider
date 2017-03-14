@@ -117,15 +117,12 @@ public class ExtraInfoManager {
 		map.put("surname", info.getSurname());
 		map.put("email", info.getEmail());
 
+		// default initialization.
+		map.put("isMale", false);
 		if (info.getGender() != null && !info.getGender().isEmpty()) {
 			map.put("isMale", !"F".equals(info.getGender()));
 		}
 
-		// default initialization.
-		map.put("birthdayDay", 0);
-		map.put("birthdayMonth", 0);
-		map.put("birthdayYear", 0);
-		
 		if (info.getBirthdate() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(info.getBirthdate());
