@@ -110,38 +110,38 @@ public class ExtraInfoManager {
 	 * @throws SecurityException 
 	 */
 	private void sendAddUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
-		Map<String,Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("ccUserId", userId);
-		map.put("pilot",info.getPilot());
+		map.put("pilot", info.getPilot());
 		map.put("firstName", info.getName());
 		map.put("surname", info.getSurname());
 		map.put("email", info.getEmail());
-		
+
 		if (info.getGender() != null && !info.getGender().isEmpty()) {
-			map.put("isMale", !"F".equals(info.getGender()));	
+			map.put("isMale", !"F".equals(info.getGender()));
 		}
-		
+
 		if (info.getBirthdate() != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(info.getBirthdate());
-			map.put("birthdayDay",c.get(Calendar.DAY_OF_MONTH));
-			map.put("birthdayMonth",c.get(Calendar.MONTH)+1);
-			map.put("birthdayYear",c.get(Calendar.YEAR));
-		} 
-		
-		map.put("isDeveloper", info.isDeveloper());
-		map.put("role", StringUtils.hasText(info.getRole()) ? info.getRole() : "Citizen");
-		map.put("zipCode", info.getZip());
-		map.put("country", info.getCountry());
-		map.put("city", info.getCity());
+			map.put("birthdayDay", c.get(Calendar.DAY_OF_MONTH));
+			map.put("birthdayMonth", c.get(Calendar.MONTH) + 1);
+			map.put("birthdayYear", c.get(Calendar.YEAR));
+		}
+
+		map.put("developer", info.isDeveloper());
 		map.put("address", info.getAddress());
-		
-		if (info.getLanguage() != null) map.put("languages", info.getLanguage());
+		map.put("zipCode", info.getZip());
+		map.put("city", info.getCity());
+		map.put("country", info.getCountry());
+		if (info.getLanguage() != null)
+			map.put("languages", info.getLanguage());
+		map.put("role", StringUtils.hasText(info.getRole()) ? info.getRole() : "Citizen");
+		map.put("employement", info.getStatus());
 		if (info.getKeywords() != null) {
 			map.put("tags", StringUtils.commaDelimitedListToStringArray(info.getKeywords()));
 		}
 		
-//		map.put("status", info.getStatus());
 //		map.put("isAdult", info.isAdult());
 		
 //		map.put("cmd", "{\"/Challenge62-portlet.clsidea/add-new-user\":{}}");
