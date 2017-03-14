@@ -136,7 +136,7 @@ public class AuthController extends AbstractController {
 		// call post swagger.
 		try {
 			String response = Utils.callPOST(
-					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + password, null, header);
+					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + URLEncoder.encode(password, "UTF-8"), null, header);
 			JSONObject responseJSON = new JSONObject(response);
 			if (!responseJSON.getBoolean("error")) {
 				return new ModelAndView("redirect:/eauth/welive?username=" + username);
