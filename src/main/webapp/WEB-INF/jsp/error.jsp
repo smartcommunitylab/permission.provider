@@ -23,7 +23,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon"/>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
