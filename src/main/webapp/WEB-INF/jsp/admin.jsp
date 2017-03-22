@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="admin">
   <head>
+    <link rel="shortcut icon" href="img/favicon.ico"/>
     <meta charset="utf-8">
     <title>AAC Developers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
