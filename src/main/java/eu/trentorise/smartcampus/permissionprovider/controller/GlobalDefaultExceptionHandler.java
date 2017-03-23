@@ -40,6 +40,7 @@ class GlobalDefaultExceptionHandler implements HandlerExceptionResolver, Ordered
 	        HttpServletRequest aReq, HttpServletResponse aRes,
 	        Object aHandler, Exception anExc
 	    ) {
+	    	anExc.printStackTrace();
 	        // Otherwise setup and send the user to a default error-view.
 	        ModelAndView mav = new ModelAndView();
 	        mav.addObject("exception", anExc);
