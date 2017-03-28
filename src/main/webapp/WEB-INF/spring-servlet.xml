@@ -266,7 +266,7 @@
   
   	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" >
         <property name="cookieName" value="language" />
-        <!-- <property name="defaultLocale" value="it" /> -->
+        <property name="defaultLocale" value="en" />
     </bean>
     	
 </beans>

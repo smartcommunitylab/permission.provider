@@ -68,8 +68,13 @@ public class ExtraInfoController extends AbstractController {
 	 */
 	private String getEmail(AccountProfile accProfile) {
 		String email = accProfile.getAttribute("google", "OIDC_CLAIM_email");
-		if (email != null) return email;
-		return null;
+		
+		if (email == null) {
+			//facebook.
+			email = accProfile.getAttribute("facebook", "email");
+		}
+		
+		return email;
 	}
 
 	// bind name of bean in ModelAttribute annotation should be defined. If not
