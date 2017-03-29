@@ -248,6 +248,7 @@ input[type=checkbox] {
                     	<div><label>
                     	 <form:errors path="adult" cssClass="error pull-right"></form:errors>
                     	<form:checkbox path="adult" /><fmt:message bundle="${res}" key="extinfo_adult_declare" />
+                    	<span><fmt:message bundle="${res}" key="extinfo_required_field" /></span>
                     	</label></div>
                     </div>
                     	    
