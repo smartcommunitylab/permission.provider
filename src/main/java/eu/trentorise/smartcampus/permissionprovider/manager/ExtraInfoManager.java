@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -30,6 +32,7 @@ import org.springframework.util.StringUtils;
 
 import eu.trentorise.smartcampus.network.RemoteException;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
+import eu.trentorise.smartcampus.permissionprovider.controller.AuthController;
 import eu.trentorise.smartcampus.permissionprovider.model.ExtraInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.permissionprovider.repository.ExtraInfoRepository;
@@ -39,6 +42,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Transactional(rollbackFor = Exception.class)
 public class ExtraInfoManager {
 
+	private static Log normalLogger = LogFactory.getLog(ExtraInfoManager.class);
+	
 	private static final String DEFAULT_ROLE = "Citizen";
 	
 	@Autowired
@@ -193,8 +198,8 @@ public class ExtraInfoManager {
 //			}
 			String bodyStr = new ObjectMapper().writeValueAsString(body);
 			StringEntity input = new StringEntity(bodyStr, "UTF-8");
-			System.out.println(url);
-			System.out.println(bodyStr);
+			normalLogger.info(url);
+			normalLogger.info(bodyStr);
 //			input.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
 			input.setContentType("application/json; charset=UTF-8");
 			post.setEntity(input);
