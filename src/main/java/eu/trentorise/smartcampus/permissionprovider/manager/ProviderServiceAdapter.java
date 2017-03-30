@@ -132,7 +132,6 @@ public class ProviderServiceAdapter {
 			user.setAttributeEntities(new HashSet<Attribute>(list));
 			user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 			userRepository.save(user);
-			normalLogger.info("USER UPDATE: " + user);
 			
 			Map<String,Object> logMap = new HashMap<String, Object>();
 			logMap.put("userid", ""+user.getId());
