@@ -79,6 +79,7 @@ public class ExtraInfoManager {
 			if (info != null) {
 				/** save user. issue#344 **/
 				newUser = userRepo.save(newUser);
+				normalLogger.info("user created: " + newUser);
 				if (!StringUtils.hasText(newUser.email())) {
 					addEmail(newUser, info.getEmail());
 				}
@@ -192,10 +193,6 @@ public class ExtraInfoManager {
 		}		
 
 		try {
-//			String bodyStr = "";
-//			for (String key : body.keySet()) {
-//				bodyStr += "&"+key+"="+URLEncoder.encode(""+body.get(key), "UTF-8");
-//			}
 			String bodyStr = new ObjectMapper().writeValueAsString(body);
 			StringEntity input = new StringEntity(bodyStr, "UTF-8");
 			normalLogger.info(url);

@@ -27,6 +27,8 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,6 +51,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.UserRepository;
 @Component
 @Transactional
 public class ProviderServiceAdapter {
+	
+	private Log normalLogger = LogFactory.getLog(ProviderServiceAdapter.class);
 	
 	@Autowired
 	private WeLiveLogger logger;
@@ -88,6 +92,7 @@ public class ProviderServiceAdapter {
 	 * @throws AcServiceException
 	 */
 	public User updateUser(String authorityUrl, Map<String, String> map, HttpServletRequest req) {
+		
 		Authority auth = authorityRepository.findByRedirectUrl(authorityUrl);
 		if (auth == null) {
 			throw new IllegalArgumentException("Unknown authority URL: " + authorityUrl);
@@ -127,6 +132,7 @@ public class ProviderServiceAdapter {
 			user.setAttributeEntities(new HashSet<Attribute>(list));
 			user.updateNames(attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR));
 			userRepository.save(user);
+			normalLogger.info("USER UPDATE: " + user);
 			
 			Map<String,Object> logMap = new HashMap<String, Object>();
 			logMap.put("userid", ""+user.getId());

@@ -53,7 +53,7 @@ public class ExtraInfoController extends AbstractController {
 		Locale locale = RequestContextUtils.getLocale(req);
 		String languageCode = locale.getLanguage();
 		if (languageCode.length() > 2) {
-			logger.warn("cookie resolver locale language issue" + languageCode);
+			logger.info("cookie resolver locale language issue " + languageCode);
 			languageCode = locale.getDefault().getLanguage();
 		}
         model.addAttribute("language", languageCode);
