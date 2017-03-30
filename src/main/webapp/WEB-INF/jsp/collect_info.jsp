@@ -73,6 +73,11 @@ input[type=checkbox] {
 </script>
 </head>
 <body>
+	<%@ page import="java.util.ResourceBundle"%>
+	<%
+		ResourceBundle resource = ResourceBundle.getBundle("commoncore");
+		String email = resource.getString("support.email");
+	%>
 	<div class="container">
 		<%-- <fmt:message bundle="${res}" key="language_label" /> :  --%>
         <a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
@@ -94,7 +99,8 @@ input[type=checkbox] {
 				<p><fmt:message bundle="${res}" key="extinfo_message" /></p>
 			</div>
             <c:if test="${genericError != null}">
-			 <div class="error"><fmt:message bundle="${res}" key="${genericError}" /></div>
+			 <div class="error"><fmt:message bundle="${res}" key="${genericError}" />
+			 <%=email%></div>
 			</c:if>
 			<div role="form">
 				<form:form method="POST" modelAttribute="info" acceptCharset="UTF-8" action="/aac/collect-info">

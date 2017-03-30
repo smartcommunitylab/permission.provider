@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  *
  */
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1067996326671906278L;
@@ -49,23 +49,22 @@ public class User implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
-			CascadeType.REMOVE, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable=false)
+	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE })
+	@JoinColumn(name = "USER_ID", nullable = false)
 	private Set<Attribute> attributeEntities;
 
 	@Column(name = "social_id")
 	private String socialId;
 
-	private String name; 
+	private String name;
 	private String surname;
 	private String fullName;
-	
+	private long timestamp;
+
 	public User() {
 		super();
 	}
-	
-	
+
 	/**
 	 * Create user with the specified parameters
 	 * @param id
@@ -81,7 +80,14 @@ public class User implements Serializable {
 		this.attributeEntities = attrs;
 	}
 
-
+	public User(String socialId, String name, String surname, Set<Attribute> attributeEntities, long timestamp) {
+		super();
+		this.attributeEntities = attributeEntities;
+		this.socialId = socialId;
+		this.name = name;
+		this.surname = surname;
+		this.timestamp = timestamp;
+	}
 
 	public Long getId() {
 		return id;
@@ -98,7 +104,6 @@ public class User implements Serializable {
 	public void setAttributeEntities(Set<Attribute> attributeEntities) {
 		this.attributeEntities = attributeEntities;
 	}
-
 
 	@Override
 	public String toString() {
@@ -137,6 +142,13 @@ public class User implements Serializable {
 		this.fullName = fullName;
 	}
 
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	/**
 	 * Update name/surname params
@@ -144,54 +156,44 @@ public class User implements Serializable {
 	 * @param surname
 	 */
 	public void updateNames(String name, String surname) {
-		if (name != null) setName(name);
-		if (surname != null) setSurname(surname);
-		setFullName((getName()+" "+getSurname()).trim().toLowerCase());
+		if (name != null)
+			setName(name);
+		if (surname != null)
+			setSurname(surname);
+		setFullName((getName() + " " + getSurname()).trim().toLowerCase());
 	}
-	
+
 	public void updateEmail(String email) {
 		if (attributeEntities != null) {
-			Map<String, Authority> authorities = new HashMap<String,Authority>();
+			Map<String, Authority> authorities = new HashMap<String, Authority>();
 			for (Attribute a : attributeEntities) {
-				if ("google".equals(a.getAuthority().getName()) && 
-					"OIDC_CLAIM_email".equals(a.getKey())) 
-				{
+				if ("google".equals(a.getAuthority().getName()) && "OIDC_CLAIM_email".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
-				if ("welive".equals(a.getAuthority().getName()) && 
-						"email".equals(a.getKey())) 
-				{
+				if ("welive".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
-				if ("welive".equals(a.getAuthority().getName()) && 
-						"username".equals(a.getKey())) 
-				{
+				if ("welive".equals(a.getAuthority().getName()) && "username".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
-				if ("googlelocal".equals(a.getAuthority().getName()) && 
-						"email".equals(a.getKey())) 
-				{
+				if ("googlelocal".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
-				if ("facebook".equals(a.getAuthority().getName()) && 
-						"email".equals(a.getKey())) 
-				{
+				if ("facebook".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
-				if ("facebooklocal".equals(a.getAuthority().getName()) && 
-						"email".equals(a.getKey())) 
-				{
+				if ("facebooklocal".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 					a.setValue(email);
 					return;
 				}
 				authorities.put(a.getAuthority().getName(), a.getAuthority());
 			}
-			
+
 			Attribute newAttr = new Attribute();
 			newAttr.setValue(email);
 			if (authorities.containsKey("facebook")) {
@@ -213,47 +215,38 @@ public class User implements Serializable {
 			attributeEntities.add(newAttr);
 		}
 	}
-	
+
 	private String findEmail() {
 		for (Attribute a : attributeEntities) {
-			if ("google".equals(a.getAuthority().getName()) && 
-				"OIDC_CLAIM_email".equals(a.getKey())) 
-			{
+			if ("google".equals(a.getAuthority().getName()) && "OIDC_CLAIM_email".equals(a.getKey())) {
 				return a.getValue();
 			}
-			if ("welive".equals(a.getAuthority().getName()) && 
-					"email".equals(a.getKey())) 
-			{
+			if ("welive".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 				return a.getValue();
 			}
-			if ("welive".equals(a.getAuthority().getName()) && 
-					"username".equals(a.getKey())) 
-			{
+			if ("welive".equals(a.getAuthority().getName()) && "username".equals(a.getKey())) {
 				return a.getValue();
 			}
-			if ("googlelocal".equals(a.getAuthority().getName()) && 
-					"email".equals(a.getKey())) 
-			{
+			if ("googlelocal".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 				return a.getValue();
 			}
-			if ("facebook".equals(a.getAuthority().getName()) && 
-					"email".equals(a.getKey())) 
-			{
+			if ("facebook".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 				return a.getValue();
 			}
-			if ("facebooklocal".equals(a.getAuthority().getName()) && 
-					"email".equals(a.getKey())) 
-			{
+			if ("facebooklocal".equals(a.getAuthority().getName()) && "email".equals(a.getKey())) {
 				return a.getValue();
 			}
 		}
 		return null;
 	}
+
 	public String email() {
 		if (attributeEntities != null) {
 			String res = findEmail();
-			if (StringUtils.hasText(res) && !"null".equals(res)) return res;
+			if (StringUtils.hasText(res) && !"null".equals(res))
+				return res;
 		}
 		return null;
 	}
+
 }

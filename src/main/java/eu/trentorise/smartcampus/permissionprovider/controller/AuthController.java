@@ -471,7 +471,8 @@ public class AuthController extends AbstractController {
 
 			}
 
-			UserDetails user = new User(userEntity.getId().toString(), "", list);
+//			UserDetails user = new User(userEntity.getId().toString(), "", list);
+			UserDetails user = new User(userEntity.getId() == null ? UUID.randomUUID().toString() : userEntity.getId().toString(), "", list);
 
 			AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(user, null, list);
 			a.setDetails(authorityUrl);
@@ -479,7 +480,9 @@ public class AuthController extends AbstractController {
 			SecurityContextHolder.getContext().setAuthentication(a);
 
 			if (collectInfoMode && !authorityUrl.equals("welive")) {
-				if (!infoManager.infoAlreadyCollected(getUserId())) {
+				if (userEntity.getId() == null) {
+					req.getSession().setAttribute("NEW_USER", userEntity);
+				//if (!infoManager.infoAlreadyCollected(getUserId())) {
 					req.getSession().setAttribute("redirect", target);
 					return new ModelAndView("redirect:/terms");
 				}

@@ -3,7 +3,9 @@ package eu.trentorise.smartcampus.permissionprovider.manager;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,6 +18,12 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -35,6 +43,9 @@ public class ExtraInfoManager {
 	
 	@Autowired
 	private WeLiveLogger logger;
+	
+	@Autowired
+	private AttributesAdapter attrAdapter;
 	
 	@Autowired
 	private ExtraInfoRepository infoRepo;
@@ -57,29 +68,32 @@ public class ExtraInfoManager {
 		return infoRepo.findByUser(user) != null;
 	}
 
-	public void collectInfoForUser(ExtraInfoBean info, Long userId) throws SecurityException, RemoteException {
-		User load = userRepo.findOne(userId);
-		if (load != null) {
-			if (!StringUtils.hasText(load.email())) {
-				addEmail(load, info.getEmail());
-			}
-			
+	public User collectInfoForUser(ExtraInfoBean info, User newUser) throws SecurityException, RemoteException {
+//		User load = userRepo.findOne(userId);
+		if (newUser != null) {
 			if (info != null) {
-				sendAddUser(info, userId);
+				/** save user. issue#344 **/
+				newUser = userRepo.save(newUser);
+				if (!StringUtils.hasText(newUser.email())) {
+					addEmail(newUser, info.getEmail());
+				}
+				
+				sendAddUser(info, newUser.getId());
+				
 				ExtraInfo entity = createEntity(info);
-//				ExtraInfo entity = info == null ? new ExtraInfo(): new ExtraInfo(info);
-				entity.setUser(load);
+				entity.setUser(newUser);
 				
 				infoRepo.save(entity);
-			
+				
 				if(info.getPilot() != null) {
 					Map<String,Object> logMap = new HashMap<String, Object>();
-					logMap.put("userid", ""+userId);
+					logMap.put("userid", ""+newUser.getId());
 					logMap.put("pilot", info.getPilot());
 					logger.log(WeLiveLogger.USER_EXTRA_INFO, logMap);
 				}
 			}
 		}
+		return newUser;
 	}
 
 	/**

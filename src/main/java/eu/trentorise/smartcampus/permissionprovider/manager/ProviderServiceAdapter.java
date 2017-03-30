@@ -120,22 +120,7 @@ public class ProviderServiceAdapter {
 		User user = null;
 		if (users.isEmpty()) {
 			String socialId = "1";
-			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list));
-			user = userRepository.save(user);
-			if (!testMode) {
-				try {
-					socialId = socialEngine.createUser(""+user.getId());
-					user.setSocialId(socialId);
-					userRepository.save(user);
-				} catch (SocialEngineException e) {
-					throw new IllegalArgumentException(e.getMessage(),e);
-				}
-			}
-			
-			Map<String,Object> logMap = new HashMap<String, Object>();
-			logMap.put("userid", ""+user.getId());
-			logMap.put("authority", authorityUrl);
-			logger.log(WeLiveLogger.USER_CREATED, logMap);
+			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list), System.currentTimeMillis());
 		} else {
 			user = users.get(0);
 			attributeRepository.deleteInBatch(user.getAttributeEntities());
@@ -148,6 +133,7 @@ public class ProviderServiceAdapter {
 			logMap.put("authority", authorityUrl);
 			logger.log(WeLiveLogger.USER_UPDATED, logMap);
 		}
+		
 		return user;
 	}
 

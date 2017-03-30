@@ -1,6 +1,10 @@
 package eu.trentorise.smartcampus.permissionprovider.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,8 +13,13 @@ import javax.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,12 +30,15 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import eu.trentorise.smartcampus.permissionprovider.beans.ExtraInfoBean;
 import eu.trentorise.smartcampus.permissionprovider.manager.BasicProfileManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ExtraInfoManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
+import eu.trentorise.smartcampus.permissionprovider.model.User;
 import eu.trentorise.smartcampus.profile.model.AccountProfile;
-import eu.trentorise.smartcampus.profile.model.BasicProfile;
 
 @Controller
-@Transactional
 public class ExtraInfoController extends AbstractController {
+
+	@Autowired
+	private WeLiveLogger weLiveLogger;
 
 	private Log logger = LogFactory.getLog(getClass());
 
@@ -41,7 +53,7 @@ public class ExtraInfoController extends AbstractController {
 		Locale locale = RequestContextUtils.getLocale(req);
 		String languageCode = locale.getLanguage();
 		if (languageCode.length() > 2) {
-			logger.error("cookie resolver locale language issue" + languageCode);
+			logger.warn("cookie resolver locale language issue" + languageCode);
 			languageCode = locale.getDefault().getLanguage();
 		}
         model.addAttribute("language", languageCode);
@@ -50,12 +62,13 @@ public class ExtraInfoController extends AbstractController {
 	
 	@RequestMapping(value = "/collect-info", method = RequestMethod.GET)
 	public String load(Model model, HttpServletRequest req) {
-		BasicProfile profile = profileManager.getBasicProfileById(Long
-				.toString(getUserId()));
+//		BasicProfile profile = profileManager.getBasicProfileById(Long
+//				.toString(getUserId()));
+		User profile = (User) req.getSession().getAttribute("NEW_USER");
 		ExtraInfoBean info = new ExtraInfoBean();
 		
-		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
-		info.setEmail(getEmail(accProfile));
+//		AccountProfile accProfile = profileManager.getAccountProfileById(profile.getUserId());
+		info.setEmail(profile.email());
 		
 		info.setName(profile.getName() != null ? profile.getName() : "");
 		info.setSurname(profile.getSurname() != null ? profile.getSurname()
@@ -98,7 +111,9 @@ public class ExtraInfoController extends AbstractController {
 				return "extra_info_confirm";
 			}
 			try {
-				saveInfo(info);
+				/** extra user from request. issue#344**/
+				User newUser = (User) req.getSession().getAttribute("NEW_USER");
+				saveInfo(info, newUser);
 			} catch (Exception e) {
 				e.printStackTrace();
 				model.addAttribute("genericError", "error_error");
@@ -118,7 +133,9 @@ public class ExtraInfoController extends AbstractController {
 			HttpServletResponse res) {
 		info = (ExtraInfoBean)req.getSession().getAttribute("extra_info_data");
 		try {
-			saveInfo(info);
+			/** extra user from request. issue#344**/
+			User newUser = (User) req.getSession().getAttribute("NEW_USER");
+			saveInfo(info, newUser);
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("genericError", "error_error");
@@ -141,9 +158,23 @@ public class ExtraInfoController extends AbstractController {
 		return "collect_info";
 	}
 	
-	private void saveInfo(ExtraInfoBean info) throws Exception {
+	private void saveInfo(ExtraInfoBean info, User newUser) throws Exception {
 		info.setDeveloper(true);
-		infoManager.collectInfoForUser(info, getUserId());
+		newUser = infoManager.collectInfoForUser(info, newUser);
+		List<GrantedAuthority> list = Collections
+				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+		UserDetails user = new org.springframework.security.core.userdetails.User(newUser.getId().toString(), "", list);
+
+		AbstractAuthenticationToken a = new UsernamePasswordAuthenticationToken(user, null, list);
+		a.setDetails(SecurityContextHolder.getContext().getAuthentication().getDetails());
+
+		SecurityContextHolder.getContext().setAuthentication(a);
+
+		Map<String,Object> logMap = new HashMap<String, Object>();
+		logMap.put("userid", ""+newUser.getId());
+		logMap.put("authority", SecurityContextHolder.getContext().getAuthentication().getDetails());
+		weLiveLogger.log(WeLiveLogger.USER_CREATED, logMap);
+		
 		logger.info(String.format("Collected info for user "));
 	}
 	
