@@ -39,7 +39,12 @@ public class ExtraInfoController extends AbstractController {
 	@RequestMapping(value = "/terms", method = RequestMethod.GET)
 	public String terms(Model model, HttpServletRequest req) {
 		Locale locale = RequestContextUtils.getLocale(req);
-        model.addAttribute("language", locale.getLanguage());
+		String languageCode = locale.getLanguage();
+		if (languageCode.length() > 2) {
+			logger.error("cookie resolver locale language issue" + languageCode);
+			languageCode = locale.getDefault().getLanguage();
+		}
+        model.addAttribute("language", languageCode);
         return "terms";
 	}
 	
