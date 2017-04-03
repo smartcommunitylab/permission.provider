@@ -126,6 +126,9 @@ public class ProviderServiceAdapter {
 		if (users.isEmpty()) {
 			String socialId = "1";
 			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list), System.currentTimeMillis());
+			if (authorityUrl.equalsIgnoreCase("welive")) {
+				userRepository.save(user);
+			}
 		} else {
 			user = users.get(0);
 			attributeRepository.deleteInBatch(user.getAttributeEntities());
