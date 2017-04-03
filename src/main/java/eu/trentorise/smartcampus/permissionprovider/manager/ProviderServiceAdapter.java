@@ -128,6 +128,11 @@ public class ProviderServiceAdapter {
 			user = new User(socialId, attributes.get(Config.NAME_ATTR), attributes.get(Config.SURNAME_ATTR), new HashSet<Attribute>(list), System.currentTimeMillis());
 			if (authorityUrl.equalsIgnoreCase("welive")) {
 				userRepository.save(user);
+				// WELIVE authority store.
+				Map<String,Object> logMap = new HashMap<String, Object>();
+				logMap.put("userid", ""+user.getId());
+				logMap.put("authority", authorityUrl);
+				logger.log(WeLiveLogger.USER_CREATED, logMap);
 			}
 		} else {
 			user = users.get(0);
