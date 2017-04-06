@@ -57,6 +57,7 @@ import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Service;
 import eu.trentorise.smartcampus.permissionprovider.manager.ClientDetailsManager;
 import eu.trentorise.smartcampus.permissionprovider.manager.ResourceManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.WeLiveLogger;
 import eu.trentorise.smartcampus.permissionprovider.model.BasicClientInfo;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientDetailsEntity;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientModel;
@@ -82,6 +83,8 @@ import eu.trentorise.smartcampus.permissionprovider.repository.ClientDetailsRepo
 public class ResourceAccessController extends AbstractController {
 
 	private static Log logger = LogFactory.getLog(ResourceAccessController.class);
+	@Autowired
+	private WeLiveLogger weliveLogger;
 	@Autowired
 	private ResourceServerTokenServices resourceServerTokenServices;
 	@Autowired
@@ -506,6 +509,10 @@ public class ResourceAccessController extends AbstractController {
 				result.setCode(HttpServletResponse.SC_UNAUTHORIZED);
 			} else {
 				resourceManager.deleteUserData(cascade, ccUserId, result, res);
+				Map<String,Object> logMap = new HashMap<String, Object>();
+				logMap.put("userid", ""+ccUserId);
+				logMap.put("cascade", String.valueOf(cascade));
+				weliveLogger.log(WeLiveLogger.USER_DELETED, logMap);
 			}
 		} catch (Exception e) {
 			// 500 - Action failed, no more details are provided

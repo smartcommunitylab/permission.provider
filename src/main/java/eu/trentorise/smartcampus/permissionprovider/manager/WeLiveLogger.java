@@ -39,6 +39,7 @@ public class WeLiveLogger {
 	
 	public static final String USER_CREATED = "UserCreated";
 	public static final String USER_UPDATED = "UserUpdated";
+	public static final String USER_DELETED = "UserDeleted";
 	public static final String USER_EXTRA_INFO = "UserExtraInfo";
 	
 	public static final String CLIENT_APP_CREATED = "ClientAppCreated";
