@@ -458,7 +458,7 @@ public class ResourceAccessController extends AbstractController {
 			return parseToken(request);
 		}
 	}
-
+   /** disabled on 10-04-17 as potentially powerful operation
 	@RequestMapping(method = RequestMethod.DELETE, value = "/user/me")
 	public @ResponseBody Response deleteUser(@RequestHeader("Authorization") String token,
 			@RequestParam(required = false) Boolean cascade, HttpServletRequest req, HttpServletResponse res) {
@@ -488,7 +488,7 @@ public class ResourceAccessController extends AbstractController {
 		}
 
 		return result;
-	}
+	}**/
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/user/{ccUserId}")
 	public @ResponseBody Response deleteUserDataByUserId(@RequestHeader("Authorization") String token,
