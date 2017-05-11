@@ -142,6 +142,7 @@ public class AuthController extends AbstractController {
 			if (!responseJSON.getBoolean("error")) {
 				return new ModelAndView("redirect:/eauth/welive?username=" + username);
 			} else {
+				normalLogger.info(responseJSON);
 				throw new Exception(response);
 			}
 
