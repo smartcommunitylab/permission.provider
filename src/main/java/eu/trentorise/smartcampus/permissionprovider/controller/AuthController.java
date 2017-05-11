@@ -135,6 +135,7 @@ public class AuthController extends AbstractController {
 
 		// call post swagger.
 		try {
+			normalLogger.info("Invoking API: " + swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/");
 			String response = Utils.callPOST(
 					swaggerServerUri + "/lum/check-login/email/" + username + "/pwd/" + URLEncoder.encode(password, "UTF-8"), null, header);
 			JSONObject responseJSON = new JSONObject(response);
