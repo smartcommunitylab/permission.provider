@@ -159,7 +159,7 @@ public class ExtraInfoController extends AbstractController {
 	}
 	
 	private void saveInfo(ExtraInfoBean info, User newUser) throws Exception {
-		info.setDeveloper(true);
+		
 		newUser = infoManager.collectInfoForUser(info, newUser);
 		List<GrantedAuthority> list = Collections
 				.<GrantedAuthority> singletonList(new SimpleGrantedAuthority("ROLE_USER"));
