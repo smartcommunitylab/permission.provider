@@ -229,7 +229,7 @@ input[type=checkbox] {
 					<div class="form-group relativepos">
                         <label for="role" class="pull-left"><fmt:message bundle="${res}" key="extinfo_developer" />? </label>
                         <form:errors path="developer" cssClass="error pull-left"></form:errors>
-                        <form:select path="developer" cssClass="form-control" disabled="true">
+                        <form:select path="developer" cssClass="form-control" disabled="false">
                             <form:option value="false"><fmt:message bundle="${res}" key="extinfo_dev_no" /></form:option>
                             <form:option value="true"><fmt:message bundle="${res}" key="extinfo_dev_yes" /></form:option>
                         </form:select>
