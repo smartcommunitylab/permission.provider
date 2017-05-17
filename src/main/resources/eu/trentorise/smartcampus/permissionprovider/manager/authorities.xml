@@ -32,6 +32,14 @@
       <attributes alias="eu.trentorise.smartcampus.surname">OIDC_CLAIM_family_name</attributes>
       <identifyingAttributes>OIDC_CLAIM_email</identifyingAttributes>
   </authorityMapping>
+   <authorityMapping name="googlelocal" url="googlelocal" public="true" web="false">
+      <attributes alias="eu.trentorise.smartcampus.givenname">given_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">family_name</attributes>
+      <attributes>email</attributes>
+      <attributes>name</attributes>
+      <attributes>link</attributes>
+      <identifyingAttributes>id</identifyingAttributes>
+  </authorityMapping>
   <authorityMapping name="welive" url="welive" public="true"  useParams="true">
     <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
     <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
@@ -46,6 +54,7 @@
   </authorityMapping>
   <authorityMatching>
       <authority name="google" attribute="OIDC_CLAIM_email"/>
+      <authority name="googlelocal" attribute="email"/>
       <authority name="welive" attribute="username"/>
       <authority name="facebook" attribute="email"/>
   </authorityMatching>
