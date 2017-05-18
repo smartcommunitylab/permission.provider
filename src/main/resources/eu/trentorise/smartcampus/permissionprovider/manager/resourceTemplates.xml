@@ -41,6 +41,20 @@
 			authority="ROLE_USER">
 			<description>Profile of the current platform user. Read access only.</description>
 		</resourceMapping>
+		<resourceMapping id="cdv.customdata.delete"
+			name="Delete user's custom data" uri="cdv.customdata.delete"
+			authority="ROLE_ANY">
+			<description>Delete user's custom data.</description>
+		</resourceMapping>
+		<resourceMapping id="cdv.customdata.write"
+			name="Write user's custom data" uri="cdv.customdata.write"
+			authority="ROLE_ANY">
+			<description>Write user's custom data.</description>
+		</resourceMapping>
+		<resourceMapping id="cdv.customdata.read"
+			authority="ROLE_ANY">
+			<description>Read and search user's custom data.</description>
+		</resourceMapping>
 	</service>
 	
     <service name="Logging service" id="welive.logging">
