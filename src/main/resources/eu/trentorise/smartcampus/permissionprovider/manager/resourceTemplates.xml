@@ -52,6 +52,7 @@
 			<description>Write user's custom data.</description>
 		</resourceMapping>
 		<resourceMapping id="cdv.customdata.read"
+			name="Read and search user's custom data" uri="cdv.customdata.read"
 			authority="ROLE_ANY">
 			<description>Read and search user's custom data.</description>
 		</resourceMapping>
