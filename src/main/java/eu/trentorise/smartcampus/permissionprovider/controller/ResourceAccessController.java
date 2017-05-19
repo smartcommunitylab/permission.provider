@@ -143,29 +143,24 @@ public class ResourceAccessController extends AbstractController {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			// client only
-			if (auth.isClientOnly()) {
-				String clientId = auth.getAuthorizationRequest().getClientId();
-				if (clientId != null) {
-					ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-					if (client != null) {
-						BasicClientInfo info = new BasicClientInfo();
-						info.setClientId(clientId);
-						info.setClientName((String) client.getAdditionalInformation().get("name"));
-						return info;
-					}
+			String clientId = auth.getAuthorizationRequest().getClientId();
+			if (clientId != null) {
+				ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+				if (client != null) {
+					BasicClientInfo info = new BasicClientInfo();
+					info.setClientId(clientId);
+					info.setClientName((String) client.getAdditionalInformation().get("name"));
+					return info;
 				}
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			} else {
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
-			return null;
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
 		} catch (AuthenticationException e) {
 			logger.error("Error getting information about client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
+
 		}
+		return null;
 	}
 
 	/**
@@ -187,32 +182,28 @@ public class ResourceAccessController extends AbstractController {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
 
-			if (auth.isClientOnly()) { //client only.
-				if (auth.getName() != null && !auth.getName().isEmpty()) {
-					List<BasicClientInfo> infos = new ArrayList<BasicClientInfo>();
-					String userId = auth.getName();
-					// get different client_id for user in oauth_access_token
-					// collection.
-					List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
-					// loop through client_id and create info obj for each client_id
-					// and add to list.
-					for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
-						if (oAuth2AccessTokenMap.containsKey("client_id")) {
-							String json = (String) oAuth2AccessTokenMap.get("additional_information");
-							Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
-							String clientId = String.valueOf(oAuth2AccessTokenMap.get("client_id"));
-							BasicClientInfo info = new BasicClientInfo();
-							info.setClientId(clientId);
-							info.setClientName(String.valueOf(clientDetails.get("name")));
-							infos.add(info);
-						}
+			if (auth.getName() != null && !auth.getName().isEmpty()) {
+				List<BasicClientInfo> infos = new ArrayList<BasicClientInfo>();
+				String userId = auth.getName();
+				// get different client_id for user in oauth_access_token
+				// collection.
+				List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
+				// loop through client_id and create info obj for each client_id
+				// and add to list.
+				for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
+					if (oAuth2AccessTokenMap.containsKey("client_id")) {
+						String json = (String) oAuth2AccessTokenMap.get("additional_information");
+						Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
+						String clientId = String.valueOf(oAuth2AccessTokenMap.get("client_id"));
+						BasicClientInfo info = new BasicClientInfo();
+						info.setClientId(clientId);
+						info.setClientName(String.valueOf(clientDetails.get("name")));
+						infos.add(info);
 					}
-					return infos;
-				} else {
-					logger.error("Error getting information about client");
-					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				}
+				return infos;
 			} else {
+				logger.error("Error getting information about client");
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 
