@@ -154,13 +154,14 @@ public class ResourceAccessController extends AbstractController {
 				}
 			}
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
 
 		} catch (AuthenticationException e) {
 			logger.error("Error getting information about client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
+			return null;
 		}
-		return null;
+		
 	}
 
 	/**
