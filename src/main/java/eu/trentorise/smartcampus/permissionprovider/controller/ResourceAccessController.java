@@ -143,17 +143,22 @@ public class ResourceAccessController extends AbstractController {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			String clientId = auth.getAuthorizationRequest().getClientId();
-			if (clientId != null) {
-				ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-				if (client != null) {
-					BasicClientInfo info = new BasicClientInfo();
-					info.setClientId(clientId);
-					info.setClientName((String) client.getAdditionalInformation().get("name"));
-					return info;
+			// client only
+			if (auth.isClientOnly()) {
+				String clientId = auth.getAuthorizationRequest().getClientId();
+				if (clientId != null) {
+					ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+					if (client != null) {
+						BasicClientInfo info = new BasicClientInfo();
+						info.setClientId(clientId);
+						info.setClientName((String) client.getAdditionalInformation().get("name"));
+						return info;
+					}
 				}
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return null;
 
 		} catch (AuthenticationException e) {
@@ -182,30 +187,32 @@ public class ResourceAccessController extends AbstractController {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
 
-			if (auth.getName() != null && !auth.getName().isEmpty()) {
-				List<BasicClientInfo> infos = new ArrayList<BasicClientInfo>();
-				String userId = auth.getName();
-				// get different client_id for user in oauth_access_token
-				// collection.
-				List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
-				// loop through client_id and create info obj for each client_id
-				// and add to list.
-				for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
-					if (oAuth2AccessTokenMap.containsKey("client_id")) {
-						String json = (String) oAuth2AccessTokenMap.get("additional_information");
-						Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
-						String clientId = String.valueOf(oAuth2AccessTokenMap.get("client_id"));
-						BasicClientInfo info = new BasicClientInfo();
-						info.setClientId(clientId);
-						info.setClientName(String.valueOf(clientDetails.get("name")));
-						infos.add(info);
+			if (auth.isClientOnly()) { //client only.
+				if (auth.getName() != null && !auth.getName().isEmpty()) {
+					List<BasicClientInfo> infos = new ArrayList<BasicClientInfo>();
+					String userId = auth.getName();
+					// get different client_id for user in oauth_access_token
+					// collection.
+					List<Map<String, Object>> oAuthTokens = autoJdbcTokenStore.findClientIdsByUserName(userId);
+					// loop through client_id and create info obj for each client_id
+					// and add to list.
+					for (Map<String, Object> oAuth2AccessTokenMap : oAuthTokens) {
+						if (oAuth2AccessTokenMap.containsKey("client_id")) {
+							String json = (String) oAuth2AccessTokenMap.get("additional_information");
+							Map<String, Object> clientDetails = mapper.readValue(json, Map.class);
+							String clientId = String.valueOf(oAuth2AccessTokenMap.get("client_id"));
+							BasicClientInfo info = new BasicClientInfo();
+							info.setClientId(clientId);
+							info.setClientName(String.valueOf(clientDetails.get("name")));
+							infos.add(info);
+						}
 					}
+					return infos;
+				} else {
+					logger.error("Error getting information about client");
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				}
-
-				return infos;
-
 			} else {
-				logger.error("Error getting information about client");
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 
@@ -302,41 +309,45 @@ public class ResourceAccessController extends AbstractController {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			String clientId = auth.getAuthorizationRequest().getClientId();
-			if (clientId != null) {
-				ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
-				if (client != null) {
-					ClientModel model = ClientModel.fromClient(client);
-					// Set<String> scopes = model.getScopes();
-					// for (String scope: scopes) {
-					// Resource r = resourceManager.getResource(scope);
-					// if (r != null) {
-					//
-					// }
-					// }
-					List<ResourceParameter> params = resourceManager.getOwnResourceParameters(clientId);
-					if (params != null) {
-						model.setOwnParameters(new HashSet<ServiceParameterModel>());
-						for (ResourceParameter rp : params) {
-							ServiceParameterModel spm = new ServiceParameterModel();
-							spm.setName(rp.getParameter());
-							spm.setService(rp.getService().getServiceName());
-							spm.setValue(rp.getValue());
-							spm.setVisibility(rp.getVisibility());
-							model.getOwnParameters().add(spm);
+			if (auth.isClientOnly()) {
+				String clientId = auth.getAuthorizationRequest().getClientId();
+				if (clientId != null) {
+					ClientDetailsEntity client = clientDetailsRepository.findByClientId(clientId);
+					if (client != null) {
+						ClientModel model = ClientModel.fromClient(client);
+						// Set<String> scopes = model.getScopes();
+						// for (String scope: scopes) {
+						// Resource r = resourceManager.getResource(scope);
+						// if (r != null) {
+						//
+						// }
+						// }
+						List<ResourceParameter> params = resourceManager.getOwnResourceParameters(clientId);
+						if (params != null) {
+							model.setOwnParameters(new HashSet<ServiceParameterModel>());
+							for (ResourceParameter rp : params) {
+								ServiceParameterModel spm = new ServiceParameterModel();
+								spm.setName(rp.getParameter());
+								spm.setService(rp.getService().getServiceName());
+								spm.setValue(rp.getValue());
+								spm.setVisibility(rp.getVisibility());
+								model.getOwnParameters().add(spm);
+							}
 						}
+						return model;
 					}
-					return model;
 				}
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return null;
 
 		} catch (AuthenticationException e) {
 			logger.error("Error getting information about client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return null;
 		}
+
+		return null;
 	}
 
 	@RequestMapping(value = "/resources/clientspec", method = RequestMethod.POST)
@@ -346,31 +357,36 @@ public class ResourceAccessController extends AbstractController {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
 			String clientId = auth.getAuthorizationRequest().getClientId();
-			if (clientId != null) {
-				try {
-					model = clientDetailsManager.createNewFromModel(model,
-							clientDetailsRepository.findByClientId(clientId).getDeveloperId());
-				} catch (Exception e) {
-					logger.error("Error creating client: " + e.getMessage());
-					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-					Response r = new Response();
-					r.setErrorMessage(e.getMessage());
-					r.setResponseCode(RESPONSE.ERROR);
+			// client only.
+			if (auth.isClientOnly()) { // client only.
+				if (clientId != null) {
 					try {
-						response.getWriter().print(JsonUtils.toJSON(r));
-					} catch (IOException e1) {
+						model = clientDetailsManager.createNewFromModel(model,
+								clientDetailsRepository.findByClientId(clientId).getDeveloperId());
+					} catch (Exception e) {
+						logger.error("Error creating client: " + e.getMessage());
+						response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+						Response r = new Response();
+						r.setErrorMessage(e.getMessage());
+						r.setResponseCode(RESPONSE.ERROR);
+						try {
+							response.getWriter().print(JsonUtils.toJSON(r));
+						} catch (IOException e1) {
+						}
+						return null;
 					}
-					return null;
-				}
-				return model;
+					return model;
+				}				
+			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return null;
 			}
 		} catch (AuthenticationException e) {
 			logger.error("Error creating client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return null;
 		}
-
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
 	}
@@ -381,34 +397,41 @@ public class ResourceAccessController extends AbstractController {
 		try {
 			String parsedToken = resourceFilterHelper.parseTokenFromRequest(request);
 			OAuth2Authentication auth = resourceServerTokenServices.loadAuthentication(parsedToken);
-			String clientId = auth.getAuthorizationRequest().getClientId();
-			if (clientId != null) {
-				ClientDetailsEntity ownerClient = clientDetailsRepository.findByClientId(clientId);
-				ClientDetailsEntity updatedClient = clientDetailsRepository.findByClientId(model.getClientId());
-				if (ownerClient == null || updatedClient == null)
-					throw new BadCredentialsException("No client found");
+			if (auth.isClientOnly()) { //client only.
+				String clientId = auth.getAuthorizationRequest().getClientId();
 
-				if (!ownerClient.getDeveloperId().equals(updatedClient.getDeveloperId())) {
-					throw new BadCredentialsException("Not authorized");
-				}
-				try {
-					model = clientDetailsManager.updateFromModel(model,
-							clientDetailsRepository.findByClientId(clientId).getDeveloperId());
-				} catch (Exception e) {
-					logger.error("Error creating client: " + e.getMessage());
-					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-					Response r = new Response();
-					r.setErrorMessage(e.getMessage());
-					r.setResponseCode(RESPONSE.ERROR);
-					try {
-						response.getWriter().print(JsonUtils.toJSON(r));
-					} catch (IOException e1) {
+				if (clientId != null) {
+					ClientDetailsEntity ownerClient = clientDetailsRepository.findByClientId(clientId);
+					ClientDetailsEntity updatedClient = clientDetailsRepository.findByClientId(model.getClientId());
+					if (ownerClient == null || updatedClient == null)
+						throw new BadCredentialsException("No client found");
+
+					if (!ownerClient.getDeveloperId().equals(updatedClient.getDeveloperId())) {
+						throw new BadCredentialsException("Not authorized");
 					}
-					return null;
+					try {
+						model = clientDetailsManager.updateFromModel(model,
+								clientDetailsRepository.findByClientId(clientId).getDeveloperId());
+					} catch (Exception e) {
+						logger.error("Error creating client: " + e.getMessage());
+						response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+						response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+						Response r = new Response();
+						r.setErrorMessage(e.getMessage());
+						r.setResponseCode(RESPONSE.ERROR);
+						try {
+							response.getWriter().print(JsonUtils.toJSON(r));
+						} catch (IOException e1) {
+						}
+						return null;
+					}
+					return model;
 				}
-				return model;
+			} else {
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return null;
 			}
+
 		} catch (AuthenticationException e) {
 			logger.error("Error creating client: " + e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
