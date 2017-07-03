@@ -20,10 +20,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <fmt:setBundle basename="resources.internal" var="res" />
 <!DOCTYPE html>
 <html>
 <head>
+
 <link rel="shortcut icon" href="../img/favicon.ico" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF8">
 <meta name="viewport"
@@ -36,6 +42,7 @@
 	type="text/css">
 <title>WeLive AAC</title>
 <style type="text/css">
+
 .button-row {
 	margin-top: 10px;
 }
@@ -44,13 +51,15 @@
 .button-row input:hover {
 	background-color: #b6bd00;
 	color: white;
-	text-transform: uppercase
+	text-transform: uppercase;
+	font-family: "Roboto", sans-serif;
 }
 
 .button-row input {
 	background-color: #b6bd00;
 	color: white;
-	text-transform: uppercase
+	text-transform: uppercase;
+	font-family: "Roboto", sans-serif;	
 }
 
 .button {
@@ -75,6 +84,7 @@ a.link {
 	background-image: none;
 	background-repeat: no-repeat;
 	opacity: 1;
+	font-family: "Roboto", sans-serif;
 }
 
 .footer a.link {
@@ -94,8 +104,72 @@ a.link {
 
 .form-group input {
 	border-radius: 6px;
-	margin-bottom: 10px
+	margin-bottom: 10px;
+	font-family: "Roboto", sans-serif;
 }
+
+.logo-container {
+    font-size: smaller;
+    height: 100%;
+    line-height: 64px;
+    margin: 0 0 0 10px;
+    padding: 0 10px;
+    white-space: nowrap;
+    font-weight: 400;
+    position: absolute;
+    left: 0px;
+}
+
+.dock-logo {
+    max-height: 80%;
+}
+
+.dock-menu {
+    float: right !important;
+    font-family: "Roboto",​sans-serif;
+    font-size: 14px;
+}
+
+.dock-menu li {
+    float: left;
+    list-style-type: none;
+    transition: background-color .3s;
+}
+
+.dock-menu li:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dock-menu li a {
+    line-height: 64px;
+    font-weight: 400;
+    transition: background-color .3s;
+    display: inline-block;
+    padding: 0 15px;
+    cursor: pointer;
+    color: #040404;
+    text-decoration: none;
+}
+
+.dropdown-content li > a {
+    font-size: 16px;
+    color: #6FAFDA;
+    display: block;
+    line-height: 22px;
+    padding: 14px 16px;
+}
+
+.white {
+    height: 64px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    margin-bottom: 5px;
+}
+
+.welive-font{
+ 	font-family: "Roboto",​sans-serif;
+}
+
+
 </style>
 
 <script type="text/javascript">
@@ -118,16 +192,35 @@ a.link {
 		ResourceBundle resource = ResourceBundle.getBundle("commoncore");
 		String serverRedirect = resource.getString("default.redirect.url");
 	%>
-	<div class="langSelect">
-		<%-- <fmt:message bundle="${res}" key="language_label" /> :  --%>
+	<nav class="white" role="navigation" id="welive-dockbar">
+		<a class="logo-container" href="<%=serverRedirect%>"> <img src="../img/wl-logo.png" class="dock-logo"></img>
+		</a>
+		<ul class="dock-menu">
+			<li>
+				<div class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown"><i class="material-icons" style="line-height: 64px;">translate</i></a>
+					 <ul class="dropdown-menu dropdown-content" role="menu" style="margin-left: -105px;">
+						<li><a href="javascript:changeLang('en')">English</a></li>
+						<li><a href="javascript:changeLang('it')">Italiano</a></li>
+						<li><a href="javascript:changeLang('es')">Espa&ntilde;ol</a></li>
+						<li><a href="javascript:changeLang('sr')">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a></li>
+						<li><a href="javascript:changeLang('sh')">Spski(latinica)</a></li>
+						<li><a href="javascript:changeLang('fi')">Suomi</a></li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</nav>
+	<%-- <div class="langSelect">
+		<fmt:message bundle="${res}" key="language_label" /> : 
 		<a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
 		<a id="itlang" href="javascript:changeLang('it')">Italiano</a>&nbsp;|&nbsp;
 		<a href="javascript:changeLang('es')">Espa&ntilde;ol</a>&nbsp;|&nbsp;
 		<a href="javascript:changeLang('sr')">&#1057;&#1088;&#1087;&#1089;&#1082;&#1080;</a>&nbsp;|&nbsp;
 		<a href="javascript:changeLang('sh')">Spski (latinica)</a>&nbsp;|&nbsp;
 		<a href="javascript:changeLang('fi')">Suomi</a>
-		<%-- Current Locale : ${pageContext.response.locale} --%>
-	</div>
+		Current Locale : ${pageContext.response.locale}
+	</div> --%>
 	<div class="clear"></div>
 	<%
 		Map<String, String> authorities = (Map<String, String>) request.getAttribute("authorities");
@@ -158,12 +251,12 @@ a.link {
 		<%
 			if (authorities.containsKey("welive")) {
 		%>
-		<div id="my-big-authtitle" class="col-md-offset-1 col-md-10">
+		<div id="my-big-authtitle" class="col-md-offset-1 col-md-10 welive-font">
 			<label> <fmt:message bundle="${res}"
 					key="authorities_access_text" />
 			</label>
 		</div>
-		<div id="my-small-authtitle" class="col-xs-offset-1 col-xs-10">
+		<div id="my-small-authtitle" class="col-xs-offset-1 col-xs-10 welive-font">
 			<label> <fmt:message bundle="${res}"
 					key="authorities_access_text" />
 			</label>
@@ -227,7 +320,7 @@ a.link {
 	<%
 		if (authorities.containsKey("google") || authorities.containsKey("facebook")) {
 	%>
-	<div class="authorities">
+	<div class="welive-font">
 
 		<%
 			if (authorities.containsKey("welive")) {
@@ -250,7 +343,7 @@ a.link {
 				<%
 					if (authorities.containsKey("google")) {
 				%>
-				<a class="btn btn-google"
+				<a class="btn btn-google welive-font"
 					href="<%=request.getContextPath()%>/eauth/google">GOOGLE</a>
 				<%
 					}
@@ -258,7 +351,7 @@ a.link {
 				<%
 					if (authorities.containsKey("facebook")) {
 				%>
-				<a class="btn btn-facebook"
+				<a class="btn btn-facebook welive-font"
 					href="<%=request.getContextPath()%>/eauth/facebook">FACEBOOK </a>
 				<%
 					}

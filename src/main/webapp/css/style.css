@@ -19,7 +19,7 @@
 body {
 	/*width: 100%;
 	height: 100%;*/
-	font-family: "lucida grande", tahoma, arial, sans-serif;
+	font-family: "Roboto", sans-serif;
 	/* verdana */
 /* 	color: #ffffff;
  */	
@@ -29,7 +29,7 @@ body {
 	margin: 0 auto;
 	text-align: center;
 	background-color: white;
-	font-family: "lucida grande", tahoma, arial, sans-serif;
+	font-family: "Roboto", sans-serif;
 }
 
 ul.pprovider {
