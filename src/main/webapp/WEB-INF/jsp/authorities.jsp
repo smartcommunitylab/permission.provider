@@ -60,12 +60,14 @@
 	color: white;
 	text-transform: uppercase;
 	font-family: "Roboto", sans-serif;
+	border-radius: 2px	
 }
 
 .button {
 	background-color: #6fafda;
 	color: white;
-	text-transform: uppercase
+	text-transform: uppercase;
+	border-radius: 2px
 }
 
 a.link {
@@ -108,7 +110,7 @@ a.link {
 }
 
 .form-group input {
-	border-radius: 6px;
+	border-radius: 2px;
 	margin-bottom: 10px;
 	font-family: "Roboto", sans-serif;
 }
@@ -177,6 +179,7 @@ a.link {
 
 .hover-item {
 	box-shadow: 0 2px 6px 0 rgba(0,0,0,0.25);
+	border-radius: 2px;
 }
 
 .hover-item:hover {
