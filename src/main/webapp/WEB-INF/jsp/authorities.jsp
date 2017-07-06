@@ -49,21 +49,21 @@
 
 /** input within button-row class**/
 .button-row input:hover {
-	background-color: #b6bd00;
+	background-color: #6fafda;
 	color: white;
 	text-transform: uppercase;
 	font-family: "Roboto", sans-serif;
 }
 
 .button-row input {
-	background-color: #b6bd00;
+	background-color: #6fafda;
 	color: white;
 	text-transform: uppercase;
-	font-family: "Roboto", sans-serif;	
+	font-family: "Roboto", sans-serif;
 }
 
 .button {
-	background-color: #b6bd00;
+	background-color: #6fafda;
 	color: white;
 	text-transform: uppercase
 }
@@ -90,6 +90,11 @@ a.link {
 .footer a.link {
 	color: #555;
 }
+
+.footer a:hover {
+    color: white;
+}
+
 
 .langSelect {
 	align: center;
@@ -170,6 +175,13 @@ a.link {
  	font-size: 16px
 }
 
+.hover-item {
+	box-shadow: 0 2px 6px 0 rgba(0,0,0,0.25);
+}
+
+.hover-item:hover {
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19),0 6px 6px rgba(0,0,0,0.23);
+}
 
 </style>
 
@@ -299,7 +311,7 @@ a.link {
 				<div class="button-row welive-font">
 					<input type="submit" name="login"
 						value="<fmt:message bundle="${res}" key="authorities_welive_login_button_text" />"
-						class="btn btn-default welive-font" />
+						class="btn btn-default welive-font hover-item" />
 				</div>
 				<%
 					if (request.getSession().getAttribute("error") != null) {
@@ -344,7 +356,7 @@ a.link {
 				<%
 					if (authorities.containsKey("google")) {
 				%>
-				<a class="btn btn-google welive-font"
+				<a class="btn btn-google welive-font hover-item"
 					href="<%=request.getContextPath()%>/eauth/google">GOOGLE</a>
 				<%
 					}
@@ -352,7 +364,7 @@ a.link {
 				<%
 					if (authorities.containsKey("facebook")) {
 				%>
-				<a class="btn btn-facebook welive-font"
+				<a class="btn btn-facebook welive-font hover-item"
 					href="<%=request.getContextPath()%>/eauth/facebook">FACEBOOK </a>
 				<%
 					}
@@ -373,7 +385,7 @@ a.link {
 			<div class="col">
 				<a class="link welive-font" target="_blank"><fmt:message bundle="${res}"
 						key="authorities_register_text" /></a> <a
-					class="button btn btn-default welive-font"
+					class="btn button welive-font hover-item"
 					href=<%=serverRedirect + "/" + lang
 					+ "/?p_p_id=58&p_p_lifecycle=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&saveLastPath=0&_58_struts_action=%2Flogin%2Fcreate_account"%>><fmt:message
 						bundle="${res}" key="authorities_register_button_text" /></a>
