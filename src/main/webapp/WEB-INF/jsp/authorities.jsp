@@ -117,7 +117,7 @@ a.link {
     font-weight: 400;
     position: absolute;
     left: 0px;
-    padding-top: 6px;
+    padding-top: 7px;
 }
 
 .dock-logo {
