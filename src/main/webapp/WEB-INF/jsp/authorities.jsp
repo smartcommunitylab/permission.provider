@@ -113,11 +113,11 @@ a.link {
     height: 100%;
     line-height: 64px;
     margin: 0 0 0 10px;
-    padding: 0 10px;
     white-space: nowrap;
     font-weight: 400;
     position: absolute;
     left: 0px;
+    padding-top: 6px;
 }
 
 .dock-logo {
