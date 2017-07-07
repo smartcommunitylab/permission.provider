@@ -30,8 +30,23 @@
 #info {
     padding: 1em;
 }
+
 .button-row {
-    margin-bottom: 1em;
+	margin-top: 10px;
+}
+
+/** input within button-row class**/
+.button-row input:hover {
+	color: white;
+	text-transform: uppercase;
+	font-family: "Roboto", sans-serif;
+}
+
+.button-row input {
+	color: white;
+	text-transform: uppercase;
+	font-family: "Roboto", sans-serif;
+	border-radius: 2px	
 }
 .error {
     line-height: 2.2;
@@ -56,6 +71,39 @@ input[type=checkbox] {
 	text-align: justify;
 }
 
+.hover-item {
+	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+	border-radius: 2px;
+	text: white
+}
+
+.hover-item:hover {
+	text: white;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px
+		rgba(0, 0, 0, 0.23);
+}
+
+.button-blue {
+	background-color: #6fafda;
+	text: white
+}
+
+.button-blue:hover {
+	background-color: #6fafda;
+	text: white
+}
+
+.button-red {
+	background-color: #ef5350;
+	text: white
+}
+
+.button-red:hover {
+	background-color: #ef5350;
+	text: white
+}
+
+
 
 </style>
 <script src="lib/jquery.js" type="text/javascript"></script>
@@ -74,7 +122,12 @@ input[type=checkbox] {
 </script>
 </head>
 <body>
-
+<%@ page language="java" import="java.util.*"%>
+	<%@ page import="java.util.ResourceBundle"%>
+	<%
+		ResourceBundle resource = ResourceBundle.getBundle("commoncore");
+		String serverRedirect = resource.getString("default.redirect.url");
+	%>
 	<div class="container">
        <%--  <fmt:message bundle="${res}" key="language_label" /> : 
         <a id="enlang" href="javascript:changeLang('en')">English</a>&nbsp;|&nbsp;
@@ -106,8 +159,8 @@ input[type=checkbox] {
         <form:form method="POST" modelAttribute="info" action="/aac/collect-info">
             <div class="row">
             	<div class="button-row">
-					<input type="submit" name="accept" value="<fmt:message bundle="${res}" key="extinfo_accept" />" class="btn btn-default" />
-					<input type="submit" name="reject" value="<fmt:message bundle="${res}" key="extinfo_reject" />" class="btn btn-default" />			
+					<input type="submit" name="accept" value="<fmt:message bundle="${res}" key="extinfo_accept" />" class="button-blue btn btn-default hover-item" />
+					<input type="submit" name="reject" value="<fmt:message bundle="${res}" key="extinfo_reject" />" class="button-red btn btn-default hover-item" />			
             	</div>
         	</div>
         </form:form>

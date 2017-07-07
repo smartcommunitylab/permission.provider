@@ -164,6 +164,7 @@
 </head>
 
 <body>
+
 	<%@ page language="java" import="java.util.*"%>
 	<%@ page import="java.util.ResourceBundle"%>
 	<%
@@ -192,7 +193,8 @@
 		</li>
 	</ul>
 	</nav>
-		<%
+	
+	<%
 		Map<String, String> langMap = new HashMap<String, String>();
 		langMap.put("en", "en_GB");
 		langMap.put("it", "it_IT");
@@ -214,6 +216,7 @@
 				out.print("invalid username/password");
 			} */
 	%>
+	
 <div class="clear"></div>
 	<div class="container">
 		<div class="row" align="center">

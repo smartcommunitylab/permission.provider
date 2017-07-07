@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import eu.trentorise.smartcampus.permissionprovider.Config.AUTHORITY;
 import eu.trentorise.smartcampus.permissionprovider.model.ClientAppInfo;
@@ -60,7 +64,7 @@ public class AccessConfirmationController {
 	 * @throws Exception
 	 */
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView getAccessConfirmation(Map<String, Object> model) throws Exception {
+	public ModelAndView getAccessConfirmation(Map<String, Object> model, HttpServletRequest req) throws Exception {
 		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 		// load client information given the client credentials obtained from the request
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
@@ -93,6 +97,8 @@ public class AccessConfirmationController {
 		model.put("resources", resources);
 		model.put("auth_request", clientAuth);
 		model.put("clientName", info.getName());
+		Locale locale = RequestContextUtils.getLocale(req);
+		model.put("language", locale);
 		return new ModelAndView("access_confirmation", model);
 	}
 
