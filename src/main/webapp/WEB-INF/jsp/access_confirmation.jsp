@@ -61,7 +61,7 @@
 .dock-menu {
 	float: right !important;
 	font-family: "Roboto", ​sans-serif;
-	font-size: 16px;
+	font-size: 14px;
 }
 
 .dock-menu li {
