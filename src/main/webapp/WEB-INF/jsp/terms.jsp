@@ -104,7 +104,7 @@ input[type=checkbox] {
 .dock-menu {
 	float: right !important;
 	font-family: "Roboto", ​sans-serif;
-	font-size: 14px;
+	font-size: 16px;
 }
 
 .dock-menu li {
