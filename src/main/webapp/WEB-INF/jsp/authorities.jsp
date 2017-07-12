@@ -163,7 +163,11 @@ a.link {
     color: #6FAFDA;
     display: block;
     line-height: 22px;
-    padding: 14px 16px;
+    padding: 14px 24px;
+}
+
+.icon-caret-down {
+    margin-left: 15px;
 }
 
 .white {
@@ -213,9 +217,20 @@ a.link {
 		</a>
 		<ul class="dock-menu">
 			<li>
+            	<div class="dropdown">
+                	<a class="dropdown-toggle" data-toggle="dropdown"><fmt:message bundle="${res}" key="help_label"/></fmt><i class="caret icon-caret-down"></i></a>
+                		<ul class="dropdown-menu dropdown-content dropdown-menu-right" role="menu">
+                      		<li><a href="<%=serverRedirect%>/user-guide"><fmt:message bundle="${res}" key="help_menu_1"/></fmt></a></li>
+                      		<li><a href="<%=serverRedirect%>/faq"><fmt:message bundle="${res}" key="help_menu_2"/></fmt></a></li>
+                      		<li><a href="<%=serverRedirect%>/contactus"><fmt:message bundle="${res}" key="help_menu_3"/></fmt></a></li>
+                      		<li role="separator" class="divider"></li>
+                		</ul>
+            	</div>
+        	</li>
+			<li>
 				<div class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown"><i class="material-icons" style="line-height: 64px;">translate</i></a>
-					 <ul class="dropdown-menu dropdown-content" role="menu" style="margin-left: -105px;">
+					 <ul class="dropdown-menu dropdown-content dropdown-menu-right" role="menu">
 						<li><a href="javascript:changeLang('en')">English</a></li>
 						<li><a href="javascript:changeLang('it')">Italiano</a></li>
 						<li><a href="javascript:changeLang('es')">Espa&ntilde;ol</a></li>
