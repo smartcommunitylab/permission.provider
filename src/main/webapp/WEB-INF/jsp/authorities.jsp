@@ -117,7 +117,6 @@ a.link {
 
 .logo-container {
     font-size: smaller;
-    height: 100%;
     line-height: 64px;
     margin: 0 0 0 10px;
     white-space: nowrap;
