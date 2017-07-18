@@ -76,11 +76,11 @@ a.link {
 	/*font-size: 1.1em;*/
 	padding: 0px 3px;
 	text-decoration: none;
-	width: auto
+	width: auto;
+	margin-bottom: inherit;
 }
 
 .footer {
-	border-top: 1px solid #EEE;
 	margin-top: 2em;
 	padding: 1em;
 	background-image: none;
@@ -93,11 +93,6 @@ a.link {
 	color: #555;
 }
 
-.footer a:hover {
-    color: white;
-}
-
-
 .langSelect {
 	align: center;
 	heght: 30px;
@@ -106,13 +101,18 @@ a.link {
 }
 
 .row img {
-	margin-bottom: 10px
+	margin-bottom: 40px
+}
+
+.label {
+	margin-bottom: 20px
 }
 
 .form-group input {
 	border-radius: 2px;
 	margin-bottom: 10px;
 	font-family: "Roboto", sans-serif;
+	padding-left: 5px;
 }
 
 .logo-container {
@@ -187,6 +187,11 @@ a.link {
 
 .hover-item:hover {
 	box-shadow: 0 10px 20px rgba(0,0,0,0.19),0 6px 6px rgba(0,0,0,0.23);
+}
+
+.label-custom {
+	margin-bottom: 20px;
+	font-weight: 100;
 }
 
 </style>
@@ -282,12 +287,12 @@ a.link {
 			if (authorities.containsKey("welive")) {
 		%>
 		<div id="my-big-authtitle" class="col-md-offset-1 col-md-10 welive-font">
-			<label> <fmt:message bundle="${res}"
+			<label class="label-custom"> <fmt:message bundle="${res}"
 					key="authorities_access_text" />
 			</label>
 		</div>
-		<div id="my-small-authtitle" class="col-xs-offset-1 col-xs-10 welive-font">
-			<label> <fmt:message bundle="${res}"
+		<div id="my-small-authtitle" class="label-custom col-xs-offset-1 col-xs-10 welive-font label-custom">
+			<label class="label-custom"> <fmt:message bundle="${res}"
 					key="authorities_access_text" />
 			</label>
 		</div>
