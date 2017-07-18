@@ -112,7 +112,6 @@ a.link {
 	border-radius: 2px;
 	margin-bottom: 10px;
 	font-family: "Roboto", sans-serif;
-	padding-left: 5px;
 }
 
 .logo-container {
@@ -192,6 +191,10 @@ a.link {
 .label-custom {
 	margin-bottom: 20px;
 	font-weight: 100;
+}
+
+.text-field {
+	padding-left: 5px;
 }
 
 </style>
@@ -312,13 +315,13 @@ a.link {
 		<form:form method="POST" acceptCharset="UTF-8"
 			action="/aac/login/welive-login">
 			<div class="form-group welive-font">
-				<input id="username" type="text" name="username"
+				<input class="text-field" id="username" type="text" name="username"
 					placeholder="insert your email" />
 				<script>
 					document.getElementById('username').placeholder = "<fmt:message bundle="${res}" key='authorities_username_ptext'/>";
 				</script>
 				<div>
-					<input id="password" type="password" name="password"
+					<input class="text-field" id="password" type="password" name="password"
 						placeholder="password" />
 					<script>
 						document.getElementById('password').placeholder = "<fmt:message bundle="${res}" key='authorities_password_ptext'/>";
