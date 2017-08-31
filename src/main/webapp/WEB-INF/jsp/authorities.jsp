@@ -33,11 +33,13 @@
 		<p>Please choose the provider for your login</p>
 		<ul class="pprovider">
 <% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
-   for (String s : authorities.keySet()) {%>		
-            <li>
-		      <a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a>
-            </li>
-<%  } %>            
+   for (String s : authorities.keySet()) {%>
+     <% if (s.equalsIgnoreCase("adc")) { %>		
+     <li><a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a></li>
+     <% } else { %>
+     <li><a href="<%=request.getContextPath() %>/eauth/<%=s %>">CPS / SPID</a></li>
+     <% } %>
+<% } %>            
 		</ul>
 	</div>
 </body>
