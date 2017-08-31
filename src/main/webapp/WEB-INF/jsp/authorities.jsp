@@ -35,9 +35,9 @@
 <% Map<String, String> authorities = (Map<String,String>)request.getAttribute("authorities");
    for (String s : authorities.keySet()) {%>
      <% if (s.equalsIgnoreCase("adc")) { %>		
-     <li><a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a></li>
-     <% } else { %>
      <li><a href="<%=request.getContextPath() %>/eauth/<%=s %>">CPS / SPID</a></li>
+     <% } else { %>
+     <li><a href="<%=request.getContextPath() %>/eauth/<%=s %>"><%=s.toUpperCase() %></a></li>
      <% } %>
 <% } %>            
 		</ul>
