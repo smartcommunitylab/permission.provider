@@ -99,9 +99,9 @@
         <sec:logout invalidate-session="true" logout-url="/admin/logout" success-handler-ref="adminCookieCleaner" />
     </sec:http>
 
-    <bean id="cookieCleaner" class="eu.trentorise.smartcampus.permissionprovider.controller.CookieCleaner">
+    <bean id="redirectLogoutHandler" class="eu.trentorise.smartcampus.permissionprovider.controller.RedirectLogoutSuccessHandler">
         <constructor-arg value="JSESSIONID,open_id_session_id,_shibsession"/>
-        <constructor-arg value="/dev"/>
+        <constructor-arg value="target"/>
     </bean>
     <bean id="adminCookieCleaner" class="eu.trentorise.smartcampus.permissionprovider.controller.CookieCleaner">
         <constructor-arg value="JSESSIONID,open_id_session_id,_shibsession"/>
@@ -124,7 +124,7 @@
         <sec:intercept-url pattern="/dev/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
         <sec:form-login login-page="/eauth/dev" />
-        <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/dev"/>
+        <sec:logout invalidate-session="true" logout-url="/logout" delete-cookies="JSESSIONID,open_id_session_id,vasdevgoogle" logout-success-url="/dev" success-handler-ref="redirectLogoutHandler"/>
     </sec:http>
 	
 	<bean id="clientAuthenticationEntryPoint"

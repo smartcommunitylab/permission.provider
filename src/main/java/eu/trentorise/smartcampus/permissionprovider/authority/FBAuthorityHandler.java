@@ -58,7 +58,7 @@ public class FBAuthorityHandler implements AuthorityHandler {
 		
 		try {
 			// first, we have to validate that the token is a correct platform token
-			String s = RemoteConnector.getJSON("https://graph.facebook.com", "/v2.2/me?fields=name,first_name,last_name,picture,email&access_token="+token, null);
+			String s = RemoteConnector.getJSON("https://graph.facebook.com", "/v2.9/me?fields=name,first_name,last_name,picture,email&access_token="+token, null);
 			
 			return extractAttributes(s, mapping);
 		} catch (Exception e) {
