@@ -40,6 +40,7 @@ public class RedirectLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler 
 	public RedirectLogoutSuccessHandler(String cookiePrefixes, String redirectParam) {
 		super();
 		this.cookieNames = cookiePrefixes.split(",");
+		this.setDefaultTargetUrl("/dev");
 		setTargetUrlParameter(redirectParam);
 	}
 
