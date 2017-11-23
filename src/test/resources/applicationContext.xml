@@ -28,7 +28,7 @@
 	<!-- Scan controllers in this package -->
 	<context:component-scan base-package="eu.trentorise.smartcampus.permissionprovider.manager" />
 
-	 <bean id="socialEngine" class="${social.engine.impl}"/>
+	 <bean id="socialEngine" class="eu.trentorise.smartcampus.permissionprovider.manager.DefaultSocialEngine"/>
 	<bean id="resourceStorage" class="eu.trentorise.smartcampus.permissionprovider.oauth.CachedResourceStorage"/>
   
 	<bean id="authorityHandlerContainer"

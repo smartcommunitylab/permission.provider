@@ -177,6 +177,11 @@ input[type=checkbox] {
 
 
 </style>
+<script src="lib/jquery.js" type="text/javascript"></script>
+<script src="lib/jquery-ui.min.js" type="text/javascript"></script>
+<script src="lib/bootstrap.js" type="text/javascript"></script>
+<script src="lib/moment-with-locales.min.js" type="text/javascript"></script>
+<script src="lib/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
   var showTerms = true;

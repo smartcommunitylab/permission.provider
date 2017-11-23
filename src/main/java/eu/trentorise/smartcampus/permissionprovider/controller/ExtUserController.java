@@ -59,11 +59,15 @@ public class ExtUserController extends AbstractController {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("name", user.getName());
 		map.put("surname", user.getSurname());
-		map.put("email", user.getEmail());
+		
+		// trim email for issue (#639)
+		String email = user.getEmail().trim();
+		map.put("email", email);
+		
 		if (StringUtils.hasText(user.getUsername())) {
 			map.put("username", user.getUsername());
 		} else {
-			map.put("username", user.getEmail());
+			map.put("username", email);
 		}  
 		User updateUser = provider.updateUser("welive", map, req);
 		return ""+updateUser.getId();

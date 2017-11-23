@@ -223,7 +223,7 @@
 	<bean id="defaultHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.DefaultAuthorityHandler">
 	    <constructor-arg value="${mode.testing}"></constructor-arg>
 	</bean>
-	<bean id="socialEngine" class="${social.engine.impl}"/>
+	<bean id="socialEngine" class="eu.trentorise.smartcampus.permissionprovider.manager.DefaultSocialEngine"/>
 		
 	<import resource="datalayer.xml"/>
 
