@@ -49,36 +49,36 @@ public class AuthorityMappingTest {
 
 	@Before
 	public void init() {
-		List<User> users = userRepository.findByFullNameLike("mario rossi");
+		List<User> users = userRepository.findByFullNameLike("TESTNAME TESTSURNAME");
 		if (users != null) {
 			userRepository.delete(users);
 		}
 	}
 	
 	@Test
-	public void testUsers() {
+	public void testGoogleUsers() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.addParameter("openid.ext1.value.name", "mario");
-		req.addParameter("openid.ext1.value.surname", "rossi");
-		req.addParameter("openid.ext1.value.email", "mario.rossi@gmail.com");
+		req.addParameter("OIDC_CLAIM_given_name", "TESTNAME");
+		req.addParameter("OIDC_CLAIM_family_name", "TESTSURNAME");
+		req.addParameter("OIDC_CLAIM_email", "test.test.test@gmail.com");
 		
 		providerServiceAdapter.updateUser("google", new HashMap<String, String>(), req);
-		List<User> users = userRepository.findByFullNameLike("mario rossi");
+		List<User> users = userRepository.findByFullNameLike("TESTNAME TESTSURNAME");
 		Assert.assertNotNull(users);
 		Assert.assertEquals(1, users.size());
 		
 		providerServiceAdapter.updateUser("googlelocal", new HashMap<String, String>(), req);
-		users = userRepository.findByFullNameLike("mario rossi");
+		users = userRepository.findByFullNameLike("TESTNAME TESTSURNAME");
 		Assert.assertNotNull(users);
 		Assert.assertEquals(1, users.size());
 		
 		req = new MockHttpServletRequest();
-		req.addParameter("openid.ext1.value.name", "mario");
-		req.addParameter("openid.ext1.value.surname", "rossi");
-		req.addParameter("openid.ext1.value.email", "mario.rossi2@gmail.com");
+		req.addParameter("OIDC_CLAIM_given_name", "TESTNAME");
+		req.addParameter("OIDC_CLAIM_family_name", "TESTSURNAME");
+		req.addParameter("OIDC_CLAIM_email", "test.test.test2@gmail.com");
 		
 		providerServiceAdapter.updateUser("google", new HashMap<String, String>(), req);
-		users = userRepository.findByFullNameLike("mario rossi");
+		users = userRepository.findByFullNameLike("TESTNAME TESTSURNAME");
 		Assert.assertNotNull(users);
 		Assert.assertEquals(2, users.size());
 

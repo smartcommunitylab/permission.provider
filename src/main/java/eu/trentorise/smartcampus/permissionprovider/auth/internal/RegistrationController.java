@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.trentorise.smartcampus.permissionprovider.common.AlreadyRegisteredException;
 import eu.trentorise.smartcampus.permissionprovider.common.RegistrationException;
-import eu.trentorise.smartcampus.permissionprovider.manager.RegistrationManager;
+import eu.trentorise.smartcampus.permissionprovider.manager.RegistrationService;
 import eu.trentorise.smartcampus.permissionprovider.model.Registration;
 
 /**
@@ -56,7 +56,7 @@ import eu.trentorise.smartcampus.permissionprovider.model.Registration;
 public class RegistrationController {
 
 	@Autowired
-	private RegistrationManager manager;
+	private RegistrationService service;
 	
 	/**
 	 * Redirect to login page
@@ -85,7 +85,7 @@ public class RegistrationController {
 			HttpServletRequest req) 
 	{
 		try {
-			Registration user = manager.getUser(username, password);
+			Registration user = service.getUser(username, password);
 			String targetEnc = null;
 			try {
 				targetEnc = URLEncoder.encode((String) req.getSession()
@@ -139,7 +139,7 @@ public class RegistrationController {
         }
 		try {
 			Locale locale = LocaleContextHolder.getLocale();
-			manager.register(reg.getName(), reg.getSurname(), reg.getEmail(), reg.getPassword(), locale.getLanguage());
+			service.register(reg.getName(), reg.getSurname(), reg.getEmail(), reg.getPassword(), locale.getLanguage());
 			return "registration/regsuccess";
 		} catch (RegistrationException e) {
 			model.addAttribute("error", e.getClass().getSimpleName());
@@ -172,7 +172,7 @@ public class RegistrationController {
 			return;
         }
 		try {
-			manager.register(reg.getName(), reg.getSurname(), reg.getEmail(), reg.getPassword(), reg.getLang());
+			service.register(reg.getName(), reg.getSurname(), reg.getEmail(), reg.getPassword(), reg.getLang());
 		} catch(AlreadyRegisteredException e) {
 			res.setStatus(HttpStatus.CONFLICT.value());
 		} catch (RegistrationException e) {
@@ -205,7 +205,7 @@ public class RegistrationController {
 	@RequestMapping(value = "/resend", method = RequestMethod.POST)
 	public String resendConfirm(Model model, @RequestParam String username) {
 		try {
-			manager.resendConfirm(username);
+			service.resendConfirm(username);
 			return "registration/regsuccess";
 		} catch (RegistrationException e) {
 			e.printStackTrace();
@@ -223,7 +223,7 @@ public class RegistrationController {
 	@RequestMapping("/confirm")
 	public String confirm(Model model, @RequestParam String confirmationCode, HttpServletRequest req) {
 		try {
-			Registration user = manager.confirm(confirmationCode);
+			Registration user = service.confirm(confirmationCode);
 			if (user.getPassword() != null) {
 				return "registration/confirmsuccess";
 			} else {
@@ -245,7 +245,7 @@ public class RegistrationController {
 	@RequestMapping(value = "/reset", method = RequestMethod.POST)
 	public String reset(Model model, @RequestParam String username) {
 		try {
-			manager.resetPassword(username);
+			service.resetPassword(username);
 		} catch (RegistrationException e) {
 			model.addAttribute("error", e.getClass().getSimpleName());
 			return "registration/resetpwd";
@@ -269,7 +269,7 @@ public class RegistrationController {
 		req.getSession().removeAttribute("changePwdEmail");
 		
 		try {
-			manager.updatePassword(reg.getEmail(), reg.getPassword());
+			service.updatePassword(reg.getEmail(), reg.getPassword());
 		} catch (RegistrationException e) {
 			e.printStackTrace();
 			model.addAttribute("error", e.getClass().getSimpleName());

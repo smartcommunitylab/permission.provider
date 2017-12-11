@@ -28,6 +28,11 @@
 	<!-- Scan controllers in this package -->
 	<context:component-scan base-package="eu.trentorise.smartcampus.permissionprovider.manager" />
 
+  <bean id="defaultHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.DefaultAuthorityHandler">
+      <constructor-arg value="${mode.testing}"></constructor-arg>
+  </bean>
+
+
 	 <bean id="socialEngine" class="${social.engine.impl}"/>
 	<bean id="resourceStorage" class="eu.trentorise.smartcampus.permissionprovider.oauth.CachedResourceStorage"/>
   
@@ -45,5 +50,24 @@
 	</bean>
 
 	<import resource="datalayer.xml" />
+
+    <bean id="templateEngine" class="org.thymeleaf.TemplateEngine">
+      <property name="templateResolver">
+        <bean id="templateResolver"
+          class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
+          <property name="prefix" value="/templates/" />
+          <property name="suffix" value=".html" />
+          <property name="characterEncoding" value="UTF-8"/>
+          <property name="templateMode" value="HTML5" />
+        </bean>
+      </property>
+    </bean>
+
+    <bean id="messageSource"
+    class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basename">
+      <value>resources/internal</value>
+    </property>
+  </bean>
 
 </beans>

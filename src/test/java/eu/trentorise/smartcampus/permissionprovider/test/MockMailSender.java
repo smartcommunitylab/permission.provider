@@ -14,23 +14,33 @@
  *    limitations under the License.
  ******************************************************************************/
 
-package eu.trentorise.smartcampus.permissionprovider.repository;
+package eu.trentorise.smartcampus.permissionprovider.test;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Map;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import eu.trentorise.smartcampus.permissionprovider.model.Registration;
+import eu.trentorise.smartcampus.permissionprovider.common.RegistrationException;
+import eu.trentorise.smartcampus.permissionprovider.manager.MailSender;
 
 /**
  * @author raman
  *
  */
-@Repository
-public interface RegistrationRepository extends JpaRepository<Registration, Long>{
+public class MockMailSender extends MailSender {
 
-	Registration findByEmail(String email);
-	List<Registration> findAllByEmail(String email);
-	Registration findByConfirmationKey(String confirmationKey);
+	public MockMailSender() throws IOException {
+		super();
+	}
+
+	@Override
+	public void init() throws IOException {
+		// DO NOTHING
+	}
+
+	@Override
+	public void sendEmail(String email, String template, String subject, Map<String, Object> vars) throws RegistrationException {
+		// DO NOTHING
+	}
+
+	
 }
