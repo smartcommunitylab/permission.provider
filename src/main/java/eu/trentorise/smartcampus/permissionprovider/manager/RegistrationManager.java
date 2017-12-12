@@ -133,7 +133,23 @@ public class RegistrationManager {
 			throw new RegistrationException(e);
 		}
 	}
-	
+
+	public Registration getUserByPwdResetToken(String confirmationToken) throws RegistrationException {
+		Registration existing;
+		try {
+			existing = getUserByToken(confirmationToken);
+		} catch (Exception e) {
+			throw new RegistrationException(e);
+		}
+		if (existing == null) {
+			throw new NotRegisteredException();
+		}
+		if (!existing.isConfirmed()) {
+			throw new NotConfirmedException();
+		}
+		
+		return existing;
+	}
 	public Registration confirm(String confirmationToken) throws RegistrationException {
 		Registration existing;
 		try {
@@ -183,11 +199,11 @@ public class RegistrationManager {
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DATE, 1);
 		// if there were duplicate calls too close in time, simply ignore		
-		if (!existing.isConfirmed() && existing.getConfirmationDeadline() != null && c.getTimeInMillis() - existing.getConfirmationDeadline().getTime() < 2000) {
+		if (existing.getConfirmationDeadline() != null && c.getTimeInMillis() - existing.getConfirmationDeadline().getTime() < 2000) {
 			return;
 		}
 		try {
-			existing.setConfirmed(false);
+//			existing.setConfirmed(false);
 			existing.setConfirmationDeadline(c.getTime());
 			String key = generateKey();
 			existing.setConfirmationKey(key);
@@ -206,15 +222,15 @@ public class RegistrationManager {
 		Calendar c = Calendar.getInstance();
 		c.add(Calendar.DATE, 1);
 		// if there were duplicate calls too close in time, simply ignore		
-		if (!existing.isConfirmed() && existing.getConfirmationDeadline() != null && c.getTimeInMillis() - existing.getConfirmationDeadline().getTime() < 2000) {
+		if (existing.getConfirmationDeadline() != null && c.getTimeInMillis() - existing.getConfirmationDeadline().getTime() < 2000) {
 			return;
 		}		
 		try {
-			existing.setConfirmed(false);
+//			existing.setConfirmed(false);
 			existing.setConfirmationDeadline(c.getTime());
 			String key = generateKey();
 			existing.setConfirmationKey(key);
-			existing.setPassword(null);
+//			existing.setPassword(null);
 			repository.save(existing);
 			sendResetMail(existing, key);
 		} catch (Exception e) {
@@ -228,6 +244,7 @@ public class RegistrationManager {
 			throw new NotRegisteredException();
 		}
 		try {
+			existing.setConfirmed(true);
 			existing.setPassword(PasswordHash.createHash(password));
 			repository.save(existing);
 		} catch (Exception e) {
@@ -297,7 +314,7 @@ public class RegistrationManager {
 		String lang = reg.getLang();
 		Map<String,Object> vars = new HashMap<String, Object>();
 		vars.put("user", user);
-		vars.put("url", applicationURL+"/internal/confirm?confirmationCode="+key);
+		vars.put("url", applicationURL+"/internal/confirm?reset=true&confirmationCode="+key);
 		String subject = messageSource.getMessage("reset.subject", null, Locale.forLanguageTag(reg.getLang()));
 		sender.sendEmail(reg.getEmail(), "reset_"+lang, subject, vars);
 	}

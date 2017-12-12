@@ -51,7 +51,7 @@
             <div class="col-md-12 form-group">
               <a class="btn" href="resend
               "><fmt:message bundle="${res}" key="lbl_resend" /></a>
-              <a class="btn" href="login"><fmt:message bundle="${res}" key="lbl_login" /></a>
+<%--               <a class="btn" href="login"><fmt:message bundle="${res}" key="lbl_login" /></a> --%>
             </div>
             <div>&nbsp;</div>
             </div>

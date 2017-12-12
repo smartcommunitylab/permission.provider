@@ -221,20 +221,28 @@ public class RegistrationController {
 	 * @return
 	 */
 	@RequestMapping("/confirm")
-	public String confirm(Model model, @RequestParam String confirmationCode, HttpServletRequest req) {
-		try {
-			Registration user = service.confirm(confirmationCode);
-			if (user.getPassword() != null) {
-				return "registration/confirmsuccess";
-			} else {
+	public String confirm(Model model, @RequestParam String confirmationCode, @RequestParam(required=false) Boolean reset, HttpServletRequest req) {
+		
+		if (Boolean.TRUE.equals(reset)) {
+			try {
+				Registration user = service.getUserByPwdResetToken(confirmationCode);
 				req.getSession().setAttribute("changePwdEmail", user.getEmail());
 				model.addAttribute("reg", new RegistrationBean());
-				return "registration/changepwd";
-			}
-		} catch (RegistrationException e) {
-			e.printStackTrace();
-			model.addAttribute("error", e.getClass().getSimpleName());
-			return "registration/confirmerror";
+				return "registration/changepwd";				
+			} catch (RegistrationException e) {
+				e.printStackTrace();
+				model.addAttribute("error", e.getClass().getSimpleName());
+				return "registration/confirmerror";
+			}		
+		} else {
+			try {
+				Registration user = service.confirm(confirmationCode);
+				return "registration/confirmsuccess";				
+			} catch (RegistrationException e) {
+				e.printStackTrace();
+				model.addAttribute("error", e.getClass().getSimpleName());
+				return "registration/confirmerror";
+			}		
 		}
 	}
 	

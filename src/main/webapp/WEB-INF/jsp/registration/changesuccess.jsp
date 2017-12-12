@@ -48,10 +48,10 @@
             <h4 style="text-align:center"><fmt:message bundle="${res}" key="lbl_changesuccess_title" /></h4>
             <div>&nbsp;</div>
             <p><fmt:message bundle="${res}" key="lbl_changesuccess_text" /></p>
-            <div class="col-md-12 form-group">
+<%--             <div class="col-md-12 form-group">
               <a class="btn" href="login"><fmt:message bundle="${res}" key="lbl_login" /></a>
             </div>
-            <div>&nbsp;</div>
+ --%>            <div>&nbsp;</div>
             </div>
           </div>
         </div>
