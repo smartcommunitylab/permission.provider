@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.client.RestTemplate;
+
 import eu.trentorise.smartcampus.network.JsonUtils;
 import eu.trentorise.smartcampus.network.RemoteConnector;
 import eu.trentorise.smartcampus.network.RemoteException;
@@ -92,7 +94,8 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> validateV3(String token) throws SecurityException, RemoteException {
-		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v3/tokeninfo?id_token="+token, null);
+		String s = new RestTemplate().getForObject("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="+token, String.class);
+//		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v3/tokeninfo?id_token="+token, null);
 		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
 		if (result == null || !validAuidence(result) || !result.containsKey("sub")) {
 			throw new SecurityException("Incorrect google token "+ token+": "+s);
@@ -121,7 +124,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> validateV1(String token) throws SecurityException, RemoteException {
 		// first, we have to validate that the token is a correct platform token
-		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v1/tokeninfo?access_token="+token, null);
+		String s = new RestTemplate().getForObject("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="+token, String.class);
 		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
 		if (result == null || !validAuidence(result)) {
 			throw new SecurityException("Incorrect google token "+ token+": "+s);
@@ -157,5 +160,10 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 			}
 		}
 		return attrs;	
+	}
+	
+	public static void main(String[] args) throws SecurityException, RemoteException {
+		new GoogleAuthorityHandler("")
+		.validateV3("eyJhbGciOiJSUzI1NiIsImtpZCI6IjcyOGY0MDE2NjUyMDc5YjllZDk5ODYxYmIwOWJhZmM1YTQ1YmFhODYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI0NTM2MDE4MTY0NDYtdGUwdTd0NGRsZjYxMTVjZTl0MGk5b2l1ZW9ocWU0NGMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI0NTM2MDE4MTY0NDYtYnM5dnRpa3Z1Ym5tNGszYWE3bjV2aDl2ZGwxN3Y4OTMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTUxNjIyMjAxMjQ1NzAzODEwODQiLCJoZCI6ImZiay5ldSIsImVtYWlsIjoibWF0dGVvLmNoaW5pQGZiay5ldSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiTWF0dGVvIENoaW5pIiwicGljdHVyZSI6Imh0dHBzOi8vbGg1Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tdGtxWWRfalA4SFEvQUFBQUFBQUFBQUkvQUFBQUFBQUFBSFkvc3kwWERNN0l5STgvczk2LWMvcGhvdG8uanBnIiwiZ2l2ZW5fbmFtZSI6Ik1hdHRlbyIsImZhbWlseV9uYW1lIjoiQ2hpbmkiLCJsb2NhbGUiOiJlbiIsImlhdCI6MTU0MDI5MjYwMywiZXhwIjoxNTQwMjk2MjAzfQ.eRvP2ByupBU2bkGNmqIeBZxVujlgpGXVN-gaUCEAV3aYjq6em0mvbrGC8jeuKbB9qqospMaTzkmYH3mXjMA4BcFn3-XEHxgEa-vaoYT7eX9XW73DxHABajW5VN3klfyVU_KyHpVs3Okq2IDEZ28j-AutuDjwmksjj-mHdXEv9Y0dXjCbzN7c8IpqvEKSZ5QQI8qSkzzXQVrSp5KhLEw5fdI4DFHp9yUlAkklKq3Yy3o4NUqr6WpBMsEAVStG044MFHkASoIoCQEHSWz_PkdZnECOgI35eRu1tYgBxS40XXINhE2tnkF1hTniXBqiYonTqJFe2CJNhuaEMpNVWlH6Lw");
 	}
 }
