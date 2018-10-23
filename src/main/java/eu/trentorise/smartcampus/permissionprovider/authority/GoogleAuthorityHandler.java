@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.client.RestTemplate;
 
 import eu.trentorise.smartcampus.network.JsonUtils;
@@ -49,6 +51,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	private static final String TOKEN_PARAM = "token";
 	
 	private Set<String> googleClientIds = null;
+	private Log logger = LogFactory.getLog(getClass());
 	
 	public GoogleAuthorityHandler(String googleClientIdsString) {
 		super();
@@ -73,6 +76,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 			try {
 				result = validateV3(token);
 			} catch (Exception e) {
+				e.printStackTrace();
 				// invalid token or invalid token version
 			}
 			if (result == null) {
@@ -96,6 +100,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	private Map<String, Object> validateV3(String token) throws SecurityException, RemoteException {
 		String s = new RestTemplate().getForObject("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="+token, String.class);
 //		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v3/tokeninfo?id_token="+token, null);
+		logger.error("s = " + s);
 		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
 		if (result == null || !validAuidence(result) || !result.containsKey("sub")) {
 			throw new SecurityException("Incorrect google token "+ token+": "+s);
@@ -125,6 +130,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	public Map<String, Object> validateV1(String token) throws SecurityException, RemoteException {
 		// first, we have to validate that the token is a correct platform token
 		String s = new RestTemplate().getForObject("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="+token, String.class);
+		logger.error("s1 = " + s);
 		Map<String,Object> result = JsonUtils.toObject(s, Map.class);
 		if (result == null || !validAuidence(result)) {
 			throw new SecurityException("Incorrect google token "+ token+": "+s);
