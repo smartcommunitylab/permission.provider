@@ -98,6 +98,7 @@ public class GoogleAuthorityHandler implements AuthorityHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> validateV3(String token) throws SecurityException, RemoteException {
+		logger.error("calling = " + "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="+token);
 		String s = new RestTemplate().getForObject("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token="+token, String.class);
 //		String s = RemoteConnector.getJSON("https://www.googleapis.com", "/oauth2/v3/tokeninfo?id_token="+token, null);
 		logger.error("s = " + s);
