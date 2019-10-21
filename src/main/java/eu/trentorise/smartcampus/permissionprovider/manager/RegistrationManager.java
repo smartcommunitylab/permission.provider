@@ -88,7 +88,26 @@ public class RegistrationManager {
 			throw new AlreadyRegisteredException();
 		}
 		else if (existing != null) {
-			return existing;
+			Calendar c = Calendar.getInstance();
+			c.add(Calendar.DATE, 1);
+			existing.setConfirmationDeadline(c.getTime());
+			String key = null;
+			try {
+				key = generateKey();
+				existing.setConfirmationKey(key);
+				repository.save(existing);
+				sendConfirmationMail(existing, key);
+				return existing;
+			} catch (NoSuchAlgorithmException e1) {
+				logger.error("Error saving (NoSuchAlgorithmException)", e1);
+				throw  new RegistrationException(e1);
+			} catch (InvalidKeySpecException e1) {
+				logger.error("Error saving (InvalidKeySpecException)", e1);
+				throw  new RegistrationException(e1);
+			} catch (Exception e) {
+				logger.error("Error saving (Send email)", e);
+				throw new RegistrationException(e);
+			}
 		}
 		
 		Registration reg = new Registration();
