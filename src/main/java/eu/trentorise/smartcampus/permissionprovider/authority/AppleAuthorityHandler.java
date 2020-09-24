@@ -16,19 +16,25 @@
 
 package eu.trentorise.smartcampus.permissionprovider.authority;
 
-import java.net.MalformedURLException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.proc.JWSKeySelector;
@@ -80,7 +86,7 @@ public class AppleAuthorityHandler implements AuthorityHandler {
 			Map<String, Object> result = claimsSet.getClaims();
 			return extractAttributes(result, mapping);
 		} catch (Exception e) {
-			throw new SecurityException("Error validating google token " + token + ": " + e.getMessage());
+			throw new SecurityException("Error validating apple token " + token + ": " + e.getMessage());
 		}
 	}
 
@@ -110,10 +116,24 @@ public class AppleAuthorityHandler implements AuthorityHandler {
 	
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected static synchronized ConfigurableJWTProcessor<SecurityContext> getProcessor() throws MalformedURLException {
+	protected static synchronized ConfigurableJWTProcessor<SecurityContext> getProcessor() throws Exception {
 		if (jwtProcessor == null) {
 			jwtProcessor = new DefaultJWTProcessor<SecurityContext>();
-			JWKSource<SecurityContext> keySource = new RemoteJWKSet<SecurityContext>(new URL("https://appleid.apple.com/auth/keys"));
+			
+			URL url = new URL("https://appleid.apple.com/auth/keys");
+			SSLContext sslContext = SSLContext.getInstance("TLSv1.2"); 
+			sslContext.init(null, null, new SecureRandom());
+			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+			connection.setSSLSocketFactory(sslContext.getSocketFactory());
+			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String input = null;
+            StringBuilder result = new StringBuilder();
+            while ((input = br.readLine()) != null) {
+            	result.append(input);
+            }
+			JWKSet jwkSet = JWKSet.parse(result.toString());
+		
+			JWKSource<SecurityContext> keySource = new ImmutableJWKSet<SecurityContext>(jwkSet);
 			JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
 			JWSKeySelector<SecurityContext> keySelector = new JWSVerificationKeySelector<SecurityContext>(expectedJWSAlg, keySource);
 			jwtProcessor.setJWSKeySelector(keySelector);
@@ -156,7 +176,7 @@ public class AppleAuthorityHandler implements AuthorityHandler {
 //
 //		System.out.println(token);
 		
-		String accessToken = "eyJraWQiOiI4NkQ4OEtmIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiaXQuc21hcnRjb21tdW5pdHlsYWIucGxheWdvZmVycmFyYSIsImV4cCI6MTYwMTAzOTg3OSwiaWF0IjoxNjAwOTUzNDc5LCJzdWIiOiIwMDAxMjkuOTdmYTFiZGVmOWZjNGM4ZWFiYjMwMzUxMzAwM2IxOWIuMTMxNSIsImNfaGFzaCI6Ik5CcUJKOWF2VHYwM2NmNGR3NkZMYUEiLCJlbWFpbCI6Im1hdHRlby5jaGluaUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6InRydWUiLCJhdXRoX3RpbWUiOjE2MDA5NTM0NzksIm5vbmNlX3N1cHBvcnRlZCI6dHJ1ZX0.cWKtEXwRs990hsR0SXu0KfySmqX765gtFqddQRc2OS4jHGqtDBJTDgpe_EEd9Jmm86N-x1ZzBA_e-eWSh8zpt7cQibof52pX9H7A2ULbm7JXP6nYt1jYWJGPt06T5P6JZQt2r2nJtTqyhcHMcC4S6w9fYzgtiZ6yV8l7YvglGwgxxUzcEHRXFZNuu7A52gkbDr_UCXINm3Z20DBsvUlucTn4pfOqMRS9hegvwRjmfPT358se6OCJeikiIplbepvE1eVTrOC5XrxhjO218BHHGfdvirJsPW-wVphsvr3UmM2-XizSUBa8sffWX7YMd0BIf-vpTcnqMfAsTI-nPUpwZw";
+		String accessToken = "";
 
 		ConfigurableJWTProcessor<SecurityContext> jwtProcessor = getProcessor();
 		JWTClaimsSet claimsSet = jwtProcessor.process(accessToken, null);
