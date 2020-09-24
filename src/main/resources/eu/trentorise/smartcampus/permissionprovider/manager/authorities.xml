@@ -56,6 +56,13 @@
       <attributes>link</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
+  <authorityMapping name="applelocal" url="applelocal" public="true" web="false">
+      <attributes alias="eu.trentorise.smartcampus.givenname">given_name</attributes>
+      <attributes alias="eu.trentorise.smartcampus.surname">family_name</attributes>
+      <attributes>email</attributes>
+      <attributes>sub</attributes>
+      <identifyingAttributes>email</identifyingAttributes>
+  </authorityMapping>
   <authorityMapping name="facebooklocal" url="facebooklocal" public="true" web="false">
       <attributes alias="eu.trentorise.smartcampus.givenname">first_name</attributes>
       <attributes alias="eu.trentorise.smartcampus.surname">last_name</attributes>
@@ -112,7 +119,8 @@
       <authority name="facebook" attribute="email"/>
       <authority name="facebooklocal" attribute="email"/>
       <authority name="internal" attribute="email"/>
-      </authorityMatching>
+      <authority name="applelocal" attribute="email"/>
+  </authorityMatching>
   <authorityMatching>
       <authority name="facebook" attribute="id"/>
       <authority name="facebooklocal" attribute="id"/>

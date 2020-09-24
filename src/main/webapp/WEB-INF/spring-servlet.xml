@@ -237,6 +237,10 @@
                   <bean id="facebookLocalAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.FBAuthorityHandler">
                   </bean>    
               </entry>
+              <entry key="applelocal">
+                  <bean id="appleLocalAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AppleAuthorityHandler">
+                  </bean>    
+              </entry>
 	            <entry key="anonymous">
                   <bean id="anonymousAuthorityHandler" class="eu.trentorise.smartcampus.permissionprovider.authority.AnonymousAuthorityHandler"/>
               </entry>
