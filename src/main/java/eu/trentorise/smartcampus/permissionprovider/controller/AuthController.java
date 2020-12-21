@@ -90,7 +90,7 @@ public class AuthController extends AbstractController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter
 				.getWebAuthorityUrls();
-		model.put("authorities", authorities);
+		req.getSession().setAttribute("authorities", authorities);
 		String target = prepareRedirect(req, "/admin");
 		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
@@ -108,7 +108,7 @@ public class AuthController extends AbstractController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter
 				.getWebAuthorityUrls();
-		model.put("authorities", authorities);
+		req.getSession().setAttribute("authorities", authorities);
 		String target = prepareRedirect(req, "/dev");
 		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
@@ -126,7 +126,7 @@ public class AuthController extends AbstractController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter
 				.getWebAuthorityUrls();
-		model.put("authorities", authorities);
+		req.getSession().setAttribute("authorities", authorities);
 		String target = prepareRedirect(req, "/sso");
 		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
@@ -144,7 +144,7 @@ public class AuthController extends AbstractController {
 		Map<String, Object> model = new HashMap<String, Object>();
 		Map<String, String> authorities = attributesAdapter
 				.getWebAuthorityUrls();
-		model.put("authorities", authorities);
+		req.getSession().setAttribute("authorities", authorities);
 		String target = prepareRedirect(req, "/cas/loginsuccess");
 		req.getSession().setAttribute("redirect", target);
 		return new ModelAndView("authorities", model);
@@ -202,7 +202,7 @@ public class AuthController extends AbstractController {
 			return new ModelAndView("redirect:/eauth/"
 					+ resultAuthorities.keySet().iterator().next());
 		}
-		model.put("authorities", resultAuthorities);
+		req.getSession().setAttribute("authorities", resultAuthorities);
 
 		return new ModelAndView("authorities", model);
 	}

@@ -18,6 +18,7 @@ package eu.trentorise.smartcampus.permissionprovider.auth.internal;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
@@ -65,7 +66,10 @@ public class RegistrationController {
 	 */
 	@RequestMapping("/login")
 	public String loginPage(HttpServletRequest req) {
-		return "registration/login";
+		if (req.getSession().getAttribute("authorities") == null) {
+			req.getSession().setAttribute("authorities", Collections.singletonMap("internal", "internal"));
+		}
+		return "authorities";
 	}
 	
 	/**
@@ -104,7 +108,7 @@ public class RegistrationController {
 			return redirect;
 		} catch (RegistrationException e) {
 			model.addAttribute("error", e.getClass().getSimpleName());
-			return "registration/login";
+			return "authorities";
 		}
 	}
 	/**

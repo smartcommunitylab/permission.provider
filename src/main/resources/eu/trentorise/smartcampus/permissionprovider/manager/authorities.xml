@@ -69,7 +69,7 @@
       <attributes>email</attributes>
       <identifyingAttributes>id</identifyingAttributes>
   </authorityMapping>
-  <authorityMapping name="internal" url="internal" public="false" web="false"  useParams="true">
+  <authorityMapping name="internal" url="internal" public="false" web="true"  useParams="true">
       <attributes alias="eu.trentorise.smartcampus.givenname">name</attributes>
       <attributes alias="eu.trentorise.smartcampus.surname">surname</attributes>
       <attributes>email</attributes>

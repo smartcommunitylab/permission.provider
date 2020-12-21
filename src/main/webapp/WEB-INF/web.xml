@@ -99,6 +99,8 @@
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>/img/*</url-pattern>
+    <url-pattern>/italia/svg/*</url-pattern>
+    <url-pattern>/italia/*</url-pattern>
     <url-pattern>/fonts/*</url-pattern>
     <url-pattern>/css/*</url-pattern>
     <url-pattern>/lib/*</url-pattern>

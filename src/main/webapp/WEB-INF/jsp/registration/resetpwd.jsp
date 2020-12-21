@@ -31,10 +31,10 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="-1" />        
         <title><fmt:message bundle="${res}" key="lbl_login_title" /></title>
-        <!-- Bootstrap core CSS -->
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <!-- Custom styles for this template -->
-        <link href="../css/style.css" rel="stylesheet">
+    <!-- Design Italia -->
+    <link rel="stylesheet" href="../italia/css/bootstrap-italia.min.css"/>   
+    <script>window.__PUBLIC_PATH__ = '../italia/fonts'</script>    
+    <link href="../italia/style.css" rel="stylesheet" />
   
 
     </head>
@@ -42,15 +42,15 @@
       <div class="container">
 	      <img class="logo" src="../img/ls_logo.png" alt="SmartCommunity" />
 	      <div class="clear"></div>
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col-md-offset-4 col-md-4">
             <div class="panel panel-default">
             <h4 style="text-align:center"><fmt:message bundle="${res}" key="lbl_reset_title" /></h4>
             <form action="reset" method="post">
-                <c:if test="${error != null}"><div class="error"><fmt:message bundle="${res}" key="${error}" /></div></c:if>
+                <c:if test="${error != null}"><div class="error text-center"><fmt:message bundle="${res}" key="${error}" /></div></c:if>
                 <div>&nbsp;</div>
                 <div class="col-md-12 form-group"><label> <fmt:message bundle="${res}" key="lbl_user" />: </label><input class="form-control" type="text" name="username"/></div>
-                <div class="col-md-12 form-group">
+                <div class="col-md-12 form-group text-center">
                   <button class="btn btn-primary"><fmt:message bundle="${res}" key="lbl_reset_btn" /></button>
 <%--                   <a class="btn" href="login"><fmt:message bundle="${res}" key="lbl_cancel" /></a>
  --%>                </div>  
@@ -60,7 +60,7 @@
           </div>
         </div>
       </div>  
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-      <script src="../lib/bootstrap.min.js"></script>
+
+  <script src="../italia/js/bootstrap-italia.bundle.min.js"  type="text/javascript" charset="utf-8"></script>     
     </body>
 </html>
