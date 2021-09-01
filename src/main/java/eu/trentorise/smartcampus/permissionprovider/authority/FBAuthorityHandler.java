@@ -26,8 +26,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 
-import eu.trentorise.smartcampus.network.RemoteConnector;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.Attributes;
 import eu.trentorise.smartcampus.permissionprovider.jaxbmodel.AuthorityMapping;
 
@@ -58,7 +58,7 @@ public class FBAuthorityHandler implements AuthorityHandler {
 		
 		try {
 			// first, we have to validate that the token is a correct platform token
-			String s = RemoteConnector.getJSON("https://graph.facebook.com", "/v2.9/me?fields=name,first_name,last_name,picture,email&access_token="+token, null);
+			String s = new RestTemplate().getForObject("https://graph.facebook.com/v2.9/me?fields=name,first_name,last_name,picture,email&access_token="+token, String.class);
 			
 			return extractAttributes(s, mapping);
 		} catch (Exception e) {
